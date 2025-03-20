@@ -1,82 +1,54 @@
 <template>
-    <div class="flex min-h-screen items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div class="w-full max-w-md space-y-8">
-        <div>
-          <h2 class="mt-6 text-center text-3xl font-bold tracking-tight text-gray-900">
-            Đăng nhập vào hệ thống
-          </h2>
+  <div class="container d-flex justify-content-center align-items-center vh-100">
+    <div class="card shadow-lg p-4" style="width: 400px;">
+      <div class="card-body">
+        <h2 class="text-center mb-4">Đăng nhập vào hệ thống</h2>
+
+        <!-- Hiển thị lỗi -->
+        <div v-if="errorMessage" class="alert alert-danger" role="alert">
+          {{ errorMessage }}
         </div>
-        
-        <div v-if="errorMessage" class="rounded-md bg-red-50 p-4">
-          <div class="flex">
-            <div class="ml-3">
-              <h3 class="text-sm font-medium text-red-800">{{ errorMessage }}</h3>
-            </div>
+
+        <form @submit.prevent="handleLogin">
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input
+              id="email"
+              v-model="form.email"
+              type="email"
+              class="form-control"
+              placeholder="Nhập email"
+              required
+            />
           </div>
-        </div>
-        
-        <form class="mt-8 space-y-6" @submit.prevent="handleLogin">
-          <div class="-space-y-px rounded-md shadow-sm">
-            <div>
-              <label for="email" class="sr-only">Email</label>
-              <input
-                id="email"
-                v-model="form.email"
-                name="email"
-                type="email"
-                autocomplete="email"
-                required
-                class="relative block w-full rounded-t-md border-0 py-1.5 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                placeholder="Email"
-              />
-            </div>
-            <div>
-              <label for="password" class="sr-only">Mật khẩu</label>
-              <input
-                id="password"
-                v-model="form.password"
-                name="password"
-                type="password"
-                autocomplete="current-password"
-                required
-                class="relative block w-full rounded-b-md border-0 py-1.5 px-3 text-gray-900 ring-1 ring-inset ring-gray-300 placeholder:text-gray-400 focus:z-10 focus:ring-2 focus:ring-inset focus:ring-indigo-600 sm:text-sm sm:leading-6"
-                placeholder="Mật khẩu"
-              />
-            </div>
+
+          <div class="mb-3">
+            <label for="password" class="form-label">Mật khẩu</label>
+            <input
+              id="password"
+              v-model="form.password"
+              type="password"
+              class="form-control"
+              placeholder="Nhập mật khẩu"
+              required
+            />
           </div>
-  
-          <div class="flex items-center justify-between">
-            <div class="text-sm">
-              <NuxtLink to="/forgot-password" class="font-medium text-indigo-600 hover:text-indigo-500">
-                Quên mật khẩu?
-              </NuxtLink>
-            </div>
+
+          <div class="d-flex justify-content-between">
+            <NuxtLink to="/forgot-password" class="text-decoration-none">
+              Quên mật khẩu?
+            </NuxtLink>
           </div>
-  
-          <div>
-            <button
-              type="submit"
-              :disabled="loading"
-              class="group relative flex w-full justify-center rounded-md bg-indigo-600 py-2 px-3 text-sm font-semibold text-white hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600 disabled:opacity-70"
-            >
-              <span v-if="loading" class="absolute inset-y-0 left-0 flex items-center pl-3">
-                <!-- Spinner icon -->
-                <svg class="h-5 w-5 animate-spin text-white" viewBox="0 0 24 24">
-                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-                  <path
-                    class="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
-                  ></path>
-                </svg>
-              </span>
-              {{ loading ? 'Đang xử lý...' : 'Đăng nhập' }}
-            </button>
-          </div>
+
+          <button type="submit" class="btn btn-primary w-100 mt-3" :disabled="loading">
+            <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span>
+            {{ loading ? "Đang xử lý..." : "Đăng nhập" }}
+          </button>
         </form>
       </div>
     </div>
-  </template>
+  </div>
+</template>
   
   <script setup>
   import { ref, reactive } from 'vue';
