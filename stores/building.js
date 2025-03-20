@@ -4,6 +4,7 @@ import { BuildingApi } from "~/services/api/building.api";
 export const useBuildingStore = defineStore("building", {
     state: () => ({
         buildings: [],
+        overview: [],
         pagination: {},
         loading: false,
         error: null
@@ -44,6 +45,24 @@ export const useBuildingStore = defineStore("building", {
                 this.loading = false;
             }
         },
+
+        async fetchOverview() {
+            this.loading = true;
+            this.error = null;
+
+            try {
+                const response = await BuildingApi.getOverview();
+                
+                if (response.data && response.data.data) {
+                    this.overview = response.data?.data?.data
+                }
+            }catch (error) {
+                console.error("Lỗi khi lấy danh sách overview:", error);
+                this.error = "Đã xảy ra lỗi khi tải dữ liệu";
+            } finally {
+                this.loading = false;
+            }
+        }
     },
 
     getters: {

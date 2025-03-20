@@ -3,8 +3,8 @@
         <Sidebar />
         <div class="content flex-grow-1">
             <Header />
-            <main>
-                <Overview />
+            <main class="container mt-4">
+                <slot />
             </main>
         </div>
     </div>
@@ -13,17 +13,9 @@
 <script setup>
 import Sidebar from '~/components/Sidebar.vue'
 import Header from '~/components/Header.vue'
-import Overview from '~/components/Overview.vue'
-
-definePageMeta({
-  middleware: "auth",
-});
 </script>
 
 <style>
-main {
-    margin: 20px;
-}
 .content {
     width: calc(100% - 250px);
 }
