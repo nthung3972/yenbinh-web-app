@@ -47,11 +47,9 @@ class ApiService {
 
     const statusCode = error.response.status;
     const router = useRouter();
-    const authStore = useAuthStore();
 
     if (statusCode === 401) {
-      authStore.logout();
-      router.push("/auth/login");
+      navigateTo('/auth/login');
     } else if (statusCode === 500) {
       router.push({
         path: "/error",

@@ -3,58 +3,20 @@ import { BuildingApi } from "~/services/api/building.api";
 
 export const useBuildingStore = defineStore("building", {
     state: () => ({
-        buildings: [],
-        overview: [],
-        pagination: {},
-        loading: false,
+        apiData: null,
+        statsBuilding: null,
+        selectedBuildingId: 'all',
         error: null
     }),
 
     actions: {
-        async fetchBuildings(page) {
+        async fetchStatsBuildings() {
             this.loading = true;
-            this.error = null;
-
-            try {
-                const response = await BuildingApi.getBuildings({ page });
-                if (response.data && response.data.data) {
-                    const responseData = response.data?.data?.data
-
-                    this.buildings = responseData?.data
-
-                    this.pagination = {
-                        current_page: Number(responseData.current_page) || 1,
-                        last_page: responseData.last_page,
-                        total: responseData.total,
-                        per_page: responseData.per_page,
-                        next_page_url: responseData.next_page_url,
-                        prev_page_url: responseData.prev_page_url
-                    };
-
-                } else {
-                    this.buildings = [];
-                    this.pagination = null;
-                    this.error = response?.message || "Không thể tải dữ liệu";
-                }
-            } catch (error) {
-                console.error("Lỗi khi lấy danh sách tòa nhà:", error);
-                this.buildings = [];
-                this.pagination = {};
-                this.error = "Đã xảy ra lỗi khi tải dữ liệu";
-            } finally {
-                this.loading = false;
-            }
-        },
-
-        async fetchOverview() {
-            this.loading = true;
-            this.error = null;
-
             try {
                 const response = await BuildingApi.getOverview();
-                
                 if (response.data && response.data.data) {
-                    this.overview = response.data?.data?.data
+                    this.apiData = response.data?.data?.data
+                    this.error = null;
                 }
             }catch (error) {
                 console.error("Lỗi khi lấy danh sách overview:", error);
@@ -62,10 +24,36 @@ export const useBuildingStore = defineStore("building", {
             } finally {
                 this.loading = false;
             }
+        },
+
+        async fetchStatsBuilding(id) {
+            if (!id) return;
+            this.loading = true;
+            this.selectedBuildingId = id;
+            try {
+                const response = await BuildingApi.getStatsBuilding(id);
+                if (response.data && response.data.data) {
+                    this.statsBuilding = response.data?.data?.data
+                    this.error = null;
+                }
+            }catch (error) {
+                console.error("Lỗi khi lấy danh sách overview:", error);
+                this.error = "Đã xảy ra lỗi khi tải dữ liệu";
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        setSelectedBuilding(id) {
+            this.selectedBuildingId = id;
         }
     },
 
     getters: {
-        hasBuildings: (state) => state.buildings.length > 0,
+        getData: (state) => state.apiData,
+        getStatsBuilding: (state) => state.statsBuilding,
+        getSelectedBuildingId: (state) => state.selectedBuildingId,
+        isLoading: (state) => state.loading,
+        hasError: (state) => state.error
     }
 });
