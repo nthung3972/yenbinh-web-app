@@ -9,10 +9,7 @@ export default defineNuxtRouteMiddleware(async (to, from) => {
       const restored = await AuthService.restoreAuth();
       
       if (!restored) {
-        return navigateTo({
-          path: '/auth/login',
-          query: { redirect: to.fullPath }
-        });
+        return navigateTo('/auth/login')
       }
     }
     

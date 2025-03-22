@@ -1,7 +1,11 @@
 import apiService from "@/services/api.service";
 
 export const DashboardApi = {
-    getCollectionRate() {
-        return apiService.get("/dashboard/collection-rate");
+    getStatsBuildings() {
+        return apiService.get("/dashboard/overview");
     },
+
+    getStatsBuilding(id) {
+        return apiService.get(`/dashboard/stats/${id}`);
+    }
 };

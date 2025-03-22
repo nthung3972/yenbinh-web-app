@@ -3,7 +3,7 @@
     <div class="col-6">
       <canvas ref="chartRef"></canvas>
     </div>
-    
+
   </div>
 </template>
 
@@ -84,28 +84,28 @@ onMounted(async () => {
     const found = useDashboard.collectionRate.find(item => item.month === month);
     return found ? found.collection_rate : 0;
   });
-  console.log('dsadsdasdasd', chartDataset);
-  
 
-  const ctx = chartRef.value.getContext('2d');
-  chart = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: [
-        'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6', 
-        'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'
-      ],
-      datasets: [{
-        label: 'Tỷ lệ đóng phí dịch vụ (%)',
-        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-        borderColor: 'rgba(75, 192, 192, 1)',
-        borderWidth: 2,
-        tension: 0.3,
-        data: chartDataset
-      }]
-    },
-    options: chartOptions
-  });
+  if (chartRef.value) {
+    const ctx = chartRef.value.getContext('2d');
+    chart = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: [
+          'Tháng 1', 'Tháng 2', 'Tháng 3', 'Tháng 4', 'Tháng 5', 'Tháng 6',
+          'Tháng 7', 'Tháng 8', 'Tháng 9', 'Tháng 10', 'Tháng 11', 'Tháng 12'
+        ],
+        datasets: [{
+          label: 'Tỷ lệ đóng phí dịch vụ (%)',
+          backgroundColor: 'rgba(75, 192, 192, 0.2)',
+          borderColor: 'rgba(75, 192, 192, 1)',
+          borderWidth: 2,
+          tension: 0.3,
+          data: chartDataset
+        }]
+      },
+      options: chartOptions
+    });
+  }
 
   updateChart(); // Cập nhật dữ liệu lần đầu tiên
 });
