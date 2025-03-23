@@ -23,16 +23,16 @@
                     <li>
                         <NuxtLink :class="getActiveClass('/dashboard')" class="nav-link text-white py-2"
                             to="/dashboard">
-                            Dashboard
+                            <span><Icon name="mdi:view-dashboard" size="24"/></span>Dashboard
                         </NuxtLink>
                     </li>
                     <li>
                         <a href="#" :class="getActiveClass('/building')" class="nav-link text-white py-2"
-                            @click.prevent="checkBuildingAndNavigate('/building')">Tòa nhà</a>
+                            @click.prevent="checkBuildingAndNavigate('/building')"><span><Icon name="mdi:building" size="24"/></span>Tòa nhà</a>
                     </li>
                     <li>
                         <a href="#" :class="getActiveClass('/invoice')" class="nav-link text-white py-2"
-                            @click.prevent="checkBuildingAndNavigate('/invoice')">Thống kê</a>
+                            @click.prevent="checkBuildingAndNavigate('/invoice')"><span><Icon name="material-symbols:overview" size="24"/></span>Thống kê</a>
                     </li>
                 </div>
             </div>
@@ -42,15 +42,15 @@
                 <div class="nav flex-column">
                     <li>
                         <a href="#" :class="getActiveClass('/apartment')" class="nav-link text-white py-2"
-                            @click.prevent="checkBuildingAndNavigate('/apartment')">Căn hộ</a>
+                            @click.prevent="checkBuildingAndNavigate('/apartment')"><span><Icon name="ion:home" size="24"/></span>Căn hộ</a>
                     </li>
                     <li>
                         <a href="#" :class="getActiveClass('/resident')" class="nav-link text-white py-2"
-                            @click.prevent="checkBuildingAndNavigate('/resident')">Cư dân</a>
+                            @click.prevent="checkBuildingAndNavigate('/resident')"><span><Icon name="ic:baseline-people" size="24"/></span>Cư dân</a>
                     </li>
                     <li>
                         <a href="#" :class="getActiveClass('/invoice')" class="nav-link text-white py-2"
-                            @click.prevent="checkBuildingAndNavigate('/invoice')">Quản lý phí</a>
+                            @click.prevent="checkBuildingAndNavigate('/invoice')"><span><Icon name="fa6-solid:file-invoice-dollar" size="24"/></span>Quản lý phí</a>
                     </li>
                 </div>
             </div>
@@ -202,6 +202,12 @@ ul {
 .nav-link {
     transition: background-color 0.3s, color 0.3s;
     border-radius: 4px;
+    display: flex;
+    align-items: center;
+}
+
+.nav-link span{
+    padding: 5px 5px 0 0;
 }
 
 .nav-link.active {
