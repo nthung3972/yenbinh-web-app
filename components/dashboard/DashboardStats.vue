@@ -3,25 +3,25 @@
         <div class="row">
             <div class="col-md-3">
                 <div class="card shadow-sm p-3">
-                    <h5 class="fw-bold">{{ processedData.length }}</h5>
+                    <h5 class="fw-bold"><span><Icon name="mdi:building" size="24"/></span>{{ processedData.length }}</h5>
                     <p class="text-muted">{{ processedData.length > 1 ? 'Tòa nhà' : processedData[0].name }}</p>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card shadow-sm p-3">
-                    <h5 class="fw-bold">{{ totalApartments }}</h5>
+                    <h5 class="fw-bold"><span><Icon name="ion:home" size="24"/></span>{{ totalApartments }}</h5>
                     <p class="text-muted">Tổng số căn hộ</p>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card shadow-sm p-3">
-                    <h5 class="fw-bold">{{ totalResidents }}</h5>
+                    <h5 class="fw-bold"><span><Icon name="ic:baseline-people" size="24"/></span>{{ totalResidents }}</h5>
                     <p class="text-muted">Tổng số cư dân</p>
                 </div>
             </div>
             <div class="col-md-3">
                 <div class="card shadow-sm p-3">
-                    <h5 class="fw-bold">0</h5>
+                    <h5 class="fw-bold"><span><Icon name="fluent-mdl2:service-off" size="24"/></span>0</h5>
                     <p class="text-muted">Yêu cầu bảo trì</p>
                 </div>
             </div>
@@ -77,5 +77,14 @@ const processedData = computed(() => {
     background-color: #4cc9f0;
     border-radius: 20px;
     padding: 7px 10px 10px 10px;
+}
+
+.fw-bold {
+    display: flex;
+    align-items: center;
+}
+
+.fw-bold span {
+    padding: 0 5px 0 0;
 }
 </style>
