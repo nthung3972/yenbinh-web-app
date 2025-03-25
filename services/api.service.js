@@ -49,7 +49,12 @@ class ApiService {
     const router = useRouter();
 
     if (statusCode === 401) {
-      navigateTo('/auth/login');
+      console.log("Lỗi api:", statusCode)
+      const authStore = useAuthStore();
+      if (!authStore.token) {
+        router.push('/auth/login');
+        return Promise.reject(error);
+      }
     } else if (statusCode === 500) {
       router.push({
         path: "/error",
