@@ -5,6 +5,7 @@ import { useDashboardStore } from '@/stores/dashboard'
 export const useApartmentStore = defineStore("apartment", {
     state: () => ({
         apartmentList: [],
+        apartment: [],
         pagination: {
             current_page: 1,
             per_page: '',
@@ -43,25 +44,65 @@ export const useApartmentStore = defineStore("apartment", {
         },
 
         async createApartment(data) {
-            console.log('data', data);
             const dashboardStore = useDashboardStore();
             const building_id = dashboardStore.getSelectedBuildingId;
             const createData = {
                 ...data,
                 building_id: building_id,
             }
-            console.log('createData', createData);
             this.loading = true;
             try {
                 const response = await ApartmentApi.create(createData);
-                if (response) {
-                    console.log('apartment:', response.data);
-                    return response.data;
-                }
-                this.error = null;
+                return response.data;
             } catch (error) {
                 console.error("Lỗi khi tạo căn hộ:", error);
                 this.error = "Đã xảy ra lỗi khi tạo căn hộ";
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async createMultipleResidents(dataInfo, id) {
+            this.loading = true;
+            try {
+                const response = await ApartmentApi.addMultipleResidents(id, dataInfo);
+                return response.data;
+            } catch (error) {
+                console.error("Lỗi khi thêm cư dân:", error);
+                this.error = "Đã xảy ra lỗi thêm cư dân!";
+                // Quan trọng: Throw lại error để component có thể bắt được
+                throw error;
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async detailApartment(id) {
+            this.loading = true;
+            try {
+                const response = await ApartmentApi.edit(id);
+                if(response.data.data) {
+                    this.apartment = response.data.data[0]
+                }
+            } catch (error) {
+                console.error("Lỗi khi lấy thông tin căn hộ:", error);
+                this.error = "Đã xảy ra lỗi khi lấy thông tin căn hộ!";
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async updateApartment(id, data) {
+            console.log('data', data)
+            this.loading = true;
+            try {
+                const response = await ApartmentApi.update(id, data);
+                return response.data;
+            } catch (error) {
+                console.error("Lỗi khi cập nhật căn hộ:", error);
+                this.error = "Đã xảy ra lỗi khi cập nhật căn hộ!";
+                // Quan trọng: Throw lại error để component có thể bắt được
+                throw error;
             } finally {
                 this.loading = false;
             }

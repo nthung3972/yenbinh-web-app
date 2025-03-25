@@ -5,15 +5,15 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="successModalLabel">Tạo căn hộ thành công!</h5>
+                    <h5 class="modal-title" id="successModalLabel">Tạo căn hộ {{ createdApartmentNumber }} thành công!</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
                 </div>
                 <div class="modal-body">
-                    Bạn có muốn thêm cư dân vào căn hộ này ngay bây giờ không?
+                    Bạn có muốn thêm cư dân vào căn hộ {{ createdApartmentNumber }} ngay bây giờ không?
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Không</button>
-                    <button type="button" class="btn btn-success" @click="redirectToAddResident">Có</button>
+                    <button style="min-width: 75px;" type="button" class="btn btn-secondary" @click="redirectToApartment">Không</button>
+                    <button style="min-width: 75px;" type="button" class="btn btn-success" @click="redirectToAddResident">Có</button>
                 </div>
             </div>
         </div>
@@ -38,9 +38,14 @@
                     required>
             </div>
             <div class="mb-3">
+                <label class="form-label">Loại căn hộ</label>
+                <input type="text" v-model="apartment.ownership_type" class="form-control" placeholder="Nhập loại căn hộ"
+                    required>
+            </div>
+            <div class="mb-3">
                 <label class="form-label">Tình trạng căn hộ</label>
                 <select v-model="apartment.status" class="form-select" required>
-                    <option value="1">Để trống</option>
+                    <option value="0">Để trống</option>
                 </select>
             </div>
             <div class="d-flex justify-content-end">
@@ -71,12 +76,14 @@ const router = useRouter()
 const modalRef = ref(null)
 let modalInstance = null
 const createdApartmentId = ref()
+const createdApartmentNumber = ref()
 
 const apartment = ref({
     apartment_number: '',
     floor_number: '',
     area: '',
-    status: '1'
+    status: '0',
+    ownership_type: ''
 })
 
 onMounted(() => {
@@ -87,10 +94,16 @@ const handleSubmit = async () => {
     try {
         const result = await apartmentStore.createApartment(apartment.value)
         createdApartmentId.value = result.data.data.apartment_id
+        createdApartmentNumber.value = result.data.data.apartment_number
         modalInstance.show()
     } catch (error) {
         console.error(error)
     }
+}
+
+const redirectToApartment = () => {
+      modalInstance.hide()
+      router.push(`/apartment`)
 }
 
 const redirectToAddResident = () => {
