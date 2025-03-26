@@ -93,8 +93,8 @@ const toast = useToast();
 
 const statusOptions = [
     { value: 0, label: "Trống" },
-    { value: 1, label: "Đã sử dụng" },
-    { value: 2, label: "Cho thuê" },
+    { value: 1, label: "Đang sử dụng" },
+    { value: 2, label: "Đan cho thuê" },
 ];
 
 const apartmentForm = ref({
@@ -102,7 +102,7 @@ const apartmentForm = ref({
     floor_number: '',
     area: '',
     ownership_type: '',
-    status: '',
+    status: 0,
 });
 
 const originalApartment = ref(null);
@@ -127,6 +127,7 @@ onMounted(async () => {
 });
 
 const updateApartment = async () => {
+    console.log('apartmentForm.value', apartmentForm.value)
     const currentData = JSON.stringify(apartmentForm.value); 
     if (currentData === originalApartment.value) {
         toast.info("Bạn chưa thay đổi dữ liệu!", { timeout: 3000 });
