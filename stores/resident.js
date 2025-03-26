@@ -46,10 +46,7 @@ export const useResidentStore = defineStore("resident", {
             this.loading = true;
             try {
                 const response = await ResidentApi.create(data);
-                if (response) {
-                    return response.data
-                }
-                this.error = null;
+                return response.data
             }catch (error) {
                 console.error("Lỗi khi tạo cư dân:", error);
                 this.error = "Đã xảy ra lỗi khi tạo cư dân";

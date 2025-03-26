@@ -1,6 +1,14 @@
 <template>
-    <div class="container mt-4">
-        <h4>Thêm cư dân vào căn hộ</h4>
+    <div v-if="isLoading" class="text-center">
+        <div class="spinner-border spinner-border-sm me-2" role="status">
+            <span class="visually-hidden">Đang tạo căn hộ...</span>
+        </div>
+        <p>Đang tạo căn hộ...</p>
+    </div>
+    
+    <div v-else>
+        <div class="container mt-4">
+        <h4>Chỉnh sửa thông tin cư dân</h4>
         <div class="card p-4 shadow-sm">
             <form @submit.prevent="handleSubmit">
 
@@ -72,63 +80,62 @@
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
-                            <label class="form-label">Ngày chuyển vào</label>
-                            <input v-model="residentForm.move_in_date" type="date" class="form-control" 
-                                placeholder="Nhập email" required />
-                            <!-- <span v-if="errors.move_in_date" class="error-message">
-                                {{ errors.move_in_date }}
-                            </span> -->
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Ngày đăng ký</label>
-                            <input v-model="residentForm.registration_date" type="date" class="form-control" required />
+                            <!-- <label class="form-label">Ngày đăng ký</label>
+                            <input v-model="residentForm.created_at" type="date" class="form-control" required /> -->
                             <!-- <span v-if="errors.registration_date" class="error-message">
                                 {{ errors.registration_date }}
                             </span> -->
                         </div>
                     </div>
-
-                    <div class="mb-3">
-                        <label class="form-label">Trạng thái</label>
-                        <select v-model="residentForm.registration_status" class="form-select"  required>
-                            <option value="0">Đang cư trú</option>
-                        </select>
-                    </div>
                 </div>
 
-                <!-- <h3 class="h5 mb-3">Thông tin căn hộ</h3>
-                <span v-if="errors.apartments" class="error-message">
+                <h3 class="h5 mb-3">Thông tin căn hộ đang ở</h3>
+                <!-- <span v-if="errors.apartments" class="error-message">
                     {{ errors.apartments }}
-                </span>
-                <div v-for="(apartment, index) in apartments" :key="index" class="card mb-3">
-                    <h5 style="margin: 5px 0 0 10px;">Căn hộ {{ index + 1 }}</h5>
+                </span> -->
+                <div v-for="(apartment, index) in residentForm.apartments" :key="index" class="card mb-3">
+                    <h5 style="margin: 5px 0 0 10px;">Căn hộ #{{ apartment.apartment_number }}</h5>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Số căn hộ</label>
-                                <input v-model="apartment.apartment_number" type="text" class="form-control" required />
-                                
+                                <input v-model="apartment.apartment_number" type="text" class="form-control" readonly required /> 
                             </div>
 
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Vai trò trong căn hộ</label>
-                                <select v-model="apartment.role_in_apartment" class="form-select"
+                                <select v-model="apartment.pivot.role_in_apartment" class="form-select"
                                     placeholder="Nhập email" required>
-                                    <option value="0">Chủ hộ</option>
-                                    <option value="1">Người thuê chính</option>
-                                    <option value="2">Người thân</option>
+                                    <option :value="0">Chủ hộ</option>
+                                    <option :value="1">Người thuê chính</option>
+                                    <option :value="2">Người thân</option>
                                 </select>
                             </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Tình trạng cư trú</label>
+                                <select v-model="apartment.pivot.registration_status" class="form-select"
+                                    placeholder="Nhập email" required>
+                                    <option :value="0">Đang cư trú</option>
+                                    <option :value="1">Đã rời đi</option>
+                                </select>
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label class="form-label">Ngày đăng ký</label>
+                                <input v-model="apartment.pivot.registration_date" type="date" class="form-control" readonly required />
+                            </div>
+
                             <div class="d-flex justify-content-end">
-                                <div v-if="apartments.length > 1">
+                                <!-- <div v-if="apartments.length > 1"> -->
                                     <button @click.prevent="removeResident(index)" class="btn btn-danger">
                                         Xóa căn hộ
                                     </button>
-                                </div>
+                                <!-- </div> -->
                             </div>
                         </div>
                     </div>
-                </div> -->
+                </div>
 
                 <button type="button" class="btn btn-success mb-3" @click="addResident">
                     + Thêm căn hộ
@@ -146,6 +153,7 @@
             </form>
         </div>
     </div>
+    </div>
 </template>
 
 <script setup>
@@ -162,7 +170,9 @@ definePageMeta({
 
 const useResident = useResidentStore();
 const route = useRoute()
+const router = useRouter()
 const residentId = route.params.id
+const isLoading = ref(false);
 
 const residentForm = ref({
     full_name: '',
@@ -171,15 +181,34 @@ const residentForm = ref({
     gender: 'Nam',
     phone_number: '',
     email: '',
-    move_in_date: '',
-    registration_date: '',
-    registration_status: 0,
+    created_at: '',
+    apartments: []
 });
 
+const redirectToApartment = () => {
+    router.push('/resident')
+}
+
 onMounted(async () => {
+    isLoading.value = true;
     await useResident.fetchResident(residentId);
+    console.log(useResident.resident)
     residentForm.value = { ...useResident.resident };
-    console.log(residentForm.value );
-    
+    isLoading.value = false;
 })
 </script>
+
+
+<style scoped>
+.d-flex {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+.error-message {
+  color: red;
+  font-size: 1em;
+  margin-top: 5px;
+}
+</style>

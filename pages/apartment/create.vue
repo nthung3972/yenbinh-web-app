@@ -1,25 +1,13 @@
 <template>
-    <!-- Sau khi submit thành công sẽ show modal -->
-    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true"
-        ref="modalRef">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="successModalLabel">Tạo căn hộ {{ createdApartmentNumber }} thành công!</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Đóng"></button>
-                </div>
-                <div class="modal-body">
-                    Bạn có muốn thêm cư dân vào căn hộ {{ createdApartmentNumber }} ngay bây giờ không?
-                </div>
-                <div class="modal-footer">
-                    <button style="min-width: 75px;" type="button" class="btn btn-secondary" @click="redirectToApartment">Không</button>
-                    <button style="min-width: 75px;" type="button" class="btn btn-success" @click="redirectToAddResident">Có</button>
-                </div>
-            </div>
+    <div v-if="isLoading" class="text-center">
+        <div class="spinner-border spinner-border-sm me-2" role="status">
+            <span class="visually-hidden">Đang tạo căn hộ...</span>
         </div>
+        <p>Đang tạo căn hộ...</p>
     </div>
 
-    <div class="card shadow-sm p-3 m-3">
+    <div v-else>
+        <div class="card shadow-sm p-3 m-3">
         <h5 class="fw-bold mb-3">Thêm căn hộ mới</h5>
         <form @submit.prevent="handleSubmit">
             <div class="mb-3">
@@ -42,29 +30,24 @@
                 <input type="text" v-model="apartment.ownership_type" class="form-control" placeholder="Nhập loại căn hộ"
                     required>
             </div>
-            <div class="mb-3">
-                <label class="form-label">Tình trạng căn hộ</label>
-                <select v-model="apartment.status" class="form-select" required>
-                    <option value="0">Để trống</option>
-                </select>
-            </div>
             <div class="d-flex justify-content-end">
                 <button type="submit" class="btn btn-success me-2">
-                    <Icon name="material-symbols:save-rounded" size="20" class="me-1" />Lưu
+                    <Icon name="material-symbols:save-rounded" size="20" class="me-1" />Thêm căn hộ
                 </button>
                 <NuxtLink to="/apartment" class="btn btn-secondary">
-                    <Icon name="ic:round-cancel" size="20" class="me-1" />Hủy
+                    <Icon name="ic:round-cancel" size="20" class="me-1" />Bỏ qua
                 </NuxtLink>
             </div>
         </form>
     </div>
+    </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useApartmentStore } from '@/stores/apartment'
-import bootstrap from 'bootstrap/dist/js/bootstrap.bundle.min.js'
+import { useToast } from 'vue-toastification';
 
 definePageMeta({
     middleware: "auth",
@@ -73,42 +56,26 @@ definePageMeta({
 
 const apartmentStore = useApartmentStore()
 const router = useRouter()
-const modalRef = ref(null)
-let modalInstance = null
-const createdApartmentId = ref()
-const createdApartmentNumber = ref()
+const toast = useToast()
+const isLoading = ref(false)
 
 const apartment = ref({
     apartment_number: '',
     floor_number: '',
     area: '',
-    status: '0',
     ownership_type: ''
 })
 
-onMounted(() => {
-    modalInstance = new bootstrap.Modal(modalRef.value)
-})
-
 const handleSubmit = async () => {
+    isLoading.value = true
     try {
         const result = await apartmentStore.createApartment(apartment.value)
-        createdApartmentId.value = result.data.data.apartment_id
-        createdApartmentNumber.value = result.data.data.apartment_number
-        modalInstance.show()
+        if(result) {
+            toast.success("Thêm căn hộ thành công!", { timeout: 3000 })
+        }
     } catch (error) {
-        console.error(error)
+        toast.error("Thêm căn hộ thất bại!", { timeout: 3000 });
     }
+    isLoading.value = false
 }
-
-const redirectToApartment = () => {
-      modalInstance.hide()
-      router.push(`/apartment`)
-}
-
-const redirectToAddResident = () => {
-      modalInstance.hide()
-      router.push(`/apartment/${createdApartmentId.value}/add-resident`)
-}
-
 </script>

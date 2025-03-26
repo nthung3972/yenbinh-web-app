@@ -10,7 +10,7 @@
         <div v-else-if="hasError">{{ hasError }}</div>
         <div v-else>
             <div class="d-flex justify-content-between align-items-center mb-3 p-bottom">
-                <h5 class="fw-bold">Danh sách căn hộ</h5>
+                <h5 class="fw-bold">Danh sách cư dân</h5>
                 <div class="input-group w-50">
                     <span class="input-group-text">
                         <Icon name="material-symbols:search" />

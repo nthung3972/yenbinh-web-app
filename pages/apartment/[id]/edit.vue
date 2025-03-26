@@ -1,7 +1,7 @@
 <template>
     <div>
         <div class="row">
-            <div class="col-12 col-md-8 offset-md-2 col-lg-6 offset-lg-3">
+            <div class="col-12">
                 <div class="card shadow-sm">
                     <div class="card-header bg-primary text-white">
                         <h2 class="h4 mb-0">Chỉnh sửa thông tin căn hộ</h2>
@@ -16,14 +16,14 @@
                     <div v-else class="card-body">
                         <form @submit.prevent="updateApartment">
                             <div class="row">
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-1212 mb-3">
                                     <label class="form-label">Số căn hộ</label>
                                     <input v-model="apartmentForm.apartment_number" type="text" id="apartment_number"
                                         class="form-control" placeholder="Nhập số căn hộ" />
                                     <p v-if="errors.apartment_number" class="text-danger">{{ errors.apartment_number }}
                                     </p>
                                 </div>
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-12 mb-3">
                                     <label class="form-label">Số tầng</label>
                                     <input v-model="apartmentForm.floor_number" type="number" id="floor_number"
                                         class="form-control" placeholder="Nhập số tầng" />
@@ -32,28 +32,18 @@
                             </div>
 
                             <div class="row">
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-1212 mb-3">
                                     <label class="form-label">Diện tích (m²)</label>
                                     <input v-model="apartmentForm.area" type="number" id="area" class="form-control"
                                         placeholder="Nhập diện tích" />
                                     <p v-if="errors.area" class="text-danger">{{ errors.area }}</p>
                                 </div>
-                                <div class="col-md-6 mb-3">
+                                <div class="col-md-12 mb-3">
                                     <label class="form-label">Loại căn hộ</label>
                                     <input v-model="apartmentForm.ownership_type" type="text" id="ownership_type"
                                         class="form-control" placeholder="Nhập loại căn hộ" />
                                     <p v-if="errors.ownership_type" class="text-danger">{{ errors.ownership_type }}</p>
                                 </div>
-                            </div>
-
-                            <div class="mb-3">
-                                <label class="form-label">Trạng thái</label>
-                                <select v-model="apartmentForm.status" class="form-select">
-                                    <option v-for="option in statusOptions" :key="option.value" :value="option.value">
-                                        {{ option.label }}
-                                    </option>
-                                </select>
-                                <p v-if="errors.status" class="text-danger">{{ errors.status }}</p>
                             </div>
 
                             <hr class="my-4">
@@ -91,18 +81,11 @@ const router = useRouter();
 const apartmentStore = useApartmentStore();
 const toast = useToast();
 
-const statusOptions = [
-    { value: 0, label: "Trống" },
-    { value: 1, label: "Đang sử dụng" },
-    { value: 2, label: "Đan cho thuê" },
-];
-
 const apartmentForm = ref({
     apartment_number: '',
     floor_number: '',
     area: '',
     ownership_type: '',
-    status: 0,
 });
 
 const originalApartment = ref(null);

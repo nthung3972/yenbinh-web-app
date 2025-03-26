@@ -28,24 +28,22 @@
                     <tr>
                         <th style="width: 10%;">Số căn hộ</th>
                         <th style="width: 10%;">Số tầng</th>
-                        <th style="width: 10%;">Diện tích (m²)</th>
+                        <th style="width: 10%;">Loại căn hộ</th>
+                        <th style="width: 12%;">Diện tích (m²)</th>
                         <th style="width: 15%;">Chủ căn hộ</th>
-                        <th style="width: 15%;">Số điện thoại</th>
-                        <th style="width: 15%;">Tình trạng</th>
-                        <th style="width: 25%; text-align: center;">Hành động</th>
+                        <th style="width: 10%;">Tình trạng</th>
+                        <th style="width: 20%; text-align: center;">Hành động</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="(apartment, index) in apartmentStore.apartmentList" :key="index">
                         <td>{{ apartment.apartment_number }}</td>
                         <td>{{ apartment.floor_number }}</td>
+                        <td>{{ apartment.ownership_type }}</td>
                         <td>{{ apartment.area }}</td>
-                        <td>{{ apartment.residents[0]?.full_name ?? '' }}</td>
-                        <td>{{ apartment.residents[0]?.phone_number ?? '' }}</td>
+                        <td>{{ apartment.residents[0]?.full_name ?? 'Chưa có chủ hộ' }}</td>
                         <td>
-                            <span style="min-width: 100px;" :class="apartment.status === 0 ? 'badge bg-danger' : 'badge bg-info'">
-                                {{ apartment.status === 0 ? 'Để trống' : 'Đang sử dụng' }}
-                            </span>
+                            
                         </td>
                         <td class="d-flex justify-content-center">
                             <NuxtLink to="/" class="btn btn-sm btn-success text-white d-flex align-items-center"
@@ -54,9 +52,6 @@
                             </NuxtLink>
                             <NuxtLink :to="`/apartment/${apartment.apartment_id}/edit`" class="btn btn-sm btn-warning text-white d-flex align-items-center">
                                 <Icon name="basil:edit-solid" size="20" class="me-1" /> Chỉnh sửa
-                            </NuxtLink>
-                            <NuxtLink :to="`/apartment/${apartment.apartment_id}/add-resident`" class="btn btn-sm btn-info text-white d-flex align-items-center">
-                                <Icon name="ic:baseline-people" size="20" class="me-1" /> Thêm cư dân
                             </NuxtLink>
                         </td>
                     </tr>
