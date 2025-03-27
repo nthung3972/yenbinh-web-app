@@ -1,8 +1,61 @@
 <template>
-    <div>
-        <h1>Quản lý Hóa Đơn</h1>
-        <p>Danh sách hóa đơn</p>
+    <div class="card shadow-sm p-4 m-4">
+
+<div v-if="isLoading" class="text-center">
+    <div class="spinner-border spinner-border-sm me-2" role="status">
+        <span class="visually-hidden">Đang tải dữ liệu...</span>
     </div>
+    <p>Đang tải dữ liệu...</p>
+</div>
+<div v-else>
+    <div class="d-flex justify-content-between align-items-center mb-3 p-bottom">
+        <h5 class="fw-bold">Danh sách hóa đơn</h5>
+        <div class="input-group w-50">
+            <span class="input-group-text">
+                <Icon name="material-symbols:search" />
+            </span>
+            <input v-model="searchKeyword" @keyup.enter="onSearch" type="text" class="form-control"
+                placeholder="Điền tên hóa đơn..." />
+            <button class="btn btn-primary" @click="onSearch">Tìm</button>
+        </div>
+        <NuxtLink to="/invoice/create" class="btn btn-primary d-flex align-items-center">
+            <Icon name="ic:baseline-add-circle-outline" size="20" class="me-1" /> Thêm cư dân
+        </NuxtLink>
+    </div>
+    <table class="table table-striped table-hover align-middle" style="table-layout: fixed; width: 100%;">
+        <thead class="table-light">
+            <tr>
+                <th style="width: 15%;">Số căn hộ</th>
+                <th style="width: 15%;">Tổng tiền</th>
+                <th style="width: 15%;">Ngày phát hành</th>
+                <th style="width: 15%;">Hạn thanh toán</th>
+                <th style="width: 15%;">Trạng thái</th>
+                <th style="width: 25%; text-align: center;">Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="(invoice, index) in useInvoice.invoiceList" :key="index">
+                <td>{{ invoice.apartment.apartment_number }}</td>
+                <td>{{ invoice.total_amount }}</td>
+                <td>{{ invoice.invoice_date }}</td>
+                <td></td>
+                <td>{{ invoice.status = 1 ? 'Đã thanh toán' : 'Chưa thanh toán' }}</td>
+                <td class="d-flex justify-content-center">
+                    <NuxtLink to="/" class="btn btn-sm btn-success text-white d-flex align-items-center"
+                        style="min-width: 100px;">
+                        <Icon name="bxs:detail" size="20" class="me-1" />Chi tiết
+                    </NuxtLink>
+                    <NuxtLink to="/"
+                        class="btn btn-sm btn-warning text-white d-flex align-items-center">
+                        <Icon name="basil:edit-solid" size="20" class="me-1" /> Chỉnh sửa
+                    </NuxtLink>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <Pagination :pagination="useInvoice.pagination" @page-change="handlePageChange" />
+</div>
+</div>
 </template>
 
 <script setup>
@@ -19,9 +72,23 @@ const useInvoice = useInvoiceStore()
 const currentPage = ref(1)
 const searchKeyword = ref('')
 
+const isLoading = computed(() => useInvoice.isLoading);
+
+const handlePageChange = (page) => {
+    currentPage.value = page;
+    loadApartments();
+};
+
+const onSearch = () => {
+    currentPage.value = 1;
+    loadResidents();
+};
+
 const loadInvoices = () => {
+    isLoading.value = true
     useInvoice.fetchtInvoiceList(currentPage.value, '', searchKeyword.value)
     console.log(useInvoice.invoiceList)
+    isLoading.value = false
 }
 
 onMounted(loadInvoices)
