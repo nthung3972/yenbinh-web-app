@@ -7,7 +7,6 @@
             </div>
             <p>Đang tải dữ liệu...</p>
         </div>
-        <div v-else-if="hasError">{{ hasError }}</div>
         <div v-else>
             <div class="d-flex justify-content-between align-items-center mb-3 p-bottom">
                 <h5 class="fw-bold">Danh sách cư dân</h5>
@@ -73,8 +72,12 @@ const useResident = useResidentStore();
 const currentPage = ref(1);
 const searchKeyword = ref('');
 
+const isLoading = computed(() => useResident.isLoading);
+
 const loadResidents = () => {
+    isLoading.value = true
     useResident.fetchResidentList(currentPage.value, '', searchKeyword.value)
+    isLoading.value = false
 }
 
 

@@ -13,7 +13,15 @@ export const ResidentApi = {
         return apiService.get(`/resident/resident/${$resident_id}/edit`);
     },
 
-    // update($apartment_id, data) {
-    //     return apiService.post(`/apartment/apartment/${$apartment_id}/update`, data);
-    // }
+    addResidentToApartment(data, $resident_id) {
+        return apiService.post(`/resident/${$resident_id}/add-apartment`, data);
+    },
+
+    deleteResidentToApartment(data, $resident_id) {
+        return apiService.post(`/resident/${$resident_id}/delete-apartment`, data);
+    },
+
+    update(data, $resident_id) {
+        return apiService.post(`/resident/update/${$resident_id}`, data);
+    }
 };

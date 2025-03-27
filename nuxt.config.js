@@ -16,7 +16,8 @@ export default defineNuxtConfig({
     }
   },
   plugins: [
-    '~/plugins/chart.js'
+    '~/plugins/chart.js',
+    '~/plugins/bootstrap.client.js'
   ],
 
   compatibilityDate: '2025-03-13'

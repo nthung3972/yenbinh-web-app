@@ -13,6 +13,7 @@ export const useResidentStore = defineStore("resident", {
             last_page: 1,
         },
         keyword: '',
+        loading: false,
     }),
 
     actions: {
@@ -71,6 +72,50 @@ export const useResidentStore = defineStore("resident", {
             } finally {
                 this.loading = false;
             }
+        },
+
+        async addResidentToApartment(data, id) {
+            try {
+                const response = await ResidentApi.addResidentToApartment(data, id)
+                return response.data
+            }catch (error) {
+                console.error("Lỗi khi thêm cư dân vào căn hộ:", error);
+                this.error = "Đã xảy ra lỗi khi thêm cư dân vào căn hộ";
+                throw error;
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async deleteResidentToApartment(data, id) {
+            try {
+                const response = await ResidentApi.deleteResidentToApartment(data, id)
+                return response.data
+            }catch (error) {
+                console.error("Lỗi khi xóa cư dân khỏi căn hộ:", error);
+                this.error = "Đã xảy ra lỗi khi khi xóa cư dân khỏi căn hộ";
+                throw error;
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async updateResident(data, id) {
+            try {
+                console.log(data)
+                const response = await ResidentApi.update(data, id)
+                return response.data
+            }catch (error) {
+                console.error("Lỗi khi xóa cư dân khỏi căn hộ:", error);
+                this.error = "Đã xảy ra lỗi khi khi xóa cư dân khỏi căn hộ";
+                throw error;
+            } finally {
+                this.loading = false;
+            }
         }
     },
+
+    getters: {
+        isLoading: (state) => state.loading,
+    }
 });
