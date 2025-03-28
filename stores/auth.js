@@ -20,7 +20,7 @@ export const useAuthStore = defineStore('auth', {
   
   actions: {
     setToken(token) {
-      const expiryTime = new Date().getTime() + 5 * 60 * 1000;
+      const expiryTime = new Date().getTime() + 60 * 60 * 1000;
 
       this.token = token;
       this.expiry = expiryTime.toString();

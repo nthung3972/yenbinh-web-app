@@ -55,8 +55,6 @@
                 </div>
             </div>
         </div>
-        <!-- Popup cảnh báo -->
-        <BuildingAlert />
     </div>
 </template>
 
@@ -64,13 +62,12 @@
 
 import { onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
-import { useModalStore } from '@/stores/ModalStore'
 import { useDashboardStore } from '@/stores/dashboard'
-import BuildingAlert from '~/components/modal/BuildingAlert.vue'
+import { useToast } from 'vue-toastification'
 
-const modalStore = useModalStore();
 const dashboardStore = useDashboardStore();
 const route = useRoute();
+const toast = useToast()
 
 const getActiveClass = (path) => {
     return route.path.startsWith(path) ? 'active' : '';
@@ -99,7 +96,7 @@ const handleBuildingChange = async () => {
 
 const checkBuildingAndNavigate = (route) => {
     if (selectedBuilding.value == 'all') {
-        modalStore.openBuildingAlert()
+        toast.warning('Vui lòng chọn tòa nhà!')
     }
     else {
         navigateTo(route)
