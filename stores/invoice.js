@@ -14,6 +14,7 @@ export const useInvoiceStore = defineStore("invoice", {
         },
         keyword: '',
         loading: false,
+        errors: ref({})
     }),
 
     actions: {
@@ -27,7 +28,7 @@ export const useInvoiceStore = defineStore("invoice", {
                 if (response.data) {
                     this.invoiceList = response.data.data.data.data;
                     console.log(this.invoiceList);
-                    
+
                     this.pagination = {
                         current_page: response.data.data.data.current_page,
                         per_page: response.data.data.data.per_page,
@@ -43,6 +44,47 @@ export const useInvoiceStore = defineStore("invoice", {
                 this.loading = false;
             }
         },
+
+        async createInvoice(data) {
+            this.loading = true;
+            try {
+                const response = await InvoiceApi.createInvoice(data);
+                return response.data
+            } catch (error) {
+                throw error
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async fetchInvoice(id) {
+            this.loading = true
+            try {
+                const response = await InvoiceApi.showInvoice(id);
+                if (response.data) {
+                    this.invoice = response.data.data.data
+                    return this.invoice
+                }
+            } catch (error) {
+                throw error
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async updateInvoice(id, data) {
+            this.loading = true
+            try {
+                const response = await InvoiceApi.updateInvoice(id,data);
+                if (response.data) {
+                    return response.data
+                }
+            } catch (error) {
+                throw error
+            } finally {
+                this.loading = false;
+            }
+        }
     },
 
     getters: {

@@ -31,8 +31,8 @@
                             @click.prevent="checkBuildingAndNavigate('/building')"><span><Icon name="mdi:building" size="24"/></span>Tòa nhà</a>
                     </li>
                     <li>
-                        <a href="#" :class="getActiveClass('/invoice')" class="nav-link text-white py-2"
-                            @click.prevent="checkBuildingAndNavigate('/invoice')"><span><Icon name="material-symbols:overview" size="24"/></span>Thống kê</a>
+                        <a href="#" :class="getActiveClass('/stars')" class="nav-link text-white py-2"
+                            @click.prevent="checkBuildingAndNavigate('/stars')"><span><Icon name="material-symbols:overview" size="24"/></span>Thống kê</a>
                     </li>
                 </div>
             </div>
