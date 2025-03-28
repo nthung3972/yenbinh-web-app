@@ -1,11 +1,11 @@
 import axios from "axios";
 import { useAuthStore } from "~/stores/auth";
-import { useRouter } from "vue-router";
 
 class ApiService {
   constructor() {
     this.$http = null;
     this.$baseURL = null;
+    this.router = null;
   }
 
   // Khởi tạo service
@@ -24,6 +24,9 @@ class ApiService {
     });
 
     this.$baseURL = baseURL;
+
+    // Lưu trữ router từ bên ngoài
+    this.router = options.router;
 
     // Thêm interceptor xử lý response
     this.$http.interceptors.response.use(
@@ -46,22 +49,40 @@ class ApiService {
     }
 
     const statusCode = error.response.status;
-    const router = useRouter();
 
-    if (statusCode === 401) {
-      console.log("Lỗi api:", statusCode)
-      const authStore = useAuthStore();
-      if (!authStore.token) {
-        router.push('/auth/login');
-        return Promise.reject(error);
-      }
-    } else if (statusCode === 500) {
-      router.push({
-        path: "/error",
-        query: { statusCode: 500, message: error.response.data.message },
-      });
-    } else if (statusCode === 404) {
-      router.push("/404");
+    // Kiểm tra xem router có tồn tại không
+    if (!this.router) {
+      console.error("Router not initialized");
+      return Promise.reject(error);
+    }
+
+    // Sử dụng Pinia store
+    const authStore = useAuthStore();
+
+    switch (statusCode) {
+      case 401:
+        console.log("Lỗi api:", statusCode);
+        
+        // Đăng xuất người dùng
+        authStore.logout();
+        
+        // Chuyển hướng đến trang đăng nhập
+        this.router.push('/auth/login');
+        break;
+
+      case 500:
+        this.router.push({
+          path: "/error",
+          query: { 
+            statusCode: 500, 
+            message: error.response.data.message 
+          },
+        });
+        break;
+
+      case 404:
+        this.router.push("/404");
+        break;
     }
 
     return Promise.reject(error.response.data || error);
@@ -76,27 +97,23 @@ class ApiService {
     return config;
   }
 
-  // Phương thức GET
+  // Các phương thức HTTP
   get(resource, params = {}) {
     return this.$http.get(resource, { params });
   }
 
-  // Phương thức POST
   post(resource, data = {}) {
     return this.$http.post(resource, data);
   }
 
-  // Phương thức PUT
   put(resource, data = {}) {
     return this.$http.put(resource, data);
   }
 
-  // Phương thức PATCH
   patch(resource, data = {}) {
     return this.$http.patch(resource, data);
   }
 
-  // Phương thức DELETE
   delete(resource) {
     return this.$http.delete(resource);
   }
