@@ -4,29 +4,49 @@
             <h1>Dashboard</h1>
             <p>Quản lý tổng thể các tòa nhà</p>
         </div>
-        <button @click="logout">
-            Logout
-        </button>
-        <div class="user-info">
-            <div class="search-box bg-light">
-                <input type="text" class="form-control" placeholder="Tìm kiếm..." />
-            </div>
-            <div class="info">
-                <span>TT</span>
-            </div>
-        </div>
+
+        <UserAvatarDropdown :avatar="user.avatar" :username="user.name" :email="user.email"
+                @menu-item-click="handleMenuAction" />
     </nav>
 </template>
 
 <script setup>
-import AuthService from '~/services/auth.service';
+import AuthService from '~/services/auth.service'
+import UserAvatarDropdown from '~/components/header/UserAvatarDropdown.vue'
+
+const user = {
+//   avatar: '/images/user-avatar.jpg',
+  name: 'Nguyen Van A',
+  email: 'nguyenvana@example.com'
+}
+
+const handleMenuAction = (action) => {
+  switch (action) {
+    case 'profile':
+      // Xử lý khi người dùng nhấp vào thông tin cá nhân
+      navigateTo('/profile')
+      break
+    case 'change-password':
+      // Xử lý khi người dùng nhấp vào đổi mật khẩu
+      navigateTo('/change-password')
+      break
+    case 'settings':
+      // Xử lý khi người dùng nhấp vào cài đặt
+      navigateTo('/settings')
+      break
+    case 'logout':
+      // Xử lý khi người dùng đăng xuất
+      logout()
+      break
+  }
+}
 
 const logout = async () => {
-  try {
-    await AuthService.logout();
-  } catch (error) {
-    console.error('Logout error:', error);
-  }
+    try {
+        await AuthService.logout();
+    } catch (error) {
+        console.error('Logout error:', error);
+    }
 }
 </script>
 
@@ -56,21 +76,63 @@ nav {
 }
 
 .user-info {
+    position: relative;
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    gap: 20px;
 }
 
-.user-info .info {
-    width: 45px;
-    height: 45px;
+.info {
+    position: relative;
+    cursor: pointer;
+    padding: 10px;
+    background-color: #f1f1f1;
     border-radius: 50%;
-    background-color: #4895ef;
-    color: white;
-    font-weight: bold;
     text-align: center;
+    width: 40px;
+    height: 40px;
 }
+
+.dropdown-menu {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    background: white;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    min-width: 150px;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+}
+
+[v-show="false"] {
+    opacity: 0;
+    transform: translateY(-10px);
+    pointer-events: none;
+}
+
+[v-show="true"] {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.dropdown-menu ul {
+    list-style: none;
+    padding: 10px;
+    margin: 0;
+}
+
+.dropdown-menu li {
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #ddd;
+}
+
+.dropdown-menu li:hover {
+    background: #f0f0f0;
+}
+
+/* .info:hover .dropdown-menu {
+    display: block;
+} */
 
 .search-box {
     background-color: var(--light);

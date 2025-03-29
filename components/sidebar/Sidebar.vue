@@ -8,7 +8,7 @@
         <!-- Dropdown chọn tòa nhà -->
         <div class="sidebar-select">
             <select v-model="selectedBuilding" @change="handleBuildingChange()" class="form-select">
-                <option value="all">Tất cả tòa nhà</option>
+                <option value="all">---Tất cả tòa nhà---</option>
                 <option v-for="building in dashboardStore.getData" :key="building.building_id"
                     :value="building.building_id">
                     {{ building.name }}
@@ -23,34 +23,95 @@
                     <li>
                         <NuxtLink :class="getActiveClass('/dashboard')" class="nav-link text-white py-2"
                             to="/dashboard">
-                            <span><Icon name="mdi:view-dashboard" size="24"/></span>Dashboard
+                            <span>
+                                <Icon name="mdi:view-dashboard" size="24" />
+                            </span>Dashboard
                         </NuxtLink>
                     </li>
+                    <!-- Thống kê với Submenu -->
                     <li>
-                        <a href="#" :class="getActiveClass('/building')" class="nav-link text-white py-2"
-                            @click.prevent="checkBuildingAndNavigate('/building')"><span><Icon name="mdi:building" size="24"/></span>Tòa nhà</a>
-                    </li>
-                    <li>
-                        <a href="#" :class="getActiveClass('/stars')" class="nav-link text-white py-2"
-                            @click.prevent="checkBuildingAndNavigate('/stars')"><span><Icon name="material-symbols:overview" size="24"/></span>Thống kê</a>
+                        <a href="#" class="nav-link text-white py-2 d-flex justify-content-between align-items-center"
+                            :class="getActiveClass('/statistical')"
+                            @click.prevent="isStatisticalOpen = !isStatisticalOpen">
+                            <span>
+                                <Icon name="material-symbols:overview" size="24" /> Thống kê
+                            </span>
+                            <Icon :name="isStatisticalOpenComputed ? 'mdi:chevron-down' : 'mdi:chevron-right'" size="20"/>
+                        </a>
+                        <ul v-show="isStatisticalOpenComputed" class="submenu">
+                            <li>
+                                <NuxtLink :class="getActiveClass('/statistical/overview')" class="nav-link text-white py-2"
+                                    to="/statistical/overview">
+                                    <Icon name="mdi:chart-bar" size="20" /> Tổng quan
+                                </NuxtLink>
+                            </li>
+                            <li>
+                                <NuxtLink :class="getActiveClass('/statistical/finance')" class="nav-link text-white py-2"
+                                    to="/statistical/finance">
+                                    <Icon name="mdi:currency-usd" size="20" /> Tài chính
+                                </NuxtLink>
+                            </li>
+                            <li>
+                                <NuxtLink :class="getActiveClass('/statistical/parking')" class="nav-link text-white py-2"
+                                    to="/statistical/parking">
+                                    <Icon name="mdi:car" size="20" /> Bãi đỗ xe
+                                </NuxtLink>
+                            </li>
+                        </ul>
                     </li>
                 </div>
             </div>
 
             <div class="menu-group">
-                <h6 class="text-uppercase text-white-50">Quản lý</h6>
+                <h6 class="text-uppercase text-white-50">Tòa nhà</h6>
                 <div class="nav flex-column">
                     <li>
                         <a href="#" :class="getActiveClass('/apartment')" class="nav-link text-white py-2"
-                            @click.prevent="checkBuildingAndNavigate('/apartment')"><span><Icon name="ion:home" size="24"/></span>Căn hộ</a>
+                            @click.prevent="checkBuildingAndNavigate('/apartment')"><span>
+                                <Icon name="ion:home" size="24" />
+                            </span>Căn hộ</a>
                     </li>
                     <li>
                         <a href="#" :class="getActiveClass('/resident')" class="nav-link text-white py-2"
-                            @click.prevent="checkBuildingAndNavigate('/resident')"><span><Icon name="ic:baseline-people" size="24"/></span>Cư dân</a>
+                            @click.prevent="checkBuildingAndNavigate('/resident')"><span>
+                                <Icon name="ic:baseline-people" size="24" />
+                            </span>Cư dân</a>
                     </li>
                     <li>
                         <a href="#" :class="getActiveClass('/invoice')" class="nav-link text-white py-2"
-                            @click.prevent="checkBuildingAndNavigate('/invoice')"><span><Icon name="fa6-solid:file-invoice-dollar" size="24"/></span>Quản lý phí</a>
+                            @click.prevent="checkBuildingAndNavigate('/invoice')"><span>
+                                <Icon name="fa6-solid:file-invoice-dollar" size="24" />
+                            </span>Quản lý phí</a>
+                    </li>
+                    <li>
+                        <a href="#" :class="getActiveClass('/vehicle')" class="nav-link text-white py-2"
+                            @click.prevent="checkBuildingAndNavigate('/vehicle')"><span>
+                                <Icon name="fluent:vehicle-cab-20-filled" size="24" />
+                            </span>Quản lý xe</a>
+                    </li>
+                </div>
+            </div>
+
+            <div class="menu-group">
+                <h6 class="text-uppercase text-white-50">Dịch vụ</h6>
+                <div class="nav flex-column">
+                    <li>
+                        <a href="#" :class="getActiveClass('/service')" class="nav-link text-white py-2"
+                            @click.prevent="checkBuildingAndNavigate('/service')"><span>
+                                <Icon name="lsicon:service-filled" size="24" />
+                            </span>Dịch vụ</a>
+                    </li>
+                    <li>
+                        <a href="#" :class="getActiveClass('/fix')" class="nav-link text-white py-2"
+                            @click.prevent="checkBuildingAndNavigate('/fix')"><span>
+                                <Icon name="fluent-mdl2:service-off" size="24" />
+                            </span>Sửa chữa</a>
+                    </li>
+                    <li>
+                        <a href="#" :class="getActiveClass('/ads')" class="nav-link text-white py-2"
+                            @click.prevent="checkBuildingAndNavigate('/ads')"><span>
+                                <Icon name="ri:advertisement-fill" size="24" />
+                            </span>Quảng cáo</a>
                     </li>
                 </div>
             </div>
@@ -59,7 +120,6 @@
 </template>
 
 <script setup>
-
 import { onMounted, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { useDashboardStore } from '@/stores/dashboard'
@@ -68,10 +128,15 @@ import { useToast } from 'vue-toastification'
 const dashboardStore = useDashboardStore();
 const route = useRoute();
 const toast = useToast()
+const isStatisticalOpen = ref(false)
 
 const getActiveClass = (path) => {
     return route.path.startsWith(path) ? 'active' : '';
 };
+
+const isStatisticalOpenComputed = computed(() => {
+    return isStatisticalOpen.value || route.path.startsWith('/statistical');
+});
 
 // Sử dụng `computed` để đồng bộ giá trị với store
 const selectedBuilding = computed({
@@ -83,10 +148,10 @@ const handleBuildingChange = async () => {
     try {
         if (selectedBuilding.value === 'all') {
             await dashboardStore.fetchStatsBuildings()
-            navigateTo('dashboard')
+            navigateTo('/dashboard')
         } else {
             await dashboardStore.fetchStatsBuilding(selectedBuilding.value)
-            navigateTo('dashboard')
+            navigateTo('/dashboard')
         }
     } catch (error) {
         console.error('Lỗi khi cập nhật dữ liệu dashboard:', error)
@@ -112,8 +177,7 @@ onMounted(async () => {
 /* Sidebar chính */
 .sidebar {
     width: 300px;
-    min-height: 100vh;
-    height: auto;
+    height: 100vh;
     background: #4361ee;
     color: white;
     display: flex;
@@ -203,7 +267,7 @@ ul {
     align-items: center;
 }
 
-.nav-link span{
+.nav-link span {
     padding: 5px 5px 0 0;
 }
 
@@ -215,5 +279,15 @@ ul {
 
 .nav-link:hover {
     background-color: rgba(255, 255, 255, 0.1);
+}
+
+.submenu {
+    list-style: none;
+    padding-left: 20px;
+    transition: all 0.3s ease-in-out;
+}
+
+.submenu li {
+    padding: 5px 0;
 }
 </style>

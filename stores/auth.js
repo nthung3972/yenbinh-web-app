@@ -12,6 +12,7 @@ export const useAuthStore = defineStore('auth', {
     isAuthenticated: (state) => {
       if (!state.token || !state.expiry) return false;
       return new Date().getTime() < parseInt(state.expiry);
+
     },
     userProfile: (state) => state.user,
     userRoles: (state) => state.user?.roles || [],
