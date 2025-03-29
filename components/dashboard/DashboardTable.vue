@@ -1,5 +1,5 @@
 <template>
-    <div class="card shadow-sm p-3 m-20-0">
+    <div class="card shadow-sm p-3 mt-20">
         <h5 class="fw-bold">{{ processedData.length > 1 ? 'Tổng quan các tòa nhà' : processedData[0].name }}</h5>
         <table class="table mt-3">
             <thead class="table-light">
@@ -19,22 +19,22 @@
                     <td>{{ building.name }}</td>
                     <td>{{ building.apartments_count }}</td>
                     <td>{{ building.residents_count }}</td>
-                    <td>{{ building.occupied_rate }}%</td>
+                    <td>{{ building.occupancyRate }}%</td>
                     <td>
                         <div class="progress">
                             <div class="progress-bar" role="progressbar"
-                                :style="{ width: building.collection_rate + '%' }"
-                                :aria-valuenow="building.collection_rate" aria-valuemin="0" aria-valuemax="100">
-                                {{ building.collection_rate }}%
+                                :style="{ width: building.collectionRate + '%' }"
+                                :aria-valuenow="building.collectionRate" aria-valuemin="0" aria-valuemax="100">
+                                {{ building.collectionRate }}%
                             </div>
                         </div>
                     </td>
                     <td>
-                        <span class="text-success" v-if="building.collection_rate_change > 0">
-                            Tăng {{ building.collection_rate_change }}%
+                        <span class="text-success" v-if="building.collectionRateChange >= 0">
+                            Tăng {{ building.collectionRateChange }}%
                         </span>
                         <span class="text-danger" v-else>
-                            Giảm {{ building.collection_rate_change }}%
+                            Giảm {{ building.collectionRateChange }}%
                         </span>
                     </td>
                     <td>0</td>
@@ -68,3 +68,9 @@ const processedData = computed(() => {
   return []
 })
 </script>
+
+<style scoped>
+.mt-20 {
+    margin-top: 20px;
+}
+</style>

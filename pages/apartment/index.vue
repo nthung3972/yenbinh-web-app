@@ -41,9 +41,11 @@
                         <td>{{ apartment.floor_number }}</td>
                         <td>{{ apartment.ownership_type }}</td>
                         <td>{{ apartment.area }}</td>
-                        <td>{{ apartment.residents[0]?.full_name ?? 'Chưa có chủ hộ' }}</td>
+                        <td>{{ apartment.residents[0]?.full_name ?? '' }}</td>
                         <td>
-                            
+                            <span :class="apartment.residents[0]?.full_name ? 'badge bg-info' : 'badge bg-danger'">
+                                {{ apartment.residents[0]?.full_name ? 'Đang sử dụng' : 'Căn hộ trống' }}
+                            </span>
                         </td>
                         <td class="d-flex justify-content-center">
                             <NuxtLink to="/" class="btn btn-sm btn-success text-white d-flex align-items-center"

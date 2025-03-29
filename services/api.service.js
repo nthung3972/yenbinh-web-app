@@ -1,6 +1,7 @@
 import axios from "axios";
-import { useAuthStore } from "~/stores/auth";
-import { useRouter } from "vue-router";
+import { useAuthStore } from "~/stores/auth"
+import { useRouter } from "vue-router"
+import AuthService from '~/services/auth.service'
 
 class ApiService {
   constructor() {
@@ -49,10 +50,11 @@ class ApiService {
     const router = useRouter();
 
     if (statusCode === 401) {
-      console.log("Lỗi api:", statusCode)
+      console.log("Hết thời hạn đăng nhập:", statusCode)
+      AuthService.logout();
+      
       const authStore = useAuthStore();
       if (!authStore.token) {
-        router.push('/auth/login');
         return Promise.reject(error);
       }
     } else if (statusCode === 500) {

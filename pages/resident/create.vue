@@ -7,7 +7,7 @@
     </div>
 
     <div v-else>
-        <div class="container mt-4">
+        <div class="create-container mt-4" style="width: 100%;">
             <h4>Thêm cư dân vào căn hộ</h4>
             <div class="card p-4 shadow-sm">
                 <form @submit.prevent="handleSubmit">
@@ -35,7 +35,7 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-md-1212 mb-3">
+                            <div class="col-md-6 mb-3">
                                 <label class="form-label">Ngày sinh</label>
                                 <input v-model="residentForm.date_of_birth" type="date" class="form-control"
                                     :class="{ 'error-input': errors.date_of_birth }" required />
@@ -44,7 +44,7 @@
                                 </span>
                             </div>
 
-                            <div class="col-md-12 mb-3">
+                            <div class="col-md-6 mb-3">
                                 <label class="form-label">Giới tính</label>
                                 <div class="d-flex" style="justify-content: unset;">
                                     <div class="form-check me-3">
