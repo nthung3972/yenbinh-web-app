@@ -23,9 +23,14 @@ definePageMeta({
 <style>
 main {
     margin: 20px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    height: calc(100% - 135px);
 }
 .content {
     width: calc(100% - 250px);
+    max-height: 100vh;
+    overflow-y: hidden;
 }
 
 slot {

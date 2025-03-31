@@ -125,6 +125,7 @@ const processedData = computed(() => {
     if (Array.isArray(props.data)) {
         totalApartments.value = props.data.reduce((sum, building) => sum + building.apartments_count, 0);
         totalResidents.value = props.data.reduce((sum, building) => sum + building.residents_count, 0);
+        
         totalCollectionRate.value = props.data.length > 0
             ? (props.data.reduce((sum, building) => sum + building.collectionRate, 0) / props.data.length).toFixed(2)
             : "0.00";
