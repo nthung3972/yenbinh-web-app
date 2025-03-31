@@ -82,6 +82,9 @@ export const useVehicleStore = defineStore("vehicle", {
             try {
                 const response = await VehicleApi.update(data, id);
                 console.log('response', response);
+                if(response.data.data) {
+                    return response.data.data
+                }
             } catch (error) {
                 console.error("Lỗi khi cập nhật xe:", error);
                 throw error;

@@ -308,6 +308,7 @@ const createApartment = async () => {
 onMounted(async () => {
     await useResident.fetchResident(resident_id);
     residentForm.value = { ...useResident.resident };
+    console.log('residentForm.value', residentForm.value);
 })
 </script>
 
