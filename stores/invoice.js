@@ -27,7 +27,6 @@ export const useInvoiceStore = defineStore("invoice", {
                 const response = await InvoiceApi.getListInvoice(building_id, page, perPage, keyword);
                 if (response.data) {
                     this.invoiceList = response.data.data.data.data;
-                    console.log(this.invoiceList);
 
                     this.pagination = {
                         current_page: response.data.data.data.current_page,

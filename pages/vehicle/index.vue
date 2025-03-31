@@ -9,43 +9,47 @@
         </div>
         <div v-else>
             <div class="d-flex justify-content-between align-items-center mb-3 p-bottom">
-                <h5 class="fw-bold">Danh sách hóa đơn</h5>
+                <h5 class="fw-bold">Danh sách xe</h5>
+
+                <select v-model="vehicleType" @change="onFilter" class="form-select w-25">
+                    <option value="">Loại xe</option>
+                    <option value="car">Ô tô</option>
+                    <option value="motorbike">Xe máy</option>
+                    <option value="bicycle">Xe đạp</option>
+                </select>
+
                 <div class="input-group w-50">
                     <span class="input-group-text">
                         <Icon name="material-symbols:search" />
                     </span>
                     <input v-model="searchKeyword" @keyup.enter="onSearch" type="text" class="form-control"
-                        placeholder="Điền tên hóa đơn..." />
+                        placeholder="Điền biển số xe hoặc tên căn hộ..." />
                     <button class="btn btn-primary" @click="onSearch">Tìm</button>
                 </div>
-                <NuxtLink to="/invoice/create" class="btn btn-primary d-flex align-items-center">
-                    <Icon name="ic:baseline-add-circle-outline" size="20" class="me-1" /> Tạo hóa đơn
+                <NuxtLink to="/vehicle/create" class="btn btn-primary d-flex align-items-center">
+                    <Icon name="ic:baseline-add-circle-outline" size="20" class="me-1" /> Thêm xe
                 </NuxtLink>
             </div>
             <table class="table table-striped table-hover align-middle" style="table-layout: fixed; width: 100%;">
                 <thead class="table-light">
                     <tr>
+                        <th style="width: 15%;">Biển số xe</th>
+                        <th style="width: 15%;">Loại xe</th>
+                        <th style="width: 15%;">Vị trí</th>
                         <th style="width: 15%;">Số căn hộ</th>
-                        <th style="width: 15%;">Tổng tiền</th>
-                        <th style="width: 15%;">Ngày phát hành</th>
-                        <th style="width: 15%;">Hạn thanh toán</th>
                         <th style="width: 15%;">Trạng thái</th>
                         <th style="width: 25%; text-align: center;">Hành động</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(invoice, index) in useInvoice.invoiceList" :key="index">
-                        <td>{{ invoice.apartment.apartment_number }}</td>
-                        <td>{{ invoice.total_amount }}</td>
-                        <td>{{ invoice.invoice_date }}</td>
-                        <td>{{ invoice.due_date }}</td>
+                    <tr v-for="(vehicle, index) in vehicleStore.vehicleList" :key="index">
+                        <td>{{ vehicle.license_plate }}</td>
+                        <td>{{ vehicle.vehicle_type }}</td>
+                        <td>{{ vehicle.parking_slot ? vehicle.parking_slot : '' }}</td>
+                        <td>{{ vehicle.apartment_number }}</td>
                         <td>
-                            <span :class="invoice.status === 0 ? 'badge bg-info'
-                                : invoice.status === 1 ? 'badge bg-warning'
-                                    : 'badge bg-danger'">
-                                {{ invoice.status === 0 ? 'Chưa thanh toán'
-                                    : invoice.status === 1 ? 'Đã thanh toán'
-                                : 'Đã quá hạn' }}
+                            <span :class="vehicle.status === 0 ? 'badge bg-info': 'badge bg-danger'">
+                                {{ vehicle.status === 0 ? 'Đang hoạt động' : 'Ngừng hoạt động' }}
                             </span>
                         </td>
                         <td class="d-flex justify-content-center">
@@ -53,21 +57,21 @@
                                 style="min-width: 100px;">
                                 <Icon name="bxs:detail" size="20" class="me-1" />Chi tiết
                             </NuxtLink>
-                            <NuxtLink :to="`/invoice/edit/${invoice.invoice_id}`" class="btn btn-sm btn-warning text-white d-flex align-items-center">
+                            <NuxtLink :to="`/vehicle/edit/${vehicle.vehicle_id}`" class="btn btn-sm btn-warning text-white d-flex align-items-center">
                                 <Icon name="basil:edit-solid" size="20" class="me-1"/> Chỉnh sửa
                             </NuxtLink>
                         </td>
                     </tr>
                 </tbody>
             </table>
-            <Pagination :pagination="useInvoice.pagination" @page-change="handlePageChange" />
+            <Pagination :pagination="vehicleStore.pagination" @page-change="handlePageChange" />
         </div>
     </div>
 </template>
 
 <script setup>
 import { onMounted } from 'vue';
-import { useInvoiceStore } from '@/stores/invoice'
+import { useVehicleStore } from '@/stores/vehicle'
 import Pagination from '@/components/pagination/Pagination.vue'
 
 definePageMeta({
@@ -75,27 +79,33 @@ definePageMeta({
     layout: "dashboard"
 })
 
-const useInvoice = useInvoiceStore()
+const vehicleStore = useVehicleStore()
 const currentPage = ref(1)
 const searchKeyword = ref('')
+const vehicleType = ref('')
 
-const isLoading = computed(() => useInvoice.isLoading);
+const isLoading = computed(() => vehicleStore.isLoading);
 
 const handlePageChange = (page) => {
     currentPage.value = page;
-    loadApartments();
+    fectVehicleList();
 };
+
+const onFilter = () => {
+    currentPage.value = 1;
+    fectVehicleList();
+}
 
 const onSearch = () => {
     currentPage.value = 1;
-    loadInvoices();
+    fectVehicleList();
 };
 
-const loadInvoices = () => {
-    useInvoice.fetchtInvoiceList(currentPage.value, '', searchKeyword.value)
+const fectVehicleList = () => {
+    vehicleStore.fetchVehicleList(currentPage.value, '', searchKeyword.value, vehicleType.value)
 }
 
-onMounted(loadInvoices)
+onMounted(fectVehicleList)
 </script>
 
 <style scoped>
