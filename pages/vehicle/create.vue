@@ -130,7 +130,7 @@ const createdVehicle = async () => {
     } catch (error) {
         console.log('Lỗi khi thêm danh sách xe: ', error)
         if (error.data) {
-            errors.value = error.data.errors
+            errors.value = error.data
         }
         else {
             errors.value = error.errors;
