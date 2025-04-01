@@ -8,7 +8,6 @@ export const useAuthStore = defineStore('auth', {
   }),
   
   getters: {
-    // isAuthenticated: (state) => !!state.token,
     isAuthenticated: (state) => {
       if (!state.token || !state.expiry) return false;
       return new Date().getTime() < parseInt(state.expiry);
@@ -16,7 +15,9 @@ export const useAuthStore = defineStore('auth', {
     },
     userProfile: (state) => state.user,
     userRoles: (state) => state.user?.roles || [],
-    userPermissions: (state) => state.user?.permissions || []
+    userPermissions: (state) => state.user?.permissions || [],
+    isAdmin: (state) => state.user?.role === 'admin',
+    isStaff: (state) => state.user?.role === 'staff',
   },
   
   actions: {
@@ -34,7 +35,7 @@ export const useAuthStore = defineStore('auth', {
     
     setUser(user) {
       this.user = user;
-      
+      console.log('Thông tin user:', this.user)
       if (process.client && user) {
         localStorage.setItem('auth_user', JSON.stringify(user));
       }

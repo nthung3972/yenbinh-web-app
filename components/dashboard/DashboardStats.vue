@@ -132,6 +132,9 @@ const processedData = computed(() => {
         totalCollectionRateChange.value = props.data.length > 0
             ? (props.data.reduce((sum, building) => sum + building.collectionRateChange, 0) / props.data.length).toFixed(2)
             : "0.00";
+
+        console.log('totalCollectionRate', totalCollectionRate.value)
+        console.log('totalCollectionRateChange', totalCollectionRateChange.value)
         return props.data
     }
     return []

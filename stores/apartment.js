@@ -36,8 +36,7 @@ export const useApartmentStore = defineStore("apartment", {
                     this.error = null;
                 }
             } catch (error) {
-                console.error("Lỗi khi lấy danh sách overview:", error);
-                this.error = "Đã xảy ra lỗi khi tải dữ liệu";
+                this.error = "Đã xảy ra lỗi khi tải dữ liệu căn hộ!";
             } finally {
                 this.loading = false;
             }

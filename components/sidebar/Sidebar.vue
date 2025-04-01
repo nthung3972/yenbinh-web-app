@@ -8,7 +8,7 @@
         <!-- Dropdown chọn tòa nhà -->
         <div class="sidebar-select">
             <select v-model="selectedBuilding" @change="handleBuildingChange()" class="form-select">
-                <option value="all">---Tất cả tòa nhà---</option>
+                <option value="all">--- Tất cả tòa nhà ---</option>
                 <option v-for="building in dashboardStore.getData" :key="building.building_id"
                     :value="building.building_id">
                     {{ building.name }}
@@ -26,6 +26,14 @@
                             <span>
                                 <Icon name="mdi:view-dashboard" size="24" />
                             </span>Dashboard
+                        </NuxtLink>
+                    </li>
+                    <li  v-if="authStore.isAdmin">
+                        <NuxtLink :class="getActiveClass('/building')" class="nav-link text-white py-2"
+                            to="/building">
+                            <span>
+                                <Icon name="ion:home" size="24" />
+                            </span>Tòa nhà
                         </NuxtLink>
                     </li>
                     <!-- Thống kê với Submenu -->
@@ -120,15 +128,17 @@
 </template>
 
 <script setup>
-import { onMounted, computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { onMounted, computed } from 'vue'
+import { useRoute } from 'vue-router'
 import { useDashboardStore } from '@/stores/dashboard'
 import { useToast } from 'vue-toastification'
+import { useAuthStore } from '@/stores/auth'
 
-const dashboardStore = useDashboardStore();
-const route = useRoute();
+const dashboardStore = useDashboardStore()
+const route = useRoute()
 const toast = useToast()
 const isStatisticalOpen = ref(false)
+const authStore = useAuthStore()
 
 const getActiveClass = (path) => {
     return route.path.startsWith(path) ? 'active' : '';

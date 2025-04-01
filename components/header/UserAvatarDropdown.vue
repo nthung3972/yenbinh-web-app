@@ -95,6 +95,7 @@ onUnmounted(() => {
     z-index: 1;
     right: 0;
     background-color: white;
+    min-width: 180px;
     top: calc(100% + 15px);
     border-radius: 8px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
@@ -107,6 +108,7 @@ onUnmounted(() => {
 }
 
 .email p{
+    text-align: center;
     margin: 10px;
     font-size: 13px;
 }

@@ -5,7 +5,7 @@
             <p>Quản lý tổng thể các tòa nhà</p>
         </div>
 
-        <UserAvatarDropdown :avatar="user.avatar" :username="user.name" :email="user.email"
+        <UserAvatarDropdown :avatar="avatar" :username="name" :email="email"
                 @menu-item-click="handleMenuAction" />
     </nav>
 </template>
@@ -13,12 +13,12 @@
 <script setup>
 import AuthService from '~/services/auth.service'
 import UserAvatarDropdown from '~/components/header/UserAvatarDropdown.vue'
+import { useAuthStore } from '~/stores/auth'
 
-const user = {
-//   avatar: '/images/user-avatar.jpg',
-  name: 'Nguyen Van A',
-  email: 'nguyenvana@example.com'
-}
+const authStore = useAuthStore();
+
+const name = authStore.user.name;
+const email = authStore.user.email;
 
 const handleMenuAction = (action) => {
   switch (action) {
@@ -99,7 +99,7 @@ nav {
     background: white;
     box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
     border-radius: 5px;
-    min-width: 150px;
+    min-width: 200px;
     transition: opacity 0.2s ease, transform 0.2s ease;
 }
 

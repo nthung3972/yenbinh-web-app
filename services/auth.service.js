@@ -21,7 +21,7 @@ class AuthService {
 
   async logout() {
     try {
-      const authStore = useAuthStore();
+      const authStore = useAuthStore()
       const token = authStore.token;
 
       if (token) {

@@ -32,6 +32,7 @@
                         <th style="width: 12%;">Diện tích (m²)</th>
                         <th style="width: 15%;">Chủ căn hộ</th>
                         <th style="width: 10%;">Tình trạng</th>
+                        <th style="width: 10%;">Cập nhật</th>
                         <th style="width: 20%; text-align: center;">Hành động</th>
                     </tr>
                 </thead>
@@ -47,6 +48,7 @@
                                 {{ apartment.residents[0]?.full_name ? 'Đang sử dụng' : 'Căn hộ trống' }}
                             </span>
                         </td>
+                        <td>{{ apartment.updated_by?.name ? apartment.updated_by?.name : '' }}</td>
                         <td class="d-flex justify-content-center">
                             <NuxtLink to="/" class="btn btn-sm btn-success text-white d-flex align-items-center"
                                 style="min-width: 100px;">

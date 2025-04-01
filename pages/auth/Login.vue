@@ -78,14 +78,11 @@
         password: form.password
       });
       
-      // Lấy URL chuyển hướng nếu có
-      const redirectPath = route.query.redirect || '/dashboard';
-      
       // Hiển thị thông báo thành công (tùy chọn)
       // toast.success('Đăng nhập thành công');
       
       // Chuyển hướng sau khi đăng nhập thành công
-      router.push(redirectPath);
+      return navigateTo('/dashboard');
     } catch (error) {
       console.error('Login error:', error);
       

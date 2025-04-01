@@ -7,6 +7,7 @@
             </div>
             <p>Đang tải dữ liệu...</p>
         </div>
+        <div v-else-if="hasError">{{ hasError }}</div>
         <div v-else>
             <div class="d-flex justify-content-between align-items-center mb-3 p-bottom">
                 <h5 class="fw-bold">Danh sách xe</h5>
@@ -38,6 +39,7 @@
                         <th style="width: 15%;">Vị trí</th>
                         <th style="width: 15%;">Số căn hộ</th>
                         <th style="width: 15%;">Trạng thái</th>
+                        <th style="width: 15%;">Cập nhật</th>
                         <th style="width: 25%; text-align: center;">Hành động</th>
                     </tr>
                 </thead>
@@ -52,6 +54,7 @@
                                 {{ vehicle.status === 0 ? 'Đang hoạt động' : 'Ngừng hoạt động' }}
                             </span>
                         </td>
+                        <td>{{ vehicle.updated_by?.name ? vehicle.updated_by?.name : '' }}</td>
                         <td class="d-flex justify-content-center">
                             <NuxtLink to="/" class="btn btn-sm btn-success text-white d-flex align-items-center"
                                 style="min-width: 100px;">
@@ -85,6 +88,7 @@ const searchKeyword = ref('')
 const vehicleType = ref('')
 
 const isLoading = computed(() => vehicleStore.isLoading);
+const hasError = computed(() => vehicleStore.hasError);
 
 const handlePageChange = (page) => {
     currentPage.value = page;
@@ -103,6 +107,7 @@ const onSearch = () => {
 
 const fectVehicleList = () => {
     vehicleStore.fetchVehicleList(currentPage.value, '', searchKeyword.value, vehicleType.value)
+    console.log(vehicleStore.vehicleList)
 }
 
 onMounted(fectVehicleList)

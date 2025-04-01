@@ -7,6 +7,7 @@
             </div>
             <p>Đang tải dữ liệu...</p>
         </div>
+        <div v-else-if="hasError">{{ hasError }}</div>
         <div v-else>
             <div class="d-flex justify-content-between align-items-center mb-3 p-bottom">
                 <h5 class="fw-bold">Danh sách cư dân</h5>
@@ -30,6 +31,7 @@
                         <th style="width: 15%;">Năm sinh</th>
                         <th style="width: 15%;">Số điện thoại</th>
                         <th style="width: 15%;">Email</th>
+                        <th style="width: 15%;">Cập nhật</th>
                         <th style="width: 25%; text-align: center;">Hành động</th>
                     </tr>
                 </thead>
@@ -40,6 +42,7 @@
                         <td>{{ resident.date_of_birth }}</td>
                         <td>{{ resident.phone_number }}</td>
                         <td>{{ resident.email }}</td>
+                        <td>{{ resident.updated_by?.name ? resident.updated_by?.name : '' }}</td>
                         <td class="d-flex justify-content-center">
                             <NuxtLink to="/" class="btn btn-sm btn-success text-white d-flex align-items-center"
                                 style="min-width: 100px;">
@@ -73,17 +76,16 @@ const currentPage = ref(1);
 const searchKeyword = ref('');
 
 const isLoading = computed(() => useResident.isLoading);
+const hasError = computed(() => useResident.hasError);
 
 const loadResidents = () => {
-    isLoading.value = true
     useResident.fetchResidentList(currentPage.value, '', searchKeyword.value)
-    isLoading.value = false
 }
 
 
 const handlePageChange = (page) => {
     currentPage.value = page;
-    loadApartments();
+    loadResidents();
 };
 
 

@@ -7,6 +7,7 @@
             </div>
             <p>Đang tải dữ liệu...</p>
         </div>
+        <div v-else-if="hasError">{{ hasError }}</div>
         <div v-else>
             <div class="d-flex justify-content-between align-items-center mb-3 p-bottom">
                 <h5 class="fw-bold">Danh sách hóa đơn</h5>
@@ -30,6 +31,7 @@
                         <th style="width: 15%;">Ngày phát hành</th>
                         <th style="width: 15%;">Hạn thanh toán</th>
                         <th style="width: 15%;">Trạng thái</th>
+                        <th style="width: 15%;">Cập nhật</th>
                         <th style="width: 25%; text-align: center;">Hành động</th>
                     </tr>
                 </thead>
@@ -48,6 +50,7 @@
                                 : 'Đã quá hạn' }}
                             </span>
                         </td>
+                        <td>{{ invoice.updated_by?.name ? invoice.updated_by?.name : '' }}</td>
                         <td class="d-flex justify-content-center">
                             <NuxtLink to="/" class="btn btn-sm btn-success text-white d-flex align-items-center"
                                 style="min-width: 100px;">
@@ -80,6 +83,7 @@ const currentPage = ref(1)
 const searchKeyword = ref('')
 
 const isLoading = computed(() => useInvoice.isLoading);
+const hasError = computed(() => useInvoice.hasError);
 
 const handlePageChange = (page) => {
     currentPage.value = page;
