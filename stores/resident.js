@@ -14,6 +14,7 @@ export const useResidentStore = defineStore("resident", {
         },
         keyword: '',
         loading: false,
+        error: null,
     }),
 
     actions: {
@@ -26,7 +27,6 @@ export const useResidentStore = defineStore("resident", {
                 const response = await ResidentApi.getListResident(building_id, page, perPage, keyword);
                 if (response) {
                     this.residentList = response.data.data.data.data;
-                    console.log('residentList', this.residentList);
                     this.pagination = {
                         current_page: response.data.data.data.current_page,
                         per_page: response.data.data.data.per_page,
@@ -36,8 +36,7 @@ export const useResidentStore = defineStore("resident", {
                     this.error = null;
                 }
             } catch (error) {
-                console.error("Lỗi khi lấy danh sách overview:", error);
-                this.error = "Đã xảy ra lỗi khi tải dữ liệu";
+                this.error = "Đã xảy ra lỗi khi tải dữ liệu cư dân!";
             } finally {
                 this.loading = false;
             }
@@ -49,7 +48,6 @@ export const useResidentStore = defineStore("resident", {
                 const response = await ResidentApi.create(data);
                 return response.data
             }catch (error) {
-                console.error("Lỗi khi tạo cư dân:", error);
                 this.error = "Đã xảy ra lỗi khi tạo cư dân";
                 throw error;
             } finally {
@@ -66,7 +64,6 @@ export const useResidentStore = defineStore("resident", {
                 }
                 this.error = null;
             }catch (error) {
-                console.error("Lỗi khi lấy thông tin cư dân:", error);
                 this.error = "Đã xảy ra lỗi khi lấy thông tin cư dân";
                 throw error;
             } finally {
@@ -79,7 +76,6 @@ export const useResidentStore = defineStore("resident", {
                 const response = await ResidentApi.addResidentToApartment(data, id)
                 return response.data
             }catch (error) {
-                console.error("Lỗi khi thêm cư dân vào căn hộ:", error);
                 this.error = "Đã xảy ra lỗi khi thêm cư dân vào căn hộ";
                 throw error;
             } finally {
@@ -92,7 +88,6 @@ export const useResidentStore = defineStore("resident", {
                 const response = await ResidentApi.deleteResidentToApartment(data, id)
                 return response.data
             }catch (error) {
-                console.error("Lỗi khi xóa cư dân khỏi căn hộ:", error);
                 this.error = "Đã xảy ra lỗi khi khi xóa cư dân khỏi căn hộ";
                 throw error;
             } finally {
@@ -106,7 +101,6 @@ export const useResidentStore = defineStore("resident", {
                 const response = await ResidentApi.update(data, id)
                 return response.data
             }catch (error) {
-                console.error("Lỗi khi xóa cư dân khỏi căn hộ:", error);
                 this.error = "Đã xảy ra lỗi khi khi xóa cư dân khỏi căn hộ";
                 throw error;
             } finally {
@@ -117,5 +111,6 @@ export const useResidentStore = defineStore("resident", {
 
     getters: {
         isLoading: (state) => state.loading,
+        hasError: (state) => state.error
     }
 });

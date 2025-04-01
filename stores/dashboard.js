@@ -46,7 +46,7 @@ export const useDashboardStore = defineStore("dashboard", {
 
         setSelectedBuilding(id) {
             this.selectedBuildingId = id;
-        }
+        },
     },
 
     getters: {
@@ -55,5 +55,5 @@ export const useDashboardStore = defineStore("dashboard", {
         getSelectedBuildingId: (state) => state.selectedBuildingId,
         isLoading: (state) => state.loading,
         hasError: (state) => state.error
-    }
+    },
 });

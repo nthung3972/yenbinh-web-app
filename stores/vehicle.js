@@ -15,7 +15,7 @@ export const useVehicleStore = defineStore("vehicle", {
         keyword: '',
         vehicle_type: '',
         loading: false,
-        errors: ref({})
+        error: null,
     }),
 
     actions: {
@@ -37,7 +37,6 @@ export const useVehicleStore = defineStore("vehicle", {
                     this.error = null;
                 }
             } catch (error) {
-                console.error("Lỗi khi lấy danh sách xe:", error);
                 this.error = "Đã xảy ra lỗi khi tải dữ liệu xe";
             } finally {
                 this.loading = false;
@@ -52,7 +51,6 @@ export const useVehicleStore = defineStore("vehicle", {
                     return response.data
                 }
             } catch (error) {
-                console.error("Lỗi khi tạo danh sách xe:", error);
                 this.error = "Đã xảy ra lỗi khi tải dữ liệu xe";
                 throw error;
             } finally {
@@ -67,10 +65,8 @@ export const useVehicleStore = defineStore("vehicle", {
                 if(response.data) {
                     this.vehicle = response.data.data.data
                 }
-                console.log('this.vehicle', this.vehicle);
                 
             } catch (error) {
-                console.error("Lỗi khi lấy thông tin xe:", error);
                 throw error;
             } finally {
                 this.loading = false;
@@ -86,7 +82,6 @@ export const useVehicleStore = defineStore("vehicle", {
                     return response.data.data
                 }
             } catch (error) {
-                console.error("Lỗi khi cập nhật xe:", error);
                 throw error;
             } finally {
                 this.loading = false;
@@ -96,5 +91,6 @@ export const useVehicleStore = defineStore("vehicle", {
 
     getters: {
         isLoading: (state) => state.loading,
+        hasError: (state) => state.error
     }
 });

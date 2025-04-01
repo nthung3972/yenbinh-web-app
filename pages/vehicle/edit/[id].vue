@@ -63,7 +63,7 @@
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Ngày đăng ký</label>
-                        <input v-model="formattedDate" type="date" class="form-control" />
+                        <input v-model="vehicleForm.created_at" type="date" class="form-control" />
                         <small v-if="errors?.['created_at']" class="text-danger">
                             {{ errors?.['created_at'][0] }}
                         </small>
@@ -80,19 +80,17 @@
 </template>
 
 <script setup>
-import { ref, toRef , onMounted } from 'vue'
+import { ref , onMounted } from 'vue'
 import { useToast } from 'vue-toastification'
 import { useVehicleStore } from '@/stores/vehicle'
 import { useDashboardStore } from '@/stores/dashboard'
 import { useRouter, useRoute } from 'vue-router'
-import useDateFormat from '~/composables/useDateFormat'
 
 definePageMeta({
     middleware: "auth",
     layout: "dashboard"
 })
 
-const { useDateModel  } = useDateFormat()
 const router = useRouter()
 const route = useRoute()
 const toast = useToast()
@@ -122,9 +120,6 @@ const getVehicle = async () => {
     try {
         await vehicleStore.fechVehicle(vehicle_id)
         vehicleForm.value = vehicleStore.vehicle
-        const formattedDate = useDateModel(computed(() => vehicleForm.value.created_at));
-        console.log('date', vehicleForm.value.created_at)
-        console.log('formattedDate', formattedDate.value)
     } catch (error) {
         toast.error('Không tìm thấy xe!')
         router.push('/vehicle')

@@ -14,7 +14,7 @@ export const useInvoiceStore = defineStore("invoice", {
         },
         keyword: '',
         loading: false,
-        errors: ref({})
+        error: null,
     }),
 
     actions: {
@@ -38,7 +38,7 @@ export const useInvoiceStore = defineStore("invoice", {
                 }
             } catch (error) {
                 console.error("Lỗi khi lấy danh sách overview:", error);
-                this.error = "Đã xảy ra lỗi khi tải dữ liệu";
+                this.error = "Đã xảy ra lỗi khi tải dữ liệu hóa đơn!";
             } finally {
                 this.loading = false;
             }
@@ -88,5 +88,6 @@ export const useInvoiceStore = defineStore("invoice", {
 
     getters: {
         isLoading: (state) => state.loading,
+        hasError: (state) => state.error
     }
 });
