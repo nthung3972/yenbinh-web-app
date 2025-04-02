@@ -11,10 +11,10 @@
         <div class="card">
             <div class="card-header d-flex align-items-center">
                 <i class="fas fa-building header-icon fs-4 text-white"></i>
-                <h4 class="mb-0 text-white">Thêm tòa nhà mới</h4>
+                <h4 class="mb-0 text-white">Sửa thông tin tòa nhà</h4>
             </div>
             <div class="card-body">
-                <form @submit.prevent="createBuilding">
+                <form @submit.prevent="updateBuilding">
                     <div class="form-section">
                         <h5 class="section-title"><i class="fas fa-info-circle me-2"></i>Thông tin cơ bản</h5>
                         <div class="row g-3">
@@ -125,7 +125,7 @@
                             <i class="fas fa-times me-1"></i> Hủy
                         </button>
                         <button type="submit" class="btn btn-primary px-4">
-                            <i class="fas fa-save me-1"></i> Thêm tòa nhà
+                            <i class="fas fa-save me-1"></i> Lưu thay đổi
                         </button>
                     </div>
                 </form>
@@ -135,9 +135,10 @@
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useBuildingStore } from '@/stores/building'
 import { useToast } from 'vue-toastification'
+import { ref, onMounted } from 'vue'
 
 definePageMeta({
   middleware: "auth",
@@ -148,7 +149,8 @@ const router = useRouter()
 const buildingStore = useBuildingStore()
 const toast = useToast()
 const errors = ref('')
-
+const route = useRoute()
+const buildingId = route.params.id
 
 const isLoading = computed(() => buildingStore.isLoading);
 const hasError = computed(() => buildingStore.hasError);
@@ -163,32 +165,37 @@ const buildingForm = ref({
   building_type: ''
 })
 
-const reset = () => {
-    buildingForm.value.name = '',
-    buildingForm.value.address = '',
-    buildingForm.value.image = '',
-    buildingForm.value.floors = '',
-    buildingForm.value.total_area = '',
-    buildingForm.value.status = '',
-    buildingForm.value.building_type = '',
-    errors.value = ''
-}
-
 const back = () => {
     router.back()
 }
 
-const createBuilding = async () => {
+const getBuilding = async () => {
   try {
-    await buildingStore.createBuilding(buildingForm.value)
-    toast.success('Thêm tòa nhà thành công!')
+    const response = await buildingStore.getBuilding(buildingId)
+    buildingForm.value = {
+      ...response,
+    }
+  } catch (error) {
+    toast.error('Không tìm thấy tòa nhà!')
+    router.push('/invoice')
+  }
+}
+
+const updateBuilding = async () => {
+  try {
+    await buildingStore.updateBuilding(buildingId, buildingForm.value)
+    toast.success('Sửa thông tin thành công!')
     reset()
   } catch (error) {
     console.log(error.errors);
     errors.value = error.errors
-    toast.error('Đã xảy ra lỗi khi thêm tòa nhà!')
+    toast.error('Đã xảy ra lỗi khi sửa thông tin tòa nhà!')
   }
 }
+
+onMounted(() => {
+    getBuilding()
+})
 </script>
 
 <style scoped>

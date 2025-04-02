@@ -37,6 +37,70 @@ export const useBuildingStore = defineStore("building", {
                 this.loading = false;
             }
         },
+
+        async createBuilding(data) {
+            this.loading = true
+            try {
+                const response = await BuildingApi.create(data)
+                if(response.data) {
+                    return response.data
+                }
+                this.error = null
+            } catch (error) {
+                this.error = "Đã xảy ra lỗi khi thêm tòa nhà!";
+                throw error;
+            } finally {
+                this.loading = false
+            }
+        },
+
+        async getBuilding(id) {
+            this.loading = true
+            try {
+                const response = await BuildingApi.edit(id)
+                if(response.data) {
+                    return response.data
+                }
+                this.error = null
+            } catch (error) {
+                this.error = "Đã xảy ra lỗi khi tải thông tin tòa nhà!";
+                throw error;
+            } finally {
+                this.loading = false
+            }
+        },
+
+        async updateBuilding(id, data) {
+            this.loading = true
+            try {
+                const response = await BuildingApi.update(id, data)
+                if(response.data) {
+                    return response.data
+                }
+                this.error = null
+            } catch (error) {
+                this.error = "Đã xảy ra lỗi khi sửa thông tin tòa nhà!";
+                throw error;
+            } finally {
+                this.loading = false
+            }
+        },
+
+        async deleteBuilding(id) {
+            this.loading = true
+            try {
+                const response = await BuildingApi.delete(id)
+                if(response.data) {
+                    return response.data
+                }
+                this.error = null
+            } catch (error) {
+                this.error = "Đã xảy ra lỗi khi xóa tòa nhà!";
+                throw error;
+            } finally {
+                this.loading = false
+            }
+        }
     },
 
     getters: {

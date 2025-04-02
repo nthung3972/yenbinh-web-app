@@ -66,16 +66,16 @@
 
 
   <!-- Modal Xóa Căn Hộ -->
-  <div class="modal fade" id="deleteApartmentModal" tabindex="-1">
+  <div class="modal fade" id="deleteBuildingModal" tabindex="-1">
     <div class="modal-dialog">
       <div class="modal-content">
-        <form @submit.prevent="deleteStaff" novalidate>
+        <form @submit.prevent="deleteBuilding" novalidate>
           <div class="modal-header">
-            <h5 class="modal-title">Xác Nhận Xóa Nhân Viên</h5>
+            <h5 class="modal-title">Xác Nhận Xóa Tòa Nhà</h5>
             <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
           </div>
           <div class="modal-body">
-            Bạn có chắc chắn muốn xóa nhân viên này không?
+            Bạn có chắc chắn muốn xóa tòa nhà này không?
           </div>
           <div class="modal-footer">
             <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
@@ -125,16 +125,16 @@ const fectBuildingList = () => {
   buildingStore.fetchBuildingList(currentPage.value, '', searchKeyword.value)
 }
 
-// const deleteStaff = async () => {
-//   try {
-//       await staffStore.deleteStaff(staff_id.value)
-//       document.getElementById('deleteApartmentModal').querySelector('[data-bs-dismiss="modal"]').click()
-//       toast.success('Xóa nhân viên thành công!')
-//       fectStaffList();
-//   } catch (error) {
-//       toast.error('Đã xảy ra lỗi khi xóa nhân viên!')
-//   }
-// }
+const deleteBuilding = async () => {
+  try {
+      await buildingStore.deleteBuilding(building_id.value)
+      document.getElementById('deleteBuildingModal').querySelector('[data-bs-dismiss="modal"]').click()
+      toast.success('Xóa tòa nhà thành công!')
+      fectBuildingList();
+  } catch (error) {
+      toast.error('Đã xảy ra lỗi khi xóa nhân viên!')
+  }
+}
 
 onMounted(fectBuildingList)
 </script>

@@ -5,7 +5,19 @@ export const BuildingApi = {
         return apiService.get(`/building/building-list?page=${page}&per_page=${per_page}&keyword=${encodeURIComponent(keyword)}`);
     },
 
-    // getStatsBuilding(id) {
-    //     return apiService.get(`/dashboard/stats/${id}`);
-    // }
+    create(data) {
+        return apiService.post('/building/create', data);
+    },
+
+    edit(id) {
+        return apiService.get(`/building/edit/${$id}`);
+    },
+
+    update($id, data) {
+        return apiService.post(`/building/update${$id}`, data);
+    },
+
+    delete($id) {
+        return apiService.delete(`/building/delete/${$id}`);
+    },
 };
