@@ -2,7 +2,7 @@
     <nav class="navbar navbar-light px-4">
         <div class="header-title">
             <h1>Dashboard</h1>
-            <p>Quản lý tổng thể các tòa nhà</p>
+            <p>Nhân viên: {{ name ?? '' }}</p>
         </div>
 
         <UserAvatarDropdown :avatar="avatar" :username="name" :email="email"
@@ -23,19 +23,14 @@ const email = authStore.user.email;
 const handleMenuAction = (action) => {
   switch (action) {
     case 'profile':
-      // Xử lý khi người dùng nhấp vào thông tin cá nhân
       navigateTo('/profile')
       break
+
     case 'change-password':
-      // Xử lý khi người dùng nhấp vào đổi mật khẩu
       navigateTo('/change-password')
       break
-    case 'settings':
-      // Xử lý khi người dùng nhấp vào cài đặt
-      navigateTo('/settings')
-      break
+      
     case 'logout':
-      // Xử lý khi người dùng đăng xuất
       logout()
       break
   }
