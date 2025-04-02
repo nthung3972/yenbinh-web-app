@@ -2,7 +2,7 @@
     <div class="sidebar">
         <!-- Logo -->
         <div class="sidebar-header">
-            <h2 class="logo">BuildingManager</h2>
+            <h2 class="logo">YB-Manager</h2>
         </div>
 
         <!-- Dropdown chọn tòa nhà -->
@@ -32,12 +32,20 @@
                         <NuxtLink :class="getActiveClass('/building')" class="nav-link text-white py-2"
                             to="/building">
                             <span>
-                                <Icon name="ion:home" size="24" />
+                                <Icon name="mdi:building" size="24" />
                             </span>Tòa nhà
                         </NuxtLink>
                     </li>
+                    <li  v-if="authStore.isAdmin">
+                        <NuxtLink :class="getActiveClass('/staff')" class="nav-link text-white py-2"
+                            to="/staff">
+                            <span>
+                                <Icon name="guidance:care-staff-area" size="24" />
+                            </span>Nhân viên
+                        </NuxtLink>
+                    </li>
                     <!-- Thống kê với Submenu -->
-                    <li>
+                    <li v-if="authStore.isAdmin">
                         <a href="#" class="nav-link text-white py-2 d-flex justify-content-between align-items-center"
                             :class="getActiveClass('/statistical')"
                             @click.prevent="isStatisticalOpen = !isStatisticalOpen">

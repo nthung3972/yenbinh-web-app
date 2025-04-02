@@ -33,6 +33,7 @@
   const selectedStatsData = computed(() => {
       return selectedBuilding.value === 'all' ? dashboardStore.getData : dashboardStore.getStatsBuilding;
   });
+  console.log('selectedStatsData', selectedStatsData)
   const isLoading = computed(() => dashboardStore.isLoading);
   const hasError = computed(() => dashboardStore.hasError);
   

@@ -196,7 +196,6 @@ const taoHoaDon = async () => {
   } catch (error) {
     toast.error('Lỗi khi tạo hóa đơn: ' + error.message)
     errors.value = error.errors;
-    console.log('Lỗi khi tạo hóa đơn: ', error.errors)
   }
 }
 
