@@ -123,13 +123,13 @@
                     </button>
 
                     <div class="mb-3 d-flex">
+                        <button style="min-width: 120px;" type="button" class="btn btn-secondary"
+                            @click="redirectToApartment">Bỏ
+                            qua</button>
                         <button style="min-width: 120px;" type="submit" class="btn btn-primary me-2"
                             :disabled="isSubmitting">
                             {{ isSubmitting ? 'Đang thêm...' : 'Thêm cư dân' }}
                         </button>
-                        <button style="min-width: 120px;" type="button" class="btn btn-secondary"
-                            @click="redirectToApartment">Bỏ
-                            qua</button>
                     </div>
                 </form>
             </div>
@@ -237,5 +237,10 @@ const handleSubmit = async () => {
     color: red;
     font-size: 1em;
     margin-top: 5px;
+}
+
+.create-container {
+    max-width: 1140px;
+    margin: 0 auto;
 }
 </style>

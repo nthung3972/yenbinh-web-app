@@ -112,8 +112,8 @@
           </div>
 
           <div class="form-group d-flex" style="margin-top: 20px;">
-            <button type="submit" class="btn btn-primary">Cập nhật</button>
             <button type="button" class="btn btn-secondary" @click="goBack()">Hủy bỏ</button>
+            <button type="submit" class="btn btn-primary">Cập nhật</button>
           </div>
         </form>
       </div>
@@ -235,7 +235,7 @@ onMounted(() => {
 <style scoped>
 .invoice-container {
   background-color: white;
-  max-width: 100%;
+  max-width: 1140px;
   margin: 0 auto;
   padding: 30px;
   border-radius: 10px;

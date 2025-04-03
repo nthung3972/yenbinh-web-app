@@ -19,12 +19,33 @@ class ApiService {
       baseURL,
       timeout: 15000,
       headers: {
-        "Content-Type": "application/json",
         Accept: "application/json",
       },
     });
 
     this.$baseURL = baseURL;
+
+    // Thêm interceptor để tự động đặt Content-Type phù hợp
+    this.$http.interceptors.request.use(config => {
+      // Nếu dữ liệu là FormData (chứa file), không đặt Content-Type
+      // Axios sẽ tự động đặt thành 'multipart/form-data' và thêm boundary
+      if (config.data instanceof FormData) {
+        // Xóa Content-Type để Axios tự xử lý
+        delete config.headers['Content-Type'];
+      } else {
+        // Cho các request JSON thông thường
+        config.headers['Content-Type'] = 'application/json';
+      }
+      return config;
+    });
+
+    // Xóa mặc định Content-Type cho tất cả request
+    // apiService.interceptors.request.use((config) => {
+    //   if (config.headers["Content-Type"] === "application/json") {
+    //     delete config.headers["Content-Type"];
+    //   }
+    //   return config;
+    // });
 
     // Thêm interceptor xử lý response
     this.$http.interceptors.response.use(
@@ -52,7 +73,7 @@ class ApiService {
     if (statusCode === 401) {
       console.log("Hết thời hạn đăng nhập:", statusCode)
       AuthService.logout();
-      
+
       const authStore = useAuthStore();
       if (!authStore.token) {
         return Promise.reject(error);

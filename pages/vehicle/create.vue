@@ -75,8 +75,8 @@
                         v-if="vehicles.length > 1">Xóa</button>
                 </div>
                 <div class="d-flex justify-content-end">
-                    <button type="submit" class="btn btn-primary me-2">Lưu xe</button>
-                    <button type="button" class="btn btn-secondary" @click="goBack()">Bỏ qua</button>
+                    <button type="button" style="margin-right: 5px;" class="btn btn-secondary" @click="goBack()">Hủy</button>
+                    <button type="submit" class="btn btn-primary me-2">Thêm danh sách xe</button>
                 </div>
             </form>
         </div>
@@ -142,7 +142,7 @@ const createdVehicle = async () => {
 
 <style>
 .container {
-    max-width: 800px;
+    max-width: 1140px;
     overflow-y: auto;
     scrollbar-width: thin;
 }

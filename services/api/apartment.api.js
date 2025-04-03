@@ -9,10 +9,6 @@ export const ApartmentApi = {
         return apiService.post('/apartment/create', data);
     },
 
-    addMultipleResidents($apartment_id, data) {
-        return apiService.post(`/apartment/apartment/${$apartment_id}/add-multiple-residents`, data);
-    },
-
     edit($apartment_id) {
         return apiService.get(`/apartment/apartment/${$apartment_id}/edit`);
     },

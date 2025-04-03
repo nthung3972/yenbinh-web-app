@@ -96,8 +96,8 @@
         </div>
 
         <div class="form-group d-flex" style="margin-top: 20px;">
+          <button type="button" class="btn btn-secondary" @click="goBack()">Hủy tạo</button>
           <button type="submit" class="btn btn-primary">Tạo Hóa Đơn</button>
-          <button type="button" class="btn btn-secondary" @click="goBack()">Bỏ tạo</button>
         </div>
       </form>
     </div>
@@ -204,7 +204,7 @@ const taoHoaDon = async () => {
 <style scoped>
 .invoice-container {
   background-color: white;
-  max-width: 100%;
+  max-width: 1140px;
   margin: 0 auto;
   padding: 30px;
   border-radius: 10px;

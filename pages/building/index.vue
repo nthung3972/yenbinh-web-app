@@ -23,39 +23,41 @@
           <Icon name="ic:baseline-add-circle-outline" size="20" class="me-1" /> Thêm tòa nhà
         </NuxtLink>
       </div>
-      <table class="table table-striped table-hover align-middle" style="table-layout: fixed; width: 100%;">
+      <table class="table table-hover align-middle" style="table-layout: fixed; width: 100%;">
         <thead class="table-light">
           <tr>
             <th style="width: 15%;">Tòa nhà</th>
-            <th style="width: 30%;">Vị trí</th>
+            <th style="width: 10%;">Hình ảnh</th>
+            <th style="width: 20%;">Vị trí</th>
             <th style="width: 10%;">Số tầng</th>
-            <th style="width: 20%;">Người quản lý</th>
-            <th style="width: 15%;">Trạng thái</th>
-            <th style="width: 20%; text-align: center;">Hành động</th>
+            <th style="width: 10%;">Diện tích (m²)</th>
+            <th style="width: 10%;">Người quản lý</th>
+            <th style="width: 10%;">Trạng thái</th>
+            <th style="width: 15%; text-align: center;">Hành động</th>
           </tr>
         </thead>
         <tbody>
           <tr v-for="(building, index) in buildingStore.buildingList" :key="index">
             <td>{{ building.name }}</td>
+            <td>
+              <img v-if="building.image" :src="building.image" style="width: 100px; height: 70px;" alt="">
+            </td>
             <td>{{ building.address }}</td>
             <td>{{ building.floors }}</td>
+            <td>{{ building.total_area }}</td>
             <td>{{ building.staff_names }}</td>
             <td>
               <span :class="building.status === 0 ? 'badge bg-info' : 'badge bg-danger'">
                 {{ building.status === 0 ? 'Đang hoạt động' : 'Ngừng hoạt động' }}
               </span>
             </td>
-            <td class="d-flex justify-content-center">
-              <NuxtLink to="/" style="display: flex;" class="btn btn-sm btn-success text-white align-items-center">
+            <td class="text-center align-middle">
+              <NuxtLink to="/" class="btn btn-sm btn-success text-white align-items-center" style="margin-right: 5px;">
                 <Icon name="bxs:detail" size="20" class="me-1" />Xem
               </NuxtLink>
-              <NuxtLink to="/" style="display: flex;" class="btn btn-sm btn-warning text-white align-items-center">
+              <NuxtLink :to="`/building/edit/${building.building_id}`" class="btn btn-sm btn-warning text-white align-items-center">
                 <Icon name="bxs:detail" size="20" class="me-1" />Sửa
               </NuxtLink>
-              <button type="button" style="display: flex;" class="btn btn-danger btn-sm" data-bs-toggle="modal"
-                data-bs-target="#deleteApartmentModal" @click="setSelectedBuilding(building.building_id)">
-                <Icon name="material-symbols:delete" size="20" class="me-1" />Xóa
-              </button>
             </td>
           </tr>
         </tbody>
@@ -107,10 +109,6 @@ const toast = useToast()
 const isLoading = computed(() => buildingStore.isLoading);
 const hasError = computed(() => buildingStore.hasError);
 
-const setSelectedBuilding = (id) => {
-  building_id.value = parseInt(id);
-};
-
 const handlePageChange = (page) => {
   currentPage.value = page;
   fectBuildingList();
@@ -123,17 +121,6 @@ const onSearch = () => {
 
 const fectBuildingList = () => {
   buildingStore.fetchBuildingList(currentPage.value, '', searchKeyword.value)
-}
-
-const deleteBuilding = async () => {
-  try {
-      await buildingStore.deleteBuilding(building_id.value)
-      document.getElementById('deleteBuildingModal').querySelector('[data-bs-dismiss="modal"]').click()
-      toast.success('Xóa tòa nhà thành công!')
-      fectBuildingList();
-  } catch (error) {
-      toast.error('Đã xảy ra lỗi khi xóa nhân viên!')
-  }
 }
 
 onMounted(fectBuildingList)

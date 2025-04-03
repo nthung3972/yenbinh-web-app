@@ -4,6 +4,7 @@ import { BuildingApi } from "~/services/api/building.api";
 export const useBuildingStore = defineStore("building", {
     state: () => ({
         buildingList: [],
+        building: {},
         pagination: {
             current_page: 1,
             per_page: '',
@@ -20,7 +21,6 @@ export const useBuildingStore = defineStore("building", {
             this.loading = true;
             try {
                 const response = await BuildingApi.getListBuilding(page, perPage, keyword);
-                console.log('response', response);
                 if (response) {
                     this.buildingList = response.data.data.data.data;
                     this.pagination = {
@@ -58,8 +58,9 @@ export const useBuildingStore = defineStore("building", {
             this.loading = true
             try {
                 const response = await BuildingApi.edit(id)
+                console.log('response', response.data.data.data);
                 if(response.data) {
-                    return response.data
+                    this.building = response.data.data.data
                 }
                 this.error = null
             } catch (error) {
@@ -80,22 +81,6 @@ export const useBuildingStore = defineStore("building", {
                 this.error = null
             } catch (error) {
                 this.error = "Đã xảy ra lỗi khi sửa thông tin tòa nhà!";
-                throw error;
-            } finally {
-                this.loading = false
-            }
-        },
-
-        async deleteBuilding(id) {
-            this.loading = true
-            try {
-                const response = await BuildingApi.delete(id)
-                if(response.data) {
-                    return response.data
-                }
-                this.error = null
-            } catch (error) {
-                this.error = "Đã xảy ra lỗi khi xóa tòa nhà!";
                 throw error;
             } finally {
                 this.loading = false
