@@ -23,6 +23,9 @@
                                         id="apartmentNumber" placeholder=" ">
                                     <label for="apartmentNumber">Số căn hộ<span class="required-mark">*</span></label>
                                     <div class="help-text">Ví dụ: A101, B202, v.v.</div>
+                                    <small v-if="errors?.['apartment_number']" class="text-danger">
+                                        {{ errors?.['apartment_number'][0] }}
+                                    </small>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -30,6 +33,9 @@
                                     <input v-model="apartment.floor_number" type="number" min="1" class="form-control"
                                         id="floorInput" placeholder=" ">
                                     <label for="floorInput">Số tầng<span class="required-mark">*</span></label>
+                                    <small v-if="errors?.['floor_number']" class="text-danger">
+                                        {{ errors?.['floor_number'][0] }}
+                                    </small>
                                 </div>
                             </div>
                         </div>
@@ -41,6 +47,9 @@
                                         class="form-control" id="areaInput" placeholder=" ">
                                     <span class="input-unit">m²</span>
                                     <label for="areaInput">Diện tích<span class="required-mark">*</span></label>
+                                    <small v-if="errors?.['area']" class="text-danger">
+                                        {{ errors?.['area'][0] }}
+                                    </small>
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -55,6 +64,9 @@
                                         <option value="duplex">Duplex</option>
                                     </select>
                                     <label for="typeSelect">Loại căn hộ<span class="required-mark">*</span></label>
+                                    <small v-if="errors?.['ownership_type']" class="text-danger">
+                                        {{ errors?.['ownership_type'][0] }}
+                                    </small>
                                 </div>
                             </div>
                         </div>
@@ -87,6 +99,7 @@ const apartmentStore = useApartmentStore()
 const toast = useToast()
 const isLoading = ref(false)
 const router = useRouter()
+const errors = ref({})
 
 const apartment = ref({
     apartment_number: '',
@@ -94,6 +107,14 @@ const apartment = ref({
     area: '',
     ownership_type: ''
 })
+
+const reset = () => {
+    apartment.value.apartment_number = '',
+    apartment.value.floor_number = '',
+    apartment.value.area = '',
+    apartment.value.ownership_type = '',
+    errors.value = ''
+}
 
 const goBack = () => {
     router.back();
@@ -105,8 +126,10 @@ const handleSubmit = async () => {
         const result = await apartmentStore.createApartment(apartment.value)
         if (result) {
             toast.success("Thêm căn hộ thành công!", { timeout: 3000 })
+            reset()
         }
     } catch (error) {
+        errors.value = error.errors
         toast.error("Thêm căn hộ thất bại!", { timeout: 3000 });
     }
     isLoading.value = false

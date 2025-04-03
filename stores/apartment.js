@@ -56,20 +56,6 @@ export const useApartmentStore = defineStore("apartment", {
             } catch (error) {
                 console.error("Lỗi khi tạo căn hộ:", error);
                 this.error = "Đã xảy ra lỗi khi tạo căn hộ";
-            } finally {
-                this.loading = false;
-            }
-        },
-
-        async createMultipleResidents(dataInfo, id) {
-            this.loading = true;
-            try {
-                const response = await ApartmentApi.addMultipleResidents(id, dataInfo);
-                return response.data;
-            } catch (error) {
-                console.error("Lỗi khi thêm cư dân:", error);
-                this.error = "Đã xảy ra lỗi thêm cư dân!";
-                // Quan trọng: Throw lại error để component có thể bắt được
                 throw error;
             } finally {
                 this.loading = false;
