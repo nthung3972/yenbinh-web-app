@@ -9,12 +9,12 @@ export const BuildingApi = {
         return apiService.post('/building/create', data);
     },
 
-    edit(id) {
+    edit($id) {
         return apiService.get(`/building/edit/${$id}`);
     },
 
     update($id, data) {
-        return apiService.post(`/building/update${$id}`, data);
+        return apiService.put(`/building/update/${$id}`, data);
     },
 
     delete($id) {

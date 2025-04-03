@@ -23,8 +23,8 @@
                                     <input v-model="buildingForm.name" type="text" class="form-control" id="buildingName"
                                         placeholder=" ">
                                     <label for="buildingName">Tên tòa nhà<span class="required-mark">*</span></label>
-                                    <small v-if="errors['name']" class="text-danger">
-                                        {{ errors['name'][0] }}
+                                    <small v-if="errors?.['name']" class="text-danger">
+                                        {{ errors?.['name'][0] }}
                                     </small>
                                 </div>
                             </div>
@@ -36,8 +36,8 @@
                                     <input v-model="buildingForm.floors" type="number" min="1" class="form-control" id="floorsInput"
                                         placeholder=" ">
                                     <label for="floorsInput">Số tầng<span class="required-mark">*</span></label>
-                                    <small v-if="errors['floors']" class="text-danger">
-                                        {{ errors['floors'][0] }}
+                                    <small v-if="errors?.['floors']" class="text-danger">
+                                        {{ errors?.['floors'][0] }}
                                     </small>
                                 </div>
                             </div>
@@ -46,8 +46,8 @@
                                     <input v-model="buildingForm.total_area" type="number" min="1" class="form-control" id="floorsInput"
                                         placeholder=" ">
                                     <label for="floorsInput">Diện tích<span class="required-mark">*</span></label>
-                                    <small v-if="errors['total_area']" class="text-danger">
-                                        {{ errors['total_area'][0] }}
+                                    <small v-if="errors?.['total_area']" class="text-danger">
+                                        {{ errors?.['total_area'][0] }}
                                     </small>
                                 </div>
                             </div>
@@ -60,8 +60,8 @@
                                         placeholder=" "></textarea>
                                     <label for="addressInput">Địa chỉ tòa nhà<span
                                             class="required-mark">*</span></label>
-                                    <small v-if="errors['address']" class="text-danger">
-                                        {{ errors['address'][0] }}
+                                    <small v-if="errors?.['address']" class="text-danger">
+                                        {{ errors?.['address'][0] }}
                                     </small>
                                 </div>
                             </div>
@@ -73,15 +73,16 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="image-upload-container" id="imageUploadContainer">
-                                    <input type="file" class="file-input" id="buildingImage" accept="image/*">
+                                    <!-- <input type="file" class="file-input" id="buildingImage" accept="image/*"> -->
+                                    <input type="file" @change="handleFileChange" accept="image/*" />
                                     <i class="fas fa-cloud-upload-alt"></i>
                                     <h5>Tải lên hình ảnh tòa nhà</h5>
                                     <p class="text-muted">Kéo thả hoặc nhấp vào đây để tải lên</p>
                                     <p class="text-muted small">Hỗ trợ JPG, PNG, tối đa 5MB</p>
-                                    <img id="imagePreview" src="" alt="Xem trước" class="image-preview">
+                                    <img v-if="buildingForm.imagePreview" :src="buildingForm.imagePreview" alt="Xem trước ảnh" style="max-width: 200px; margin-top: 10px;"/>
                                 </div>
-                                <small v-if="errors['image']" class="text-danger">
-                                    {{ errors['image'][0] }}
+                                <small v-if="errors?.['image']" class="text-danger">
+                                    {{ errors?.['image'][0] }}
                                 </small>
                             </div>
                         </div>
@@ -94,12 +95,12 @@
                                 <div class="form-label-group">
                                     <select v-model="buildingForm.status" class="form-select" id="statusSelect">
                                         <option value="" disabled selected>Chọn trạng thái</option>
-                                        <option value="active">Đang hoạt động</option>
-                                        <option value="inactive">Không hoạt động</option>
+                                        <option value="0">Đang hoạt động</option>
+                                        <option value="1">Không hoạt động</option>
                                     </select>
                                     <label for="statusSelect">Trạng thái<span class="required-mark">*</span></label>
-                                    <small v-if="errors['status']" class="text-danger">
-                                        {{ errors['status'][0] }}
+                                    <small v-if="errors?.['status']" class="text-danger">
+                                        {{ errors?.['status'][0] }}
                                     </small>
                                 </div>
                             </div>
@@ -112,8 +113,8 @@
                                         <option value="mixed">Hỗn hợp</option>
                                     </select>
                                     <label for="typeSelect">Loại tòa nhà</label>
-                                    <small v-if="errors['building_type']" class="text-danger">
-                                        {{ errors['building_type'][0] }}
+                                    <small v-if="errors?.['building_type']" class="text-danger">
+                                        {{ errors?.['building_type'][0] }}
                                     </small>
                                 </div>
                             </div>
@@ -137,6 +138,7 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import { useBuildingStore } from '@/stores/building'
+import { useUploadStore } from '@/stores/upload'
 import { useToast } from 'vue-toastification'
 
 definePageMeta({
@@ -146,6 +148,7 @@ definePageMeta({
 
 const router = useRouter()
 const buildingStore = useBuildingStore()
+const uploadStore = useUploadStore()
 const toast = useToast()
 const errors = ref('')
 
@@ -156,11 +159,12 @@ const hasError = computed(() => buildingStore.hasError);
 const buildingForm = ref({
   name: '',
   address: '',
-  image: '',
+  image: null,
   floors: '',
   total_area: '',
   status: '',
-  building_type: ''
+  building_type: '',
+  imagePreview: null
 })
 
 const reset = () => {
@@ -178,7 +182,29 @@ const back = () => {
     router.back()
 }
 
+const handleFileChange = async (event) => {
+  const file = event.target.files[0]
+
+  if (!file) return
+
+  buildingForm.value.imagePreview = URL.createObjectURL(file)
+
+  console.log(buildingForm.value.imagePreview)
+
+  const formData = new FormData()
+  formData.append('image', file)
+
+  try {
+    const result = await uploadStore.uploadImage(formData)
+    buildingForm.value.imagePreview = result.path
+    buildingForm.value.image = result.path
+  } catch (error) {
+    console.error('Lỗi upload ảnh:', error)
+  }
+}
+
 const createBuilding = async () => {
+    console.log(buildingForm.value);
   try {
     await buildingStore.createBuilding(buildingForm.value)
     toast.success('Thêm tòa nhà thành công!')
@@ -324,33 +350,54 @@ const createBuilding = async () => {
 
 /* Styling cho phần tải ảnh */
 .image-upload-container {
-    border: 2px dashed #ced4da;
-    border-radius: 7px;
-    padding: 1.5rem;
+    position: relative;
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    padding: 20px;
     text-align: center;
-    transition: all 0.3s;
     cursor: pointer;
+    transition: border-color 0.3s;
+}
+
+.image-upload-container img {
+    width: 100%;
+    height: 100%;
 }
 
 .image-upload-container:hover {
-    border-color: #4e73df;
+    border-color: #999;
+}
+
+.image-upload-container input[type="file"] {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    cursor: pointer;
 }
 
 .image-upload-container i {
-    font-size: 2.5rem;
+    font-size: 48px;
     color: #6c757d;
-    margin-bottom: 1rem;
+    margin-bottom: 10px;
 }
 
-.image-preview {
-    max-width: 100%;
-    max-height: 200px;
-    margin-top: 1rem;
-    border-radius: 5px;
-    display: none;
+.image-upload-container h5 {
+    margin-bottom: 5px;
+    color: #333;
 }
 
-.file-input {
-    display: none;
+.image-upload-container p {
+    margin-bottom: 5px;
+}
+
+.image-upload-container .text-muted {
+    color: #6c757d !important;
+}
+
+.image-upload-container .small {
+    font-size: 0.875em;
 }
 </style>

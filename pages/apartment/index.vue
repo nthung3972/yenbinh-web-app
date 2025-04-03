@@ -23,7 +23,7 @@
                     <Icon name="ic:baseline-add-circle-outline" size="20" class="me-1" /> Thêm căn hộ
                 </NuxtLink>
             </div>
-            <table class="table table-striped table-hover align-middle" style="table-layout: fixed; width: 100%;">
+            <table class="table table-hover align-middle" style="table-layout: fixed; width: 100%;">
                 <thead class="table-light">
                     <tr>
                         <th style="width: 10%;">Số căn hộ</th>

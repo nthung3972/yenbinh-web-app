@@ -8,7 +8,7 @@
 
     <div v-else class="container">
         <div class="card shadow-sm p-4">
-            <h4 class="mb-4">Thêm Xe Mới</h4>
+            <h4 class="mb-4">Sửa thông tin xe</h4>
             <form @submit.prevent="updateVehicle">
 
                 <div class="row">
@@ -71,8 +71,8 @@
                 </div>
 
                 <div class="d-flex justify-content-end">
-                    <button type="submit" class="btn btn-primary me-2">Lưu xe</button>
-                    <button type="button" class="btn btn-secondary" @click="goBack()">Bỏ qua</button>
+                    <button type="button" class="btn btn-secondary" @click="goBack()">Hủy</button>
+                    <button type="submit" class="btn btn-primary me-2">Lưu thay đổi</button>
                 </div>
             </form>
         </div>
@@ -148,3 +148,17 @@ onMounted(() => {
     getVehicle()
 })
 </script>
+
+<style scoped>
+.container {
+    max-width: 1140px;
+    margin: 0 auto;
+}
+
+.d-flex {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+</style>
