@@ -66,11 +66,24 @@ const resendEmail = async () => {
     isLoading.value = true
     try {
         const response = await userStore.resendEmailVerification()
-        if (response) {
-            successMsg.value = 'Email xác nhận đã được gửi lại thành công'
+        if (response.status === 200) {
+            successMsg.value = response.mesage
         }
     } catch (error) {
-        errorMsg.value = 'Có lỗi xảy ra, vui lòng thử lại sau'
+        console.log('Error:', error)
+        if (error && error.status === 429) {
+            errorMsg.value = error.message
+            successMsg.value = null
+        } else if (error && error.status === 422) {
+            errorMsg.value = error.message
+            successMsg.value = null
+        } else if (error && error.status === 401) {
+            errorMsg.value = error.message
+            successMsg.value = null
+        } else {
+            errorMsg.value = 'Có lỗi xảy ra, vui lòng thử lại sau'
+            successMsg.value = null
+        }
     } finally {
         isLoading.value = false
     }

@@ -19,6 +19,7 @@ export const useUserStore = defineStore("user", {
                 }
             } catch (error) {
                 this.error = "Đã xảy ra lỗi khi gửi lại email!";
+                throw error;
             } finally {
                 this.loading = false;
             }
