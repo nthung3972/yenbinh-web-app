@@ -254,12 +254,12 @@ onMounted(() => {
 
 .card-header {
     background: linear-gradient(45deg, #4e73df, #224abe);
-    padding: 1.5rem;
+    padding: 12px 24px;
     border-bottom: none;
 }
 
 .card-body {
-    padding: 2rem;
+    padding: 16px 24px;
 }
 
 .form-label {
@@ -319,7 +319,7 @@ onMounted(() => {
 }
 
 .form-section {
-    margin-bottom: 2rem;
+    margin-bottom: 0;
 }
 
 .section-title {

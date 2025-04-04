@@ -1,8 +1,8 @@
 <template>
     <nav class="navbar navbar-light px-4">
         <div class="header-title">
-            <h1>Dashboard</h1>
-            <p>Nhân viên: {{ name ?? '' }}</p>
+            <h1>{{ name ?? '' }}</h1>
+            <p>Quyền truy cập: {{ role === 'admin' ? 'Quản lý' : 'Nhân viên'}}</p>
         </div>
 
         <UserAvatarDropdown :avatar="avatar" :username="name" :email="email"
@@ -19,6 +19,7 @@ const authStore = useAuthStore();
 
 const name = authStore.user.name;
 const email = authStore.user.email;
+const role = authStore.user.role;
 
 const handleMenuAction = (action) => {
   switch (action) {

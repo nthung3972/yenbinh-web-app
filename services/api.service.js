@@ -39,14 +39,6 @@ class ApiService {
       return config;
     });
 
-    // Xóa mặc định Content-Type cho tất cả request
-    // apiService.interceptors.request.use((config) => {
-    //   if (config.headers["Content-Type"] === "application/json") {
-    //     delete config.headers["Content-Type"];
-    //   }
-    //   return config;
-    // });
-
     // Thêm interceptor xử lý response
     this.$http.interceptors.response.use(
       (response) => response,

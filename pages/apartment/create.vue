@@ -138,7 +138,7 @@ const handleSubmit = async () => {
 
 <style scoped>
 .form-container {
-    max-width: 800px;
+    max-width: 1140px;
     margin: 2rem auto;
 }
 

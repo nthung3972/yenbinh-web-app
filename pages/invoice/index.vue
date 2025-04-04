@@ -38,7 +38,7 @@
                 <tbody>
                     <tr v-for="(invoice, index) in useInvoice.invoiceList" :key="index">
                         <td>{{ invoice.apartment.apartment_number }}</td>
-                        <td>{{ invoice.total_amount }}</td>
+                        <td>{{ formatVND(invoice.total_amount) }}</td>
                         <td>{{ invoice.invoice_date }}</td>
                         <td>{{ invoice.due_date }}</td>
                         <td>
@@ -81,6 +81,7 @@ definePageMeta({
 const useInvoice = useInvoiceStore()
 const currentPage = ref(1)
 const searchKeyword = ref('')
+const { formatVND } = useCurrencyFormat()
 
 const isLoading = computed(() => useInvoice.isLoading);
 const hasError = computed(() => useInvoice.hasError);
