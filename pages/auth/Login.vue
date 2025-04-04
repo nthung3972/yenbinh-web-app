@@ -5,11 +5,11 @@
       <div class="col-md-6 d-none d-md-block bg-image">
       </div>
       
-      <div class="col-md-6 bg-light">
+      <div class="col-md-6 bg-light-blue">
         <div class="login-container d-flex flex-column justify-content-center align-items-center h-100">
-          <div class="login-form-container shadow-lg rounded">
+          <div class="login-form-container bg-light shadow-lg rounded">
             <div class="text-center mb-4">
-              <!-- <img src="/images/login.jpeg" alt="Logo" class="logo mb-4" width="120"> -->
+              <img src="/images/logo-yb.png" alt="Logo" class="logo mb-4" width="100">
               <h2 class="fw-bold">Đăng nhập</h2>
               <p class="text-muted">Vui lòng nhập thông tin đăng nhập của bạn</p>
             </div>
@@ -94,6 +94,7 @@
 import { ref, reactive } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import AuthService from '~/services/auth.service';
+import { useAuthStore } from '@/stores/auth'
 
 const form = reactive({
   email: '',
@@ -113,10 +114,17 @@ const handleLogin = async () => {
     errorMessage.value = '';
     
     // Gọi auth service để xử lý đăng nhập
-    await AuthService.login({
+    const response = await AuthService.login({
       email: form.email,
       password: form.password
     });
+
+    console.log(response.data.user.email_verified_at)
+
+    if (!response.data.user.email_verified_at) {
+      // Email chưa xác thực, chuyển sang trang verify
+      return navigateTo('/auth/verify-email');
+    }
     
     // Hiển thị thông báo thành công (tùy chọn)
     // toast.success('Đăng nhập thành công');
@@ -162,17 +170,24 @@ definePageMeta({
 <style scoped>
 /* Cài đặt hình ảnh bên trái */
 .bg-image {
-  background-image: url('/images/image.jpg');
+  background-image: url('/images/login-left.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
 }
 
+/* Nền xanh nhạt cho phần bên phải */
+.bg-light-blue {
+  background-color: #e6f7ff; /* Màu xanh nhạt */
+  /* Hoặc bạn có thể sử dụng gradients */
+  background-image: linear-gradient(120deg, #e0f7fa, #bbdefb);
+}
+
 /* Container của form đăng nhập */
 .login-form-container {
   width: 100%;
-  max-width: 400px;
-  padding: 20px;
+  max-width: 450px;
+  padding: 20px 40px;
 }
 
 /* Đường phân cách "hoặc đăng nhập với" */

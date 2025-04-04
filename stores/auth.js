@@ -18,6 +18,7 @@ export const useAuthStore = defineStore('auth', {
     userPermissions: (state) => state.user?.permissions || [],
     isAdmin: (state) => state.user?.role === 'admin',
     isStaff: (state) => state.user?.role === 'staff',
+    isEmailVerified: (state) => !!state.user?.email_verified_at,
   },
   
   actions: {
@@ -35,7 +36,7 @@ export const useAuthStore = defineStore('auth', {
     
     setUser(user) {
       this.user = user;
-      console.log('Thông tin user:', this.user)
+      // console.log('Thông tin user:', this.user)
       if (process.client && user) {
         localStorage.setItem('auth_user', JSON.stringify(user));
       }

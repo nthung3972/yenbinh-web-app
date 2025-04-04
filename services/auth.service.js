@@ -42,6 +42,11 @@ class AuthService {
     return authStore.isAuthenticated;
   }
 
+  isVerified() {
+    const authStore = useAuthStore();
+    return authStore.isEmailVerified;
+  }
+
   async restoreAuth() {
     const authStore = useAuthStore();
 

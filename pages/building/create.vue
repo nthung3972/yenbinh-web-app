@@ -121,7 +121,7 @@
                         </div>
                     </div>
 
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                         <button type="button" class="btn btn-secondary px-4 me-2" @click="back()">
                             <i class="fas fa-times me-1"></i> Hủy
                         </button>
@@ -232,12 +232,12 @@ const createBuilding = async () => {
 
 .card-header {
     background: linear-gradient(45deg, #4e73df, #224abe);
-    padding: 1.5rem;
+    padding: 12px 24px;
     border-bottom: none;
 }
 
 .card-body {
-    padding: 2rem;
+    padding: 16px 24px;
 }
 
 .form-label {
@@ -297,7 +297,7 @@ const createBuilding = async () => {
 }
 
 .form-section {
-    margin-bottom: 2rem;
+    margin-bottom: 0;
 }
 
 .section-title {

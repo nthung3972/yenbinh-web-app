@@ -94,7 +94,7 @@
 
                 <!-- Cột 4: Thành tiền (readonly) -->
                 <div class="col-md-3">
-                  <input :value="formatCurrency(detail.amount)" class="form-control" placeholder="Thành tiền" readonly>
+                  <input :value="formatVND(detail.amount)" class="form-control" placeholder="Thành tiền" readonly>
                 </div>
 
                 <!-- Cột 5: Nút xóa -->
@@ -107,7 +107,7 @@
             </div>
 
             <div class="total-section">
-              Tổng Tiền: {{ invoiceForm.total_amount.toLocaleString() }} VNĐ
+              Tổng Tiền: {{ formatVND(invoiceForm.total_amount) }} VNĐ
             </div>
           </div>
 
@@ -132,8 +132,6 @@ definePageMeta({
   layout: "dashboard"
 })
 
-const formatCurrency = (value) => value.toLocaleString('vi-VN')
-
 const invoiceStore = useInvoiceStore()
 const router = useRouter()
 const route = useRoute()
@@ -141,6 +139,7 @@ const toast = useToast()
 const isLoading = computed(() => invoiceStore.isLoading);
 const invoice_id = route.params.id
 const errors = ref({})
+const { formatVND, unformatVND  } = useCurrencyFormat()
 
 const invoiceForm = ref({
   apartment_number: '',
