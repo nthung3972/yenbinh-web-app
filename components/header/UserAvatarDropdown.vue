@@ -53,7 +53,6 @@ const isMenuOpen = ref(false)
 const menuItems = ref([
     { label: 'Thông tin cá nhân', action: 'profile', icon: '👤' },
     { label: 'Đổi mật khẩu', action: 'change-password', icon: '🔑' },
-    { label: 'Cài đặt', action: 'settings', icon: '⚙️' },
     { label: 'Đăng xuất', action: 'logout', icon: '🚪' }
 ])
 

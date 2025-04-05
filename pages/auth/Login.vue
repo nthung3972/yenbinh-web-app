@@ -4,7 +4,7 @@
     <div class="row h-100 g-0">
       <div class="col-md-6 d-none d-md-block bg-image">
       </div>
-      
+
       <div class="col-md-6 bg-light-blue">
         <div class="login-container d-flex flex-column justify-content-center align-items-center h-100">
           <div class="login-form-container bg-light shadow-lg rounded">
@@ -13,9 +13,9 @@
               <h2 class="fw-bold">Đăng nhập</h2>
               <p class="text-muted">Vui lòng nhập thông tin đăng nhập của bạn</p>
             </div>
-            
+
             <div v-if="errorMessage" class="alert alert-danger" role="alert">
-               {{ errorMessage }}
+              {{ errorMessage }}
             </div>
             <!-- Form đăng nhập -->
             <form @submit.prevent="handleLogin">
@@ -23,52 +23,40 @@
                 <label for="email" class="form-label">Email</label>
                 <div class="input-group shadow-sm">
                   <span class="input-group-text">
-                      <Icon name="mdi:email-outline" />
+                    <Icon name="mdi:email-outline" />
                   </span>
-                  <input 
-                    type="email" 
-                    class="form-control" 
-                    id="email" 
-                    placeholder="Nhập email của bạn"
-                    v-model="form.email"
-                    required
-                  >
+                  <input type="email" class="form-control" id="email" placeholder="Nhập email của bạn"
+                    v-model="form.email" required>
                 </div>
               </div>
-              
+
               <div class="mb-3">
                 <div class="d-flex justify-content-between align-items-center">
                   <label for="password" class="form-label">Mật khẩu</label>
                 </div>
                 <div class="input-group shadow-sm">
                   <span class="input-group-text">
-                      <Icon name="mdi:lock-outline" />
+                    <Icon name="mdi:lock-outline" />
                   </span>
-                  <input 
-                    :type="showPassword ? 'text' : 'password'" 
-                    class="form-control" 
-                    id="password" 
-                    placeholder="Nhập mật khẩu của bạn"
-                    v-model="form.password"
-                    required
-                  >
+                  <input :type="showPassword ? 'text' : 'password'" class="form-control" id="password"
+                    placeholder="Nhập mật khẩu của bạn" v-model="form.password" required>
                   <span class="input-group-text" @click="showPassword = !showPassword">
-                      <Icon :name="showPassword ? 'mdi:eye-off-outline' : 'mdi:eye-outline'" />
+                    <Icon :name="showPassword ? 'mdi:eye-off-outline' : 'mdi:eye-outline'" />
                   </span>
                 </div>
               </div>
 
               <button type="submit" class="btn btn-primary w-100 mt-3" :disabled="loading">
-                  <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span>
-                  {{ loading ? "Đang xử lý..." : "Đăng nhập" }}
+                <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span>
+                {{ loading ? "Đang xử lý..." : "Đăng nhập" }}
               </button>
-              
+
               <!-- <button type="submit" class="btn btn-primary w-100 py-2 mb-3">Đăng nhập</button> -->
-              
+
               <div class="text-center mb-3">
                 <span class="divider">hoặc đăng nhập với</span>
               </div>
-              
+
               <!-- Nút đăng nhập xã hội -->
               <div class="d-flex justify-content-between gap-2 mb-4">
                 <button type="button" class="btn btn-outline-secondary flex-grow-1 flex">
@@ -78,9 +66,11 @@
                   <Icon name="devicon:facebook" class="text-white" />Facebook
                 </button>
               </div>
-              
+
               <div class="text-center">
-                  <a href="#" class="small text-decoration-none">Quên mật khẩu?</a>
+                <nuxt-link to="/auth/password/forgot" class="small text-decoration-none">
+                  Quên mật khẩu?
+                </nuxt-link>
               </div>
             </form>
           </div>
@@ -94,7 +84,6 @@
 import { ref, reactive } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import AuthService from '~/services/auth.service';
-import { useAuthStore } from '@/stores/auth'
 
 const form = reactive({
   email: '',
@@ -112,7 +101,7 @@ const handleLogin = async () => {
   try {
     loading.value = true;
     errorMessage.value = '';
-    
+
     // Gọi auth service để xử lý đăng nhập
     const response = await AuthService.login({
       email: form.email,
@@ -125,15 +114,15 @@ const handleLogin = async () => {
       // Email chưa xác thực, chuyển sang trang verify
       return navigateTo('/auth/verify-email');
     }
-    
+
     // Hiển thị thông báo thành công (tùy chọn)
     // toast.success('Đăng nhập thành công');
-    
+
     // Chuyển hướng sau khi đăng nhập thành công
     return navigateTo('/dashboard');
   } catch (error) {
     console.error('Login error:', error);
-    
+
     // Xử lý các loại lỗi khác nhau
     if (error.response?.status === 401) {
       errorMessage.value = 'Email hoặc mật khẩu không chính xác';
@@ -178,7 +167,8 @@ definePageMeta({
 
 /* Nền xanh nhạt cho phần bên phải */
 .bg-light-blue {
-  background-color: #e6f7ff; /* Màu xanh nhạt */
+  background-color: #e6f7ff;
+  /* Màu xanh nhạt */
   /* Hoặc bạn có thể sử dụng gradients */
   background-image: linear-gradient(120deg, #e0f7fa, #bbdefb);
 }
@@ -208,7 +198,7 @@ definePageMeta({
 }
 
 .flex {
-  display:flex;
+  display: flex;
   justify-content: center;
   align-items: center;
   gap: 5px;

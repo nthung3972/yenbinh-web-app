@@ -28,7 +28,7 @@ const handleMenuAction = (action) => {
       break
 
     case 'change-password':
-      navigateTo('/change-password')
+      navigateTo('/auth/change-password')
       break
       
     case 'logout':
