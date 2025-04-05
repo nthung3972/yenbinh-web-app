@@ -19,5 +19,13 @@ export const UserApi = {
 
     forgotPassword(data) {
         return apiService.post('/auth/forgot-password', data);
+    },
+
+    resendForgotPassword(data) {
+        return apiService.post('/auth/forgot-password/resend', data);
+    },
+
+    resetPassword(data) {
+        return apiService.post('/auth/reset-password', data);
     }
 };

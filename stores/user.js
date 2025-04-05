@@ -113,7 +113,56 @@ export const useUserStore = defineStore("user", {
             } finally {
                 this.loading = false;
             }
+        },
+
+        async resendForgotPassword(data) {
+            this.loading = true;
+            try {
+                const response = await UserApi.resendForgotPassword(data);
+                
+                if (response.status === 200) {
+                    this.success = response.data.message;
+                    this.error = null;
+                }
+            } catch (error) {
+                console.log('error' , error);
+                if (error.message) {
+                    this.error = error.message;
+                }
+                else if (error.error) {
+                    this.error = error.error;
+                }
+                this.success = null;
+                throw error;
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async resetPassword(data) {
+            this.loading = true;
+            try {
+                const response = await UserApi.resetPassword(data);
+                
+                if (response.status === 200) {
+                    this.success = response.data.message;
+                    this.error = null;
+                }
+            } catch (error) {
+                console.log('error' , error);
+                if (error.message) {
+                    this.error = error.message;
+                }
+                else if (error.error) {
+                    this.error = error.error;
+                }
+                this.success = null;
+                throw error;
+            } finally {
+                this.loading = false;
+            }
         }
+
     },
 
     getters: {
