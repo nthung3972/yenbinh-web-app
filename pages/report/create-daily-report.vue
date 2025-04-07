@@ -1,46 +1,35 @@
 <template>
-    <div v-if="isLoading" class="text-center">
-        <div class="spinner-border spinner-border-sm me-2" role="status">
-            <span class="visually-hidden">Đang tải dữ liệu...</span>
-        </div>
-        <p>Đang tải dữ liệu...</p>
+  <div v-if="isLoading" class="text-center">
+    <div class="spinner-border spinner-border-sm me-2" role="status">
+      <span class="visually-hidden">Đang tải dữ liệu...</span>
     </div>
-    
-    <div v-else>
-      <div class="container py-4">
+    <p>Đang tải dữ liệu...</p>
+  </div>
+
+  <div v-else>
+    <div class="container py-4">
       <h1 class="mb-4">Tạo báo cáo nhân sự theo ca làm việc</h1>
-      
+
       <!-- Chọn ngày làm việc -->
       <div class="mb-4">
         <label class="form-label">Chọn ngày làm việc:</label>
         <div class="col-md-4">
-          <input
-            type="date"
-            v-model="selectedDate"
-            class="form-control"
-            :max="maxDate"
-          />
+          <input type="date" v-model="selectedDate" class="form-control" :max="maxDate" />
+          <small v-if="errors?.['report_date']" class="text-danger">
+            {{ errors?.['report_date'][0] }}
+          </small>
         </div>
       </div>
-      
+
       <!-- Chọn ca làm việc -->
       <div class="mb-4">
         <label class="form-label">Chọn ca làm việc:</label>
         <div class="row row-cols-1 row-cols-md-3 g-3">
-          <div
-            v-for="shift in availableShifts"
-            :key="shift.shiftId"
-            class="col"
-          >
-            <div 
-              @click="selectShift(shift)"
-              class="card h-100"
-              :class="{
-                'border-primary': selectedShift && selectedShift.shiftId === shift.shiftId,
-                'text-muted': shift.reported
-              }"
-              :style="{'cursor': shift.reported ? 'not-allowed' : 'pointer'}"
-            >
+          <div v-for="shift in availableShifts" :key="shift.shiftId" class="col">
+            <div @click="selectShift(shift)" class="card h-100" :class="{
+              'border-primary': selectedShift && selectedShift.shiftId === shift.shiftId,
+              'text-muted': shift.reported
+            }" :style="{ 'cursor': shift.reported ? 'not-allowed' : 'pointer' }">
               <div class="card-body">
                 <h5 class="card-title">{{ shift.shiftName }}</h5>
                 <p class="card-text">{{ shift.startTime }} - {{ shift.endTime }}</p>
@@ -50,7 +39,7 @@
           </div>
         </div>
       </div>
-      
+
       <!-- Chọn nhân viên -->
       <div v-if="selectedShift && !selectedShift.reported" class="mb-4">
         <div class="d-flex justify-content-between align-items-center mb-2">
@@ -59,32 +48,17 @@
             Đã chọn: {{ selectedStaff.length }} / {{ filteredStaff.length }}
           </span>
         </div>
-        
+
         <div class="mb-3">
-          <input
-            type="text"
-            v-model="searchStaff"
-            placeholder="Tìm kiếm nhân viên..."
-            class="form-control"
-          />
+          <input type="text" v-model="searchStaff" placeholder="Tìm kiếm nhân viên..." class="form-control" />
         </div>
-        
+
         <div class="card">
           <div class="list-group list-group-flush" style="max-height: 300px; overflow-y: auto;">
-            <div
-              v-for="staff in filteredStaff"
-              :key="staff.id"
-              class="list-group-item list-group-item-action"
-              @click="toggleStaffSelection(staff)"
-              :class="{'active': isStaffSelected(staff)}"
-            >
+            <div v-for="staff in filteredStaff" :key="staff.id" class="list-group-item list-group-item-action"
+              @click="toggleStaffSelection(staff)" :class="{ 'active': isStaffSelected(staff) }">
               <div class="d-flex align-items-center">
-                <input
-                  type="checkbox"
-                  class="form-check-input me-2"
-                  :checked="isStaffSelected(staff)"
-                  @click.stop
-                />
+                <input type="checkbox" class="form-check-input me-2" :checked="isStaffSelected(staff)" @click.stop />
                 <div>
                   <div class="fw-bold">{{ staff.name }}</div>
                   <div class="small">{{ staff.position }} - {{ staff.department }}</div>
@@ -94,46 +68,34 @@
           </div>
         </div>
       </div>
-      
+
       <!-- Tạo báo cáo ca -->
       <div class="mb-4">
-        <button
-          v-if="selectedShift && !selectedShift.reported && selectedStaff.length > 0"
-          @click="createShiftReport"
-          class="btn btn-primary"
-        >
+        <button v-if="selectedShift && !selectedShift.reported && selectedStaff.length > 0" @click="createShiftReport"
+          class="btn btn-primary">
           Tạo báo cáo ca {{ selectedShift.name }}
         </button>
       </div>
-      
+
       <!-- Danh sách báo cáo ca đã tạo -->
       <div v-if="completedReports.length > 0" class="mb-4">
         <h2 class="h5 mb-3">Báo cáo ca đã tạo:</h2>
         <div class="card">
           <ul class="list-group list-group-flush">
-            <li
-              v-for="report in completedReports"
-              :key="report.shiftId"
-              class="list-group-item d-flex justify-content-between align-items-center"
-            >
+            <li v-for="report in completedReports" :key="report.shiftId"
+              class="list-group-item d-flex justify-content-between align-items-center">
               <div>
                 <div class="fw-bold">{{ report.shiftName }}</div>
                 <div class="small text-muted">{{ report.staffCount }} nhân viên</div>
               </div>
-              <button
-                @click="viewReportDetails(report)"
-                class="btn btn-sm btn-outline-secondary"
-              >
+              <button @click="viewReportDetails(report)" class="btn btn-sm btn-outline-secondary">
                 Chi tiết
               </button>
-              
-              <button
-                @click="openUpdateReportModal(report)"
-                class="btn btn-sm btn-outline-primary me-2"
-                v-if="!finalReportSubmitted"
-                >
+
+              <!-- <button @click="openUpdateReportModal(report)" class="btn btn-sm btn-outline-primary me-2"
+                v-if="!finalReportSubmitted">
                 Cập nhật
-            </button>
+              </button> -->
 
             </li>
           </ul>
@@ -141,76 +103,68 @@
       </div>
 
       <!-- Modal cập nhật báo cáo ca -->
-<div class="modal fade" id="updateReportModal" tabindex="-1" ref="updateReportModal">
-  <div class="modal-dialog modal-lg">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title">Cập nhật báo cáo ca {{ selectedReport?.shiftName }}</h5>
-        <button type="button" class="btn-close" @click="closeUpdateReportModal"></button>
-      </div>
-      <div class="modal-body">
-        <div class="mb-3">
-          <label class="form-label">Tìm kiếm nhân viên:</label>
-          <input
-            type="text"
-            v-model="updateSearchStaff"
-            class="form-control"
-            placeholder="Nhập tên, chức vụ hoặc phòng ban..."
-          />
-        </div>
-        <div class="card">
-          <div class="list-group list-group-flush" style="max-height: 300px; overflow-y: auto;">
-            <div
-  v-for="(staff, index) in updateSelectedStaff"
-  :key="staff.id"
-  class="border rounded p-2 mb-2"
->
-  <div class="fw-bold">{{ staff.name }}</div>
-  <div class="row mb-2">
-    <div class="col-md-6">
-      <label class="form-label">Giờ bắt đầu</label>
-      <input type="time" v-model="staff.workTimeStart" class="form-control" />
-    </div>
-    <div class="col-md-6">
-      <label class="form-label">Giờ kết thúc</label>
-      <input type="time" v-model="staff.workTimeEnd" class="form-control" />
-    </div>
-  </div>
-  <div class="form-check form-check-inline me-3">
-    <input class="form-check-input" type="checkbox" v-model="staff.isLate" />
-    <label class="form-check-label">Đi muộn</label>
-  </div>
-  <div class="form-check form-check-inline">
-    <input class="form-check-input" type="checkbox" v-model="staff.isOvertime" />
-    <label class="form-check-label">Tăng ca</label>
-  </div>
-</div>
+      <!-- <div class="modal fade" id="updateReportModal" tabindex="-1" ref="updateReportModal">
+        <div class="modal-dialog modal-lg">
+          <div class="modal-content">
+            <div class="modal-header">
+              <h5 class="modal-title">Cập nhật báo cáo ca {{ selectedReport?.shiftName }}</h5>
+              <button type="button" class="btn-close" @click="closeUpdateReportModal"></button>
+            </div>
+            <div class="modal-body">
+              <div class="mb-3">
+                <label class="form-label">Tìm kiếm nhân viên:</label>
+                <input type="text" v-model="updateSearchStaff" class="form-control"
+                  placeholder="Nhập tên, chức vụ hoặc phòng ban..." />
+              </div>
+              <div class="card">
+                <div class="list-group list-group-flush" style="max-height: 300px; overflow-y: auto;">
+                  <div v-for="(staff, index) in updateSelectedStaff" :key="staff.id" class="border rounded p-2 mb-2">
+                    <div class="fw-bold">{{ staff.name }}</div>
+                    <div class="row mb-2">
+                      <div class="col-md-6">
+                        <label class="form-label">Giờ bắt đầu</label>
+                        <input type="time" v-model="staff.workTimeStart" class="form-control" />
+                      </div>
+                      <div class="col-md-6">
+                        <label class="form-label">Giờ kết thúc</label>
+                        <input type="time" v-model="staff.workTimeEnd" class="form-control" />
+                      </div>
+                    </div>
+                    <div class="form-check form-check-inline me-3">
+                      <input class="form-check-input" type="checkbox" v-model="staff.isLate" />
+                      <label class="form-check-label">Đi muộn</label>
+                    </div>
+                    <div class="form-check form-check-inline">
+                      <input class="form-check-input" type="checkbox" v-model="staff.isOvertime" />
+                      <label class="form-check-label">Tăng ca</label>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button class="btn btn-secondary" @click="closeUpdateReportModal">Hủy</button>
+              <button class="btn btn-primary" @click="confirmUpdateReport">Cập nhật</button>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="modal-footer">
-        <button class="btn btn-secondary" @click="closeUpdateReportModal">Hủy</button>
-        <button class="btn btn-primary" @click="confirmUpdateReport">Cập nhật</button>
-      </div>
-    </div>
-  </div>
-</div>
-      
+      </div> -->
+
       <!-- Tạo báo cáo ngày -->
       <div class="mt-4">
-        <button
-          v-if="allShiftsReported"
-          @click="createDailyReport"
-          class="btn btn-success"
-        >
+        <button v-if="allShiftsReported" @click="createDailyReport" class="btn btn-success">
           Tạo báo cáo ngày {{ formatDate(selectedDate) }}
+        </button>
+
+        <button v-if="allShiftsReported" @click="reset" class="btn btn-info">
+          Tạo lai báo cáo ngày {{ formatDate(selectedDate) }}
         </button>
 
         <div v-else-if="completedReports.length > 0" class="alert alert-warning">
           Vui lòng tạo báo cáo cho tất cả các ca làm việc trước khi tạo báo cáo ngày
         </div>
       </div>
-      
+
       <!-- Modal xem chi tiết báo cáo -->
       <div class="modal fade" id="reportDetailModal" tabindex="-1" ref="reportModal">
         <div class="modal-dialog">
@@ -233,7 +187,7 @@
           </div>
         </div>
       </div>
-      
+
       <!-- Modal xác nhận tạo báo cáo ngày -->
       <div class="modal fade" id="dailyReportModal" tabindex="-1" ref="dailyReportModal">
         <div class="modal-dialog">
@@ -243,7 +197,8 @@
               <button type="button" class="btn-close" @click="closeDailyReportModal"></button>
             </div>
             <div class="modal-body">
-              <p>Báo cáo sẽ bao gồm tất cả {{ completedReports.length }} ca làm việc với tổng cộng {{ totalStaffCount }} nhân viên.</p>
+              <p>Báo cáo sẽ bao gồm tất cả {{ completedReports.length }} ca làm việc với tổng cộng {{ totalStaffCount }}
+                nhân viên.</p>
               <div class="mt-3 small text-muted">
                 <div v-for="report in completedReports" :key="report.shiftId" class="mb-1">
                   - {{ report.shiftName }}: {{ report.staffCount }} nhân viên
@@ -258,64 +213,62 @@
         </div>
       </div>
     </div>
-    </div>
-  </template>
-  
+  </div>
+</template>
+
 <script setup>
 import { ref, computed, onMounted } from 'vue';
 import { useReportStore } from '@/stores/report';
-import { useAuthStore } from '~/stores/auth'
+import { useToast } from 'vue-toastification'
 
 definePageMeta({
-    // middleware: "auth",
-    // layout: "dashboard"
+  // middleware: "auth",
+  // layout: "dashboard"
 })
 
 const updateReportModal = ref(null);
 const updateSearchStaff = ref('');
 const updateSelectedStaff = ref([]);
 const reportStore = useReportStore();
-const authStore = useAuthStore();
+const toast = useToast();
 const isLoading = computed(() => reportStore.isLoading);
-  
-  // Các biến ref và computed
-  const selectedDate = ref(new Date().toISOString().split('T')[0]);
-  const selectedShift = ref(null);
-  const selectedStaff = ref([]);
-  const searchStaff = ref('');
-  const completedReports = ref([]);
-  const availableShifts = ref([]);
-  const staffList = ref([]);
-  const selectedReport = ref(null);
-  const reportModal = ref(null);
-  const dailyReportModal = ref(null);
+const errors = ref({})
 
-  const report = ref({
-    building_id: 1,
-    report_date: selectedDate.value,
-    // created_by: authStore.user.,
-    notes : `Báo cáo ngày ${formatDate(selectedDate.value)}`,
-    shifts: []
-  });
+const selectedDate = ref('');
+const selectedShift = ref(null);
+const selectedStaff = ref([]);
+const searchStaff = ref('');
+const completedReports = ref([]);
+const availableShifts = ref([]);
+const staffList = ref([]);
+const selectedReport = ref(null);
+const reportModal = ref(null);
+const dailyReportModal = ref(null);
 
-  const loadFormInfo = async () => {
-    // Gọi API để lấy thông tin báo cáo
-    const response = await reportStore.getFormInfo(1);
-    if (response) {
-      availableShifts.value = response.shifts;
-      availableShifts.value.forEach(shift => {
-        shift.reported = false; // Đặt trạng thái báo cáo cho ca làm việc
-      });
-      staffList.value = response.personnel;
-      console.log(availableShifts.value)
-      selectedDate.value = response.date;
-    }
-  };
-  
-  // Ngày hiện tại cho input date
-  const maxDate = new Date().toISOString().split('T')[0];
+const report = ref({
+  building_id: 1,
+  report_date: '',
+  notes: '',
+  shifts: []
+});
 
-  const updateFilteredStaff = computed(() => {
+const loadFormInfo = async () => {
+  // Gọi API để lấy thông tin báo cáo
+  const response = await reportStore.getFormInfo(1);
+  if (response) {
+    availableShifts.value = response.shifts;
+    availableShifts.value.forEach(shift => {
+      shift.reported = false; // Đặt trạng thái báo cáo cho ca làm việc
+    });
+    staffList.value = response.personnel;
+    selectedDate.value = response.date;
+  }
+};
+
+// Ngày hiện tại cho input date
+const maxDate = new Date().toISOString().split('T')[0];
+
+const updateFilteredStaff = computed(() => {
   if (!updateSearchStaff.value) return staffList;
   const keyword = updateSearchStaff.value.toLowerCase();
   return staffList.filter(staff =>
@@ -364,122 +317,155 @@ function confirmUpdateReport() {
   }
   closeUpdateReportModal();
 }
-  
-  // Lọc danh sách nhân viên theo tìm kiếm
-  const filteredStaff = computed(() => {
-    if (!searchStaff.value) return staffList.value;
-    const searchTerm = searchStaff.value.toLowerCase();
-    return staffList.value.filter(staff => 
-      staff.name.toLowerCase().includes(searchTerm) ||
-      staff.position.toLowerCase().includes(searchTerm)
-    );
-  });
-  
-  // Kiểm tra xem tất cả các ca đã được báo cáo chưa
-  const allShiftsReported = computed(() => {
-    return availableShifts.value.every(shift => shift.reported);
-  });
-  
-  // Tổng số nhân viên trong tất cả các báo cáo
-  const totalStaffCount = computed(() => {
-    return completedReports.value.reduce((total, report) => total + report.staffCount, 0);
-  });
-  
-  // Các methods
-  function selectShift(shift) {
-    console.log(shift)
-    if (shift.reported) return;
-    selectedShift.value = shift;
-    selectedStaff.value = [];
+
+// Lọc danh sách nhân viên theo tìm kiếm
+const filteredStaff = computed(() => {
+  if (!searchStaff.value) return staffList.value;
+  const searchTerm = searchStaff.value.toLowerCase();
+  return staffList.value.filter(staff =>
+    staff.name.toLowerCase().includes(searchTerm) ||
+    staff.position.toLowerCase().includes(searchTerm)
+  );
+});
+
+// Kiểm tra xem tất cả các ca đã được báo cáo chưa
+const allShiftsReported = computed(() => {
+  return availableShifts.value.every(shift => shift.reported);
+});
+
+// Tổng số nhân viên trong tất cả các báo cáo
+const totalStaffCount = computed(() => {
+  return completedReports.value.reduce((total, report) => total + report.staffCount, 0);
+});
+
+// Các methods
+function selectShift(shift) {
+  if (shift.reported) return;
+  selectedShift.value = shift;
+  selectedStaff.value = [];
+}
+
+function toggleStaffSelection(staff) {
+  const index = selectedStaff.value.findIndex(s => s.id === staff.id);
+  if (index === -1) {
+    selectedStaff.value.push(staff);
+  } else {
+    selectedStaff.value.splice(index, 1);
   }
-  
-  function toggleStaffSelection(staff) {
-    const index = selectedStaff.value.findIndex(s => s.id === staff.id);
-    if (index === -1) {
-      selectedStaff.value.push(staff);
-    } else {
-      selectedStaff.value.splice(index, 1);
-    }
+}
+
+function isStaffSelected(staff) {
+  return selectedStaff.value.some(s => s.id === staff.id);
+}
+
+function createShiftReport() {
+  if (!selectedShift.value || selectedStaff.value.length === 0) return;
+
+  // Cập nhật trạng thái ca làm việc
+  const shiftIndex = availableShifts.value.findIndex(s => s.shiftId === selectedShift.value.shiftId);
+  availableShifts.value[shiftIndex].reported = true;
+
+  // Tạo báo cáo
+  completedReports.value.push({
+    shiftId: selectedShift.value.shiftId,
+    shiftName: selectedShift.value.shiftName,
+    staffCount: selectedStaff.value.length,
+    staffList: [...selectedStaff.value],
+  });
+
+  // Reset lựa chọn
+  selectedShift.value = null;
+  selectedStaff.value = [];
+}
+
+function viewReportDetails(report) {
+  selectedReport.value = report;
+  // Sử dụng Bootstrap modal
+  const modal = new bootstrap.Modal(document.getElementById('reportDetailModal'));
+  modal.show();
+}
+
+function closeReportModal() {
+  const modal = bootstrap.Modal.getInstance(document.getElementById('reportDetailModal'));
+  if (modal) {
+    modal.hide();
   }
-  
-  function isStaffSelected(staff) {
-    return selectedStaff.value.some(s => s.id === staff.id);
-  }
-  
-  function createShiftReport() {
-    if (!selectedShift.value || selectedStaff.value.length === 0) return;
-    
-    // Cập nhật trạng thái ca làm việc
-    const shiftIndex = availableShifts.value.findIndex(s => s.shiftId === selectedShift.value.shiftId);
-    availableShifts.value[shiftIndex].reported = true;
-    console.log(availableShifts.value[shiftIndex])
-    
-    // Tạo báo cáo
-    completedReports.value.push({
-      shiftId: selectedShift.value.shiftId,
-      shiftName: selectedShift.value.shiftName,
-      staffCount: selectedStaff.value.length,
-      staffList: [...selectedStaff.value],
+}
+
+function createDailyReport() {
+  if (!allShiftsReported.value) return;
+  // Sử dụng Bootstrap modal
+  const modal = new bootstrap.Modal(document.getElementById('dailyReportModal'));
+  modal.show();
+}
+
+function closeDailyReportModal() {
+  const modalElement = document.getElementById('dailyReportModal');
+  if (!modalElement) return;
+
+  // Luôn tạo instance mới nếu chưa tồn tại
+  const modal = bootstrap.Modal.getInstance(modalElement) || new bootstrap.Modal(modalElement);
+
+  modal.hide();
+
+  setTimeout(() => {
+    const backdrops = document.querySelectorAll('.modal-backdrop');
+    backdrops.forEach(backdrop => {
+      backdrop.parentNode.removeChild(backdrop);
     });
-    
-    // Reset lựa chọn
-    selectedShift.value = null;
-    selectedStaff.value = [];
-  }
-  
-  function viewReportDetails(report) {
-    selectedReport.value = report;
-    // Sử dụng Bootstrap modal
-    const modal = new bootstrap.Modal(document.getElementById('reportDetailModal'));
-    modal.show();
-  }
-  
-  function closeReportModal() {
-    const modal = bootstrap.Modal.getInstance(document.getElementById('reportDetailModal'));
-    if (modal) {
-      modal.hide();
-    }
-  }
-  
-  function createDailyReport() {
-    if (!allShiftsReported.value) return;
-    // Sử dụng Bootstrap modal
-    const modal = new bootstrap.Modal(document.getElementById('dailyReportModal'));
-    modal.show();
-  }
-  
-  function closeDailyReportModal() {
-    const modal = bootstrap.Modal.getInstance(document.getElementById('dailyReportModal'));
-    if (modal) {
-      modal.hide();
-    }
-  }
-  
-  function confirmDailyReport() {
-    // Đây là nơi bạn sẽ gửi dữ liệu báo cáo đến server
-    alert(`Báo cáo ngày ${formatDate(selectedDate.value)} đã được tạo thành công!`);
+    document.body.classList.remove('modal-open');
+    document.body.style.overflow = '';
+  }, 150);
+}
 
-    report.value.shifts = completedReports.value;
+const reset = () => {
+  availableShifts.value = shifts.map(shift => ({ ...shift, reported: false }));
+  completedReports.value = [];
+  selectedShift.value = null;
+  selectedStaff.value = [];
+}
 
-    console.log(report.value);
-    // console.log(JSON.stringify(completedReports.value, null, 2));
+const confirmDailyReport = async () => {
+  // Đây là nơi bạn sẽ gửi dữ liệu báo cáo đến server
+  alert(`Báo cáo ngày ${formatDate(selectedDate.value)} đã được tạo thành công!`);
+
+  report.value.report_date = selectedDate.value;
+  report.value.notes = `Báo cáo ngày ${formatDate(selectedDate.value)}`;
+  report.value.shifts = completedReports.value;
+
+  console.log(report.value);
+
+  try {
+    const result = await reportStore.createDailyReports(report.value)
     closeDailyReportModal();
-    
-    // Reset tất cả dữ liệu để tạo báo cáo mới
-    availableShifts.value = shifts.map(shift => ({ ...shift, reported: false }));
-    completedReports.value = [];
-    selectedShift.value = null;
-    selectedStaff.value = [];
+    if (result.data) {
+      toast.success('Tao bao cao thanh cong!')
+
+      availableShifts.value = availableShifts.value.map(shift => ({ ...shift, reported: false }));
+      completedReports.value = [];
+      selectedShift.value = null;
+      selectedStaff.value = [];
+      report.value.shifts = [];
+    }
+  } catch (error) {
+    errors.value = error.errors
+    closeDailyReportModal();
   }
-  
-  function formatDate(dateString) {
-    if (!dateString) return '';
+}
+
+function formatDate(dateString) {
+  if (!dateString) return '';
+  try {
     const [year, month, day] = dateString.split('-');
     return `${day}/${month}/${year}`;
+  } catch (error) {
+    console.error("Lỗi khi format ngày:", error);
+    return dateString; // Trả về giá trị gốc nếu không thể format
   }
-  
-  // Khởi tạo
-  onMounted(() => {
-    loadFormInfo();
-  });
-  </script>
+}
+
+// Khởi tạo
+onMounted(() => {
+  loadFormInfo();
+});
+</script>
