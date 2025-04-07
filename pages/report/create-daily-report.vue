@@ -222,8 +222,8 @@ import { useReportStore } from '@/stores/report';
 import { useToast } from 'vue-toastification'
 
 definePageMeta({
-  // middleware: "auth",
-  // layout: "dashboard"
+  middleware: "auth",
+  layout: "dashboard"
 })
 
 const updateReportModal = ref(null);
@@ -419,33 +419,25 @@ function closeDailyReportModal() {
 }
 
 const reset = () => {
-  availableShifts.value = shifts.map(shift => ({ ...shift, reported: false }));
+  availableShifts.value = availableShifts.value.map(shift => ({ ...shift, reported: false }));
   completedReports.value = [];
   selectedShift.value = null;
   selectedStaff.value = [];
+  report.value.shifts = [];
 }
 
 const confirmDailyReport = async () => {
-  // Đây là nơi bạn sẽ gửi dữ liệu báo cáo đến server
-  alert(`Báo cáo ngày ${formatDate(selectedDate.value)} đã được tạo thành công!`);
-
   report.value.report_date = selectedDate.value;
   report.value.notes = `Báo cáo ngày ${formatDate(selectedDate.value)}`;
   report.value.shifts = completedReports.value;
-
-  console.log(report.value);
 
   try {
     const result = await reportStore.createDailyReports(report.value)
     closeDailyReportModal();
     if (result.data) {
       toast.success('Tao bao cao thanh cong!')
-
-      availableShifts.value = availableShifts.value.map(shift => ({ ...shift, reported: false }));
-      completedReports.value = [];
-      selectedShift.value = null;
-      selectedStaff.value = [];
-      report.value.shifts = [];
+      errors.value = null
+      reset();
     }
   } catch (error) {
     errors.value = error.errors
