@@ -40,6 +40,7 @@ const handleMenuAction = (action) => {
 const logout = async () => {
     try {
         await AuthService.logout();
+        resetAllStores()
     } catch (error) {
         console.error('Logout error:', error);
     }

@@ -43,12 +43,12 @@
                         <td>{{ staff.building_role }}</td>
                         <td class="d-flex justify-content-center">
                             <NuxtLink to="/" style="display: flex;" class="btn btn-sm btn-success text-white align-items-center">
-                                <Icon name="bxs:detail" size="20" class="me-1" />Xem
+                                <Icon name="bxs:detail" size="18" class="me-1" />Xem
                             </NuxtLink>
                             <button type="button" style="display: flex;" class="btn btn-danger btn-sm" data-bs-toggle="modal"
                                 data-bs-target="#deleteApartmentModal"
                                 @click="setSelectedApartment(staff.id)">
-                                <Icon name="material-symbols:delete" size="20" class="me-1" />Xóa
+                                <Icon name="material-symbols:delete" size="18" class="me-1" />Xóa
                             </button>
                         </td>
                     </tr>

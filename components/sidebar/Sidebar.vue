@@ -28,20 +28,26 @@
                             </span>Dashboard
                         </NuxtLink>
                     </li>
-                    <li  v-if="authStore.isAdmin">
-                        <NuxtLink :class="getActiveClass('/building')" class="nav-link text-white py-2"
-                            to="/building">
+                    <li v-if="authStore.isAdmin">
+                        <NuxtLink :class="getActiveClass('/building')" class="nav-link text-white py-2" to="/building">
                             <span>
                                 <Icon name="mdi:building" size="24" />
                             </span>Tòa nhà
                         </NuxtLink>
                     </li>
-                    <li  v-if="authStore.isAdmin">
-                        <NuxtLink :class="getActiveClass('/staff')" class="nav-link text-white py-2"
-                            to="/staff">
+                    <li v-if="authStore.isAdmin">
+                        <NuxtLink :class="getActiveClass('/staff')" class="nav-link text-white py-2" to="/staff">
                             <span>
                                 <Icon name="guidance:care-staff-area" size="24" />
                             </span>Nhân viên
+                        </NuxtLink>
+                    </li>
+                    <li v-if="authStore.isAdmin">
+                        <NuxtLink :class="getActiveClass('/admin-report')" class="nav-link text-white py-2"
+                            to="/admin-report/daily-report">
+                            <span>
+                                <Icon name="material-symbols:report" size="24" />
+                            </span>Báo cáo nhân sự
                         </NuxtLink>
                     </li>
                     <!-- Thống kê với Submenu -->
@@ -52,24 +58,25 @@
                             <span>
                                 <Icon name="material-symbols:overview" size="24" /> Thống kê
                             </span>
-                            <Icon :name="isStatisticalOpenComputed ? 'mdi:chevron-down' : 'mdi:chevron-right'" size="20"/>
+                            <Icon :name="isStatisticalOpenComputed ? 'mdi:chevron-down' : 'mdi:chevron-right'"
+                                size="20" />
                         </a>
                         <ul v-show="isStatisticalOpenComputed" class="submenu">
                             <li>
-                                <NuxtLink :class="getActiveClass('/statistical/overview')" class="nav-link text-white py-2"
-                                    to="/statistical/overview">
+                                <NuxtLink :class="getActiveClass('/statistical/overview')"
+                                    class="nav-link text-white py-2" to="/statistical/overview">
                                     <Icon name="mdi:chart-bar" size="20" /> Tổng quan
                                 </NuxtLink>
                             </li>
                             <li>
-                                <NuxtLink :class="getActiveClass('/statistical/finance')" class="nav-link text-white py-2"
-                                    to="/statistical/finance">
+                                <NuxtLink :class="getActiveClass('/statistical/finance')"
+                                    class="nav-link text-white py-2" to="/statistical/finance">
                                     <Icon name="mdi:currency-usd" size="20" /> Tài chính
                                 </NuxtLink>
                             </li>
                             <li>
-                                <NuxtLink :class="getActiveClass('/statistical/parking')" class="nav-link text-white py-2"
-                                    to="/statistical/parking">
+                                <NuxtLink :class="getActiveClass('/statistical/parking')"
+                                    class="nav-link text-white py-2" to="/statistical/parking">
                                     <Icon name="mdi:car" size="20" /> Bãi đỗ xe
                                 </NuxtLink>
                             </li>
@@ -128,6 +135,18 @@
                             @click.prevent="checkBuildingAndNavigate('/ads')"><span>
                                 <Icon name="ri:advertisement-fill" size="24" />
                             </span>Quảng cáo</a>
+                    </li>
+                </div>
+            </div>
+
+            <div class="menu-group" v-if="authStore.isStaff">
+                <h6 class="text-uppercase text-white-50">Báo cáo</h6>
+                <div class="nav flex-column">
+                    <li>
+                        <a href="#" :class="getActiveClass('/report')" class="nav-link text-white py-2"
+                            @click.prevent="checkBuildingAndNavigate('/report/daily-report')"><span>
+                                <Icon name="material-symbols:report" size="24" />
+                            </span>Nhân sự hàng ngày</a>
                     </li>
                 </div>
             </div>
