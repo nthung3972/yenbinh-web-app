@@ -23,7 +23,7 @@
                     <Icon name="ic:baseline-add-circle-outline" size="20" class="me-1" /> Thêm cư dân
                 </NuxtLink>
             </div>
-            <table class="table table-hover align-middle" style="table-layout: fixed; width: 100%;">
+            <table class="table table-hover" style="table-layout: fixed; width: 100%;">
                 <thead class="table-light">
                     <tr>
                         <th style="width: 15%;">Họ và tên</th>
@@ -37,21 +37,22 @@
                 </thead>
                 <tbody>
                     <tr v-for="(resident, index) in useResident.residentList" :key="index">
-                        <td>{{ resident.full_name }}</td>
-                        <td>{{ resident.id_card_number }}</td>
-                        <td>{{ resident.date_of_birth }}</td>
-                        <td>{{ resident.phone_number }}</td>
-                        <td>{{ resident.email }}</td>
-                        <td>{{ resident.updated_by?.name ? resident.updated_by?.name : '' }}</td>
-                        <td class="d-flex justify-content-center">
-                            <NuxtLink to="/" class="btn btn-sm btn-success text-white d-flex align-items-center"
-                                style="min-width: 100px;">
-                                <Icon name="bxs:detail" size="20" class="me-1" />Chi tiết
-                            </NuxtLink>
-                            <NuxtLink :to="`/resident/${resident.resident_id}/edit`"
-                                class="btn btn-sm btn-warning text-white d-flex align-items-center">
-                                <Icon name="basil:edit-solid" size="20" class="me-1" /> Chỉnh sửa
-                            </NuxtLink>
+                        <td class="align-middle">{{ resident.full_name }}</td>
+                        <td class="align-middle">{{ resident.id_card_number }}</td>
+                        <td class="align-middle">{{ resident.date_of_birth }}</td>
+                        <td class="align-middle">{{ resident.phone_number }}</td>
+                        <td class="align-middle">{{ resident.email }}</td>
+                        <td class="align-middle">{{ resident.updated_by?.name ? resident.updated_by?.name : '' }}</td>
+                        <td class="align-middle text-center">
+                            <div class="d-inline-flex gap-2">
+                                <NuxtLink to="/" class="btn btn-sm btn-success text-white d-flex align-items-center">
+                                    <Icon name="bxs:detail" size="20" class="me-1" />Xem
+                                </NuxtLink>
+                                <NuxtLink :to="`/resident/${resident.resident_id}/edit`"
+                                    class="btn btn-sm btn-warning text-white d-flex align-items-center">
+                                    <Icon name="basil:edit-solid" size="20" class="me-1" /> Sửa
+                                </NuxtLink>
+                            </div>
                         </td>
                     </tr>
                 </tbody>

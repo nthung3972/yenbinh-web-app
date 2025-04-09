@@ -18,7 +18,7 @@
             <!-- Bộ lọc -->
             <div class="row g-3 align-items-end mb-4">
                 <div class="col-md-3">
-                    <label class="form-label">Tòa nhà</label>
+                    <label class="form-label fw-bold">Tòa nhà</label>
                     <select v-model="filters.building_id" @change="onFilter" class="form-select">
                         <option value="" selected>Chọn tòa nhà</option>
                         <option v-for="building in dashboardStore.getData" :key="building.building_id"
@@ -28,24 +28,24 @@
                     </select>
                 </div>
 
-                <div class="col-md-2">
-                    <label class="form-label">Trạng thái</label>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Trạng thái</label>
                     <select v-model="filters.status" @change="onFilter" class="form-select">
                         <option value="" selected>Chọn trạng thái</option>
-                        <option value="draft">Chưa duyệt</option>
-                        <option value="submitted">Đã duyệt</option>
+                        <option value="draft">Kế hoạch</option>
+                        <option value="submitted">Đã cập nhật</option>
                         <option value="cancelled">Đã hủy</option>
                     </select>
                 </div>
 
                 <div class="col-md-2">
-                    <label class="form-label">Từ ngày</label>
+                    <label class="form-label fw-bold">Từ ngày</label>
                     <input type="date" v-model="filters.report_date_from" @change="handleDateChange"
                         class="form-control" />
                 </div>
 
                 <div class="col-md-2">
-                    <label class="form-label">Đến ngày</label>
+                    <label class="form-label fw-bold">Đến ngày</label>
                     <input type="date" v-model="filters.report_date_to" @change="handleDateChange"
                         class="form-control" />
                 </div>
@@ -82,18 +82,26 @@
                                 }">
                                     {{
                                         report.status === 'draft'
-                                            ? 'Chưa duyệt'
+                                            ? 'Kế hoạch'
                                             : report.status === 'submitted'
-                                                ? 'Đã duyệt'
-                                    : 'Đã hủy'
+                                                ? 'Đã cập nhật'
+                                                : 'Đã hủy'
                                     }}
                                 </span>
                             </td>
-                            <td class="d-flex">
-                                <NuxtLink :to="`/admin-report/daily-report/${report.report_id}`"
-                                    class="btn btn-sm btn-success align-items-center justify-content-center gap-1">
-                                    <Icon name="bxs:detail" size="18" /> Chi tiết
-                                </NuxtLink>
+                            <td class="align-middle text-center">
+                                <div class="d-inline-flex gap-2">
+                                    <NuxtLink :to="`/admin-report/daily-report/${report.report_id}`"
+                                        class="btn btn-sm btn-success align-items-center justify-content-center gap-1">
+                                        <Icon name="bxs:detail" size="18" /> Xem
+                                    </NuxtLink>
+                                    <button type="button" class="btn btn-sm btn-danger d-flex align-items-center"
+                                        data-bs-toggle="modal" data-bs-target="#deleteDailyReportModal"
+                                        @click="setSelectedDailyreport(report.report_id)">
+                                        <Icon name="material-symbols:delete" size="18" class="me-1" />
+                                        <span>Xóa</span>
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
@@ -104,6 +112,27 @@
             <Pagination :pagination="adminReportStore.pagination" @page-change="handlePageChange" />
         </div>
     </div>
+
+    <!-- Modal Xóa Báo Cáo -->
+    <div class="modal fade" id="deleteDailyReportModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <form @submit.prevent="deleteDailyReport" novalidate>
+                    <div class="modal-header">
+                        <h5 class="modal-title">Xác Nhận Xóa Nhân Viên</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        Bạn có chắc chắn muốn xóa nhân viên này không?
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+                        <button type="submit" class="btn btn-danger">Xóa</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
 </template>
 
 <script setup>
@@ -111,6 +140,7 @@ import { ref, computed, watch, onMounted } from 'vue'
 import { useAdminReportStore } from '@/stores/admin-report'
 import { useDashboardStore } from '@/stores/dashboard'
 import Pagination from '@/components/pagination/Pagination.vue'
+import { useToast } from 'vue-toastification'
 
 definePageMeta({
     middleware: 'auth',
@@ -119,6 +149,8 @@ definePageMeta({
 
 const adminReportStore = useAdminReportStore()
 const dashboardStore = useDashboardStore()
+const toast = useToast()
+const report_id = ref('')
 
 const isLoading = computed(() => adminReportStore.isLoading)
 const hasError = computed(() => adminReportStore.hasError)
@@ -132,6 +164,10 @@ const filters = ref({
     per_page: 10,
 })
 
+const setSelectedDailyreport = (id) => {
+    report_id.value = parseInt(id);
+};
+
 // Gọi API
 const getDailyReports = async () => {
     const params = { ...filters.value }
@@ -144,6 +180,17 @@ const getDailyReports = async () => {
         params.per_page
     )
     console.log(adminReportStore.dailyReports)
+}
+
+const deleteDailyReport = async () => {
+    try {
+        await adminReportStore.deleteDailyReport(report_id.value)
+        document.getElementById('deleteDailyReportModal').querySelector('[data-bs-dismiss="modal"]').click()
+        toast.success('Xóa báo cáo thành công!')
+    } catch (error) {
+        document.getElementById('deleteDailyReportModal').querySelector('[data-bs-dismiss="modal"]').click()
+        toast.error('Đã xảy ra lỗi khi xóa báo cáo!')
+    }
 }
 
 const onFilter = () => {

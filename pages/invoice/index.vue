@@ -23,7 +23,7 @@
                     <Icon name="ic:baseline-add-circle-outline" size="20" class="me-1" /> Tạo hóa đơn
                 </NuxtLink>
             </div>
-            <table class="table table-hover align-middle" style="table-layout: fixed; width: 100%;">
+            <table class="table table-hover" style="table-layout: fixed; width: 100%;">
                 <thead class="table-light">
                     <tr>
                         <th style="width: 15%;">Số căn hộ</th>
@@ -37,28 +37,30 @@
                 </thead>
                 <tbody>
                     <tr v-for="(invoice, index) in useInvoice.invoiceList" :key="index">
-                        <td>{{ invoice.apartment.apartment_number }}</td>
-                        <td>{{ formatVND(invoice.total_amount) }}</td>
-                        <td>{{ invoice.invoice_date }}</td>
-                        <td>{{ invoice.due_date }}</td>
-                        <td>
+                        <td class="align-middle">{{ invoice.apartment.apartment_number }}</td>
+                        <td class="align-middle">{{ formatVND(invoice.total_amount) }}</td>
+                        <td class="align-middle">{{ invoice.invoice_date }}</td>
+                        <td class="align-middle">{{ invoice.due_date }}</td>
+                        <td class="align-middle">
                             <span :class="invoice.status === 0 ? 'badge bg-info'
                                 : invoice.status === 1 ? 'badge bg-warning'
                                     : 'badge bg-danger'">
                                 {{ invoice.status === 0 ? 'Chưa thanh toán'
                                     : invoice.status === 1 ? 'Đã thanh toán'
-                                : 'Đã quá hạn' }}
+                                        : 'Đã quá hạn' }}
                             </span>
                         </td>
-                        <td>{{ invoice.updated_by?.name ? invoice.updated_by?.name : '' }}</td>
-                        <td class="d-flex justify-content-center">
-                            <NuxtLink to="/" class="btn btn-sm btn-success text-white d-flex align-items-center"
-                                style="min-width: 100px;">
-                                <Icon name="bxs:detail" size="20" class="me-1" />Chi tiết
-                            </NuxtLink>
-                            <NuxtLink :to="`/invoice/edit/${invoice.invoice_id}`" class="btn btn-sm btn-warning text-white d-flex align-items-center">
-                                <Icon name="basil:edit-solid" size="20" class="me-1"/> Chỉnh sửa
-                            </NuxtLink>
+                        <td class="align-middle">{{ invoice.updated_by?.name ? invoice.updated_by?.name : '' }}</td>
+                        <td class="align-middle text-center">
+                            <div class="d-inline-flex gap-2">
+                                <NuxtLink to="/" class="btn btn-sm btn-success text-white d-flex align-items-center">
+                                    <Icon name="bxs:detail" size="20" class="me-1" />Xem
+                                </NuxtLink>
+                                <NuxtLink :to="`/invoice/edit/${invoice.invoice_id}`"
+                                    class="btn btn-sm btn-warning text-white d-flex align-items-center">
+                                    <Icon name="basil:edit-solid" size="20" class="me-1" /> Sửa
+                                </NuxtLink>
+                            </div>
                         </td>
                     </tr>
                 </tbody>
@@ -105,9 +107,9 @@ onMounted(loadInvoices)
 
 <style scoped>
 .d-flex {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
 }
 </style>

@@ -21,12 +21,21 @@
             <!-- Bộ lọc -->
             <div class="row g-3 align-items-end mb-4">
                 <div class="col-md-3">
-                    <label class="form-label">Từ ngày</label>
+                    <label class="form-label fw-bold">Trạng thái</label>
+                    <select v-model="filters.status" @change="onFilter" class="form-select">
+                        <option value="" selected>Chọn trạng thái</option>
+                        <option value="draft">Kế hoạch</option>
+                        <option value="submitted">Đã cập nhật</option>
+                        <option value="cancelled">Đã hủy</option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold">Từ ngày</label>
                     <input type="date" v-model="filters.report_date_from" @change="handleDateChange"
                         class="form-control" />
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label">Đến ngày</label>
+                    <label class="form-label fw-bold">Đến ngày</label>
                     <input type="date" v-model="filters.report_date_to" @change="handleDateChange"
                         class="form-control" />
                 </div>
@@ -61,18 +70,27 @@
                                 }">
                                     {{
                                         report.status === 'draft'
-                                            ? 'Chưa duyệt'
+                                            ? 'Kế hoạch'
                                             : report.status === 'submitted'
-                                                ? 'Đã duyệt'
-                                    : 'Đã hủy'
+                                                ? 'Đã cập nhật'
+                                                : 'Đã hủy'
                                     }}
                                 </span>
                             </td>
-                            <td class="d-flex">
-                                <NuxtLink :to="`/admin-report/daily-report/${report.report_id}`"
-                                    class="btn btn-sm btn-success align-items-center justify-content-center gap-1">
-                                    <Icon name="bxs:detail" size="18" /> Chi tiết
-                                </NuxtLink>
+                            <td class="align-middle text-center">
+                                <div class="d-inline-flex gap-2">
+                                    <NuxtLink :to="`/report/daily-report/${report.daily_report_id}`"
+                                        class="btn btn-sm btn-success align-items-center justify-content-center gap-1">
+                                        <Icon name="bxs:detail" size="18" /> Xem
+                                    </NuxtLink>
+                                    <NuxtLink
+                                        :to="report.status === 'draft' ? `/report/daily-report/edit/${report.daily_report_id}` : '#'"
+                                        :class="['btn', 'btn-sm', 'btn-warning', 'align-items-center', 'justify-content-center', 'gap-1', { 'disabled opacity-50': report.status !== 'draft' }]"
+                                        :title="report.status !== 'draft' ? 'Báo cáo không thể chỉnh sửa vì trạng thái không phải draft' : 'Chỉnh sửa báo cáo'"
+                                        @click.prevent="report.status !== 'draft' ? null : undefined">
+                                        <Icon name="bxs:edit-alt" size="20" class="me-1" /> Sửa
+                                    </NuxtLink>
+                                </div>
                             </td>
                         </tr>
                     </tbody>
@@ -86,7 +104,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useReportStore } from '@/stores/report'
 import Pagination from '@/components/pagination/Pagination.vue'
 
@@ -103,20 +121,25 @@ const hasError = computed(() => reportStore.hasError)
 const filters = ref({
     report_date_from: '',
     report_date_to: '',
+    status: '',
     page: 1,
     per_page: 10,
 })
 
-// Gọi API
 const getDailyReportsByStaff = async () => {
     const params = { ...filters.value }
     await reportStore.getReportsByStaff(
         params.report_date_from,
         params.report_date_to,
+        params.status,
         params.page,
         params.per_page
     )
-    console.log(reportStore.dailyReports)
+}
+
+const onFilter = () => {
+    filters.value.page = 1
+    getDailyReportsByStaff()
 }
 
 const handleDateChange = () => {
@@ -133,12 +156,3 @@ onMounted(() => {
     getDailyReportsByStaff()
 })
 </script>
-
-<style scoped>
-.d-flex {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-}
-</style>

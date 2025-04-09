@@ -48,10 +48,10 @@ export const useReportStore = defineStore("report", {
             }
         },
 
-        async getReportsByStaff(report_date_from, report_date_to, page = 1, per_page = 10) {
+        async getReportsByStaff(report_date_from, report_date_to, status, page = 1, per_page = 10) {
             this.loading = true
             try {
-                const response = await ReportApi.getReportsByStaff(report_date_from, report_date_to, page, per_page)
+                const response = await ReportApi.getReportsByStaff(report_date_from, report_date_to, status, page, per_page)
                 if(response.data) {
                     this.dailyReports = response.data.data
                     this.pagination = {
@@ -61,6 +61,37 @@ export const useReportStore = defineStore("report", {
                         last_page: response.data.last_page,
                     };
                     this.error = null
+                }
+            } catch (error) {
+                this.error = error
+                throw error
+            } finally {
+                this.loading = false
+            }
+        },
+
+        async getReportDetail(id) {
+            this.loading = true
+            try {
+                const response = await ReportApi.dailyrReportByStaff(id)
+                if(response.data) {
+                    return response.data
+                }
+                this.error = null
+            } catch (error) {
+                this.error = error
+                throw error
+            } finally {
+                this.loading = false
+            }
+        },
+
+        async updateDailyReport(id, data) {
+            this.loading = true
+            try {
+                const response = await ReportApi.updateDailyReport(id, data)
+                if (response.data) {
+                    return response.data
                 }
             } catch (error) {
                 this.error = error
