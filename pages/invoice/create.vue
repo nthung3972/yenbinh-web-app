@@ -1,103 +1,169 @@
 <template>
-  <div class="invoice-container container mt-4">
-    <h4>Tạo hóa đơn căn hộ</h4>
-    <div class="card p-4 shadow-sm">
+  <div class="container">
+    <div class="card shadow-lg border-0 p-4" style="border-radius: 12px;">
+      <h4 class="fw-bold text-primary mb-4">Tạo hóa đơn căn hộ</h4>
       <form @submit.prevent="taoHoaDon">
-        <div class="form-group">
-          <label>Mã Căn Hộ</label>
-          <input v-model="invoiceForm.apartment_number" type="text" class="form-control" placeholder="Nhập mã căn hộ">
-          <small v-if="errors['apartment_number']" class="text-danger">
-            {{ errors['apartment_number'] }}
-          </small>
-        </div>
-
-        <div class="row">
-          <div class="col-md-6 mb-3">
-            <div class="form-group">
-              <label>Ngày Phát hành</label>
-              <input v-model="invoiceForm.invoice_date" type="date" class="form-control">
-              <small v-if="errors['invoice_date']" class="text-danger">
+        <!-- Thông tin hóa đơn -->
+        <fieldset class="mb-4">
+          <div class="row g-3">
+            <div class="col-md-4">
+              <label class="form-label fw-medium">Mã căn hộ <span class="text-danger">*</span></label>
+              <input 
+                v-model="invoiceForm.apartment_number" 
+                type="text" 
+                class="form-control shadow-sm" 
+                :class="{ 'is-invalid': errors['apartment_number'] }" 
+                placeholder="Nhập mã căn hộ" 
+                required 
+              />
+              <div v-if="errors['apartment_number']" class="invalid-feedback">
+                {{ errors['apartment_number'] }}
+              </div>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label fw-medium">Ngày phát hành <span class="text-danger">*</span></label>
+              <input 
+                v-model="invoiceForm.invoice_date" 
+                type="date" 
+                class="form-control shadow-sm" 
+                :class="{ 'is-invalid': errors['invoice_date'] }" 
+                required 
+              />
+              <div v-if="errors['invoice_date']" class="invalid-feedback">
                 {{ errors['invoice_date'] }}
-              </small>
+              </div>
             </div>
-          </div>
-
-          <div class="col-md-6 mb-3">
-            <div class="form-group">
-              <label>Hạn thanh toán</label>
-              <input v-model="invoiceForm.due_date" type="date" class="form-control">
-              <small v-if="errors['due_date']" class="text-danger">
+            <div class="col-md-4">
+              <label class="form-label fw-medium">Hạn thanh toán <span class="text-danger">*</span></label>
+              <input 
+                v-model="invoiceForm.due_date" 
+                type="date" 
+                class="form-control shadow-sm" 
+                :class="{ 'is-invalid': errors['due_date'] }" 
+                required 
+              />
+              <div v-if="errors['due_date']" class="invalid-feedback">
                 {{ errors['due_date'] }}
-              </small>
+              </div>
             </div>
           </div>
-        </div>
+        </fieldset>
 
-        <div class="invoice-details">
-          <div class="invoice-details-header">
-            <span>Các Khoản Phí</span>
-            <button type="button" class="btn btn-success" @click="addInvoiceDetail">
-              + Thêm Khoản Phí
+        <!-- Chi tiết hóa đơn -->
+        <fieldset class="mb-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <legend class="h5 fw-semibold text-dark mb-0">Các khoản phí</legend>
+            <button 
+              type="button" 
+              class="btn btn-success d-flex align-items-center justify-content-center"
+              style="white-space: nowrap;"
+              @click="addInvoiceDetail"
+            >
+              <Icon name="ic:baseline-add-circle-outline" size="16" class="me-1" /> Thêm khoản phí
             </button>
           </div>
-
-          <div v-for="(detail, index) in invoiceDetailForm" :key="index" class="invoice-detail-row">
-            <div class="row">
-              <!-- Cột 1: Loại phí -->
-              <div class="col-md-3">
-                <select v-model="detail.service_name" class="form-control">
-                  <option value="">Chọn loại phí</option>
-                  <option value="DIEN">Tiền điện</option>
-                  <option value="NUOC">Tiền nước</option>
-                  <option value="QUANLY">Phí quản lý</option>
-                  <option value="GUIXE">Phí gửi xe</option>
-                  <option value="PHIKHAC">Phí khác</option>
-                </select>
-                <small v-if="errors[`invoice_detail.${index}.service_name`]" class="text-danger">
-                  {{ errors[`invoice_detail.${index}.service_name`][0] }}
-                </small>
-              </div>
-
-              <!-- Cột 2: Số lượng -->
-              <div class="col-md-2">
-                <input v-model.number="detail.quantity" type="number" class="form-control" placeholder="Số lượng"
-                  @input="countAmount(detail)">
-                <small v-if="errors[`invoice_detail.${index}.quantity`]" class="text-danger">
-                  {{ errors[`invoice_detail.${index}.quantity`][0] }}
-                </small>
-              </div>
-
-              <!-- Cột 3: Đơn giá -->
-              <div class="col-md-3">
-                <input v-model.number="detail.price" type="text" class="form-control" placeholder="Đơn giá"
-                  @input="countAmount(detail)">
-                <small v-if="errors[`invoice_detail.${index}.price`]" class="text-danger">
-                  {{ errors[`invoice_detail.${index}.price`][0] }}
-                </small>
-              </div>
-
-              <!-- Cột 4: Thành tiền (readonly) -->
-              <div class="col-md-3">
-                <input :value="formatCurrency(detail.amount)" class="form-control" placeholder="Thành tiền" readonly>
-              </div>
-
-              <!-- Cột 5: Nút xóa -->
-              <div class="col-md-1 text-center">
-                <button type="button" class="btn btn-danger btn-sm" @click="removeInvoiceDetail(index)">
-                  Xóa
-                </button>
-              </div>
-            </div>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th style="width: 20%;">Loại phí</th>
+                  <th style="width: 20%;">Số lượng</th>
+                  <th style="width: 20%;">Đơn giá (VNĐ)</th>
+                  <th style="width: 20%;">Thành tiền (VNĐ)</th>
+                  <th style="width: 20%;"></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(detail, index) in invoiceDetailForm" :key="index">
+                  <td>
+                    <select 
+                      v-model="detail.service_name" 
+                      class="form-select shadow-sm" 
+                      :class="{ 'is-invalid': errors[`invoice_detail.${index}.service_name`] }" 
+                      required
+                    >
+                      <option value="">Chọn loại phí</option>
+                      <option value="DIEN">Tiền điện</option>
+                      <option value="NUOC">Tiền nước</option>
+                      <option value="QUANLY">Phí quản lý</option>
+                      <option value="GUIXE">Phí gửi xe</option>
+                      <option value="PHIKHAC">Phí khác</option>
+                    </select>
+                    <div v-if="errors[`invoice_detail.${index}.service_name`]" class="invalid-feedback">
+                      {{ errors[`invoice_detail.${index}.service_name`][0] }}
+                    </div>
+                  </td>
+                  <td>
+                    <input 
+                      v-model.number="detail.quantity" 
+                      type="number" 
+                      class="form-control shadow-sm" 
+                      :class="{ 'is-invalid': errors[`invoice_detail.${index}.quantity`] }" 
+                      placeholder="Số lượng" 
+                      @input="countAmount(detail)" 
+                      required 
+                    />
+                    <div v-if="errors[`invoice_detail.${index}.quantity`]" class="invalid-feedback">
+                      {{ errors[`invoice_detail.${index}.quantity`][0] }}
+                    </div>
+                  </td>
+                  <td>
+                    <input 
+                      v-model.number="detail.price" 
+                      type="number" 
+                      class="form-control shadow-sm" 
+                      :class="{ 'is-invalid': errors[`invoice_detail.${index}.price`] }" 
+                      placeholder="Đơn giá" 
+                      @input="countAmount(detail)" 
+                      required 
+                    />
+                    <div v-if="errors[`invoice_detail.${index}.price`]" class="invalid-feedback">
+                      {{ errors[`invoice_detail.${index}.price`][0] }}
+                    </div>
+                  </td>
+                  <td>
+                    <input 
+                      :value="formatCurrency(detail.amount)" 
+                      class="form-control shadow-sm bg-light" 
+                      placeholder="Thành tiền" 
+                      readonly 
+                    />
+                  </td>
+                  <td class="text-center">
+                    <button 
+                      type="button" 
+                      class="btn btn-outline-danger btn-sm" 
+                      @click="removeInvoiceDetail(index)"
+                    >
+                      <Icon name="mdi:delete" size="16" />
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-
-          <div class="total-section">
-            Tổng Tiền: {{ invoiceForm.total_amount.toLocaleString() }} VNĐ
+          <div class="total-section text-end mt-3">
+            <strong>Tổng tiền: {{ formatCurrency(invoiceForm.total_amount) }} VNĐ</strong>
           </div>
-        </div>
+        </fieldset>
 
-        <div class="form-group d-flex" style="margin-top: 20px;">
-          <button type="button" class="btn btn-secondary" @click="goBack()">Hủy tạo</button>
-          <button type="submit" class="btn btn-primary">Tạo Hóa Đơn</button>
+        <!-- Action Buttons -->
+        <div class="d-flex justify-content-end gap-2">
+          <button 
+            type="button" 
+            class="btn btn-outline-secondary" 
+            style="min-width: 120px;" 
+            @click="goBack()"
+          >
+            Hủy tạo
+          </button>
+          <button 
+            type="submit" 
+            class="btn btn-primary" 
+            style="min-width: 120px;"
+          >
+            Tạo hóa đơn
+          </button>
         </div>
       </form>
     </div>
@@ -202,89 +268,38 @@ const taoHoaDon = async () => {
 </script>
 
 <style scoped>
-.invoice-container {
-  background-color: white;
-  max-width: 1140px;
-  margin: 0 auto;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.form-label {
+  font-size: 0.95rem;
+  color: #495057;
 }
-
-.invoice-header {
-  text-align: center;
-  margin-bottom: 30px;
+.form-control, .form-select {
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
 }
-
-.invoice-header h1 {
-  color: #333;
-  margin-bottom: 10px;
+.is-invalid {
+  border-color: #dc3545;
 }
-
-.form-group {
-  margin-bottom: 15px;
+.invalid-feedback {
+  font-size: 0.85rem;
 }
-
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
-  color: #555;
+.table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #495057;
 }
-
-.form-control {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
+.table td {
+  vertical-align: middle;
 }
-
-.invoice-details {
-  margin-top: 20px;
-  border-top: 1px solid #eee;
-  padding-top: 20px;
-}
-
-.invoice-details-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-  font-weight: bold;
-}
-
-.invoice-detail-row {
-  display: flex;
-  justify-content: center;
-  gap: 5px;
-  margin-bottom: 10px;
-  padding: 10px;
-  background-color: #f9f9f9;
-  border-radius: 5px;
-}
-
 .btn {
-  display: inline-block;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-right: 10px;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  transition: all 0.2s ease;
 }
-
 .btn:hover {
-  opacity: 0.9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
-
 .total-section {
-  margin-top: 20px;
-  text-align: right;
-  font-weight: bold;
-}
-
-.d-flex {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
+  font-size: 1.1rem;
+  color: #212529;
 }
 </style>

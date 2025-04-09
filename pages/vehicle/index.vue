@@ -9,9 +9,13 @@
         </div>
         <div v-else-if="hasError">{{ hasError }}</div>
         <div v-else>
-            <div class="d-flex justify-content-between align-items-center mb-3 p-bottom">
-                <h5 class="fw-bold">Danh sách xe</h5>
+            <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
+            <!-- <h5 class="fw-bold text-primary mb-0">Danh Sách Căn Hộ</h5> -->
+            <h5 class="fw-bold text-primary mb-0">
+                🏢 Danh sách xe
+            </h5>
 
+            <div class="d-flex align-items-center gap-3">
                 <select v-model="vehicleType" @change="onFilter" class="form-select w-25">
                     <option value="">Loại xe</option>
                     <option value="car">Ô tô</option>
@@ -19,56 +23,80 @@
                     <option value="bicycle">Xe đạp</option>
                 </select>
 
-                <div class="input-group w-50">
-                    <span class="input-group-text">
-                        <Icon name="material-symbols:search" />
-                    </span>
-                    <input v-model="searchKeyword" @keyup.enter="onSearch" type="text" class="form-control"
-                        placeholder="Điền biển số xe hoặc tên căn hộ..." />
-                    <button class="btn btn-primary" @click="onSearch">Tìm</button>
-                </div>
-                <NuxtLink to="/vehicle/create" class="btn btn-primary d-flex align-items-center">
-                    <Icon name="ic:baseline-add-circle-outline" size="20" class="me-1" /> Thêm xe
-                </NuxtLink>
+                <!-- Ô tìm kiếm -->
+    <div class="input-group">
+      <span class="input-group-text bg-white">
+        <Icon name="material-symbols:search" />
+      </span>
+      <input
+        v-model="searchKeyword"
+        @keyup.enter="onSearch"
+        type="text"
+        class="form-control"
+        placeholder="Nhập biển số xe..."
+      />
+      <button class="btn btn-outline-primary" @click="onSearch">
+        Tìm
+      </button>
+    </div>
+    <NuxtLink
+      to="/vehicle/create"
+      class="btn btn-primary d-flex align-items-center justify-content-center"
+      style="white-space: nowrap;"
+    >
+      <Icon name="ic:baseline-add-circle-outline" size="20" class="me-1" />
+      Thêm xe mới
+    </NuxtLink>
             </div>
-            <table class="table table-hover" style="table-layout: fixed; width: 100%;">
-                <thead class="table-light">
-                    <tr>
-                        <th style="width: 15%;">Biển số xe</th>
-                        <th style="width: 15%;">Loại xe</th>
-                        <th style="width: 15%;">Vị trí</th>
-                        <th style="width: 15%;">Số căn hộ</th>
-                        <th style="width: 15%;">Trạng thái</th>
-                        <th style="width: 15%;">Cập nhật</th>
-                        <th style="width: 25%; text-align: center;">Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(vehicle, index) in vehicleStore.vehicleList" :key="index">
-                        <td class="align-middle">{{ vehicle.license_plate }}</td>
-                        <td class="align-middle">{{ vehicle.vehicle_type }}</td>
-                        <td class="align-middle">{{ vehicle.parking_slot ? vehicle.parking_slot : '' }}</td>
-                        <td class="align-middle">{{ vehicle.apartment_number }}</td>
-                        <td class="align-middle">
-                            <span :class="vehicle.status === 0 ? 'badge bg-info' : 'badge bg-danger'">
-                                {{ vehicle.status === 0 ? 'Đang hoạt động' : 'Ngừng hoạt động' }}
-                            </span>
-                        </td>
-                        <td class="align-middle">{{ vehicle.updated_by?.name ? vehicle.updated_by?.name : '' }}</td>
-                        <td class="align-middle text-center">
-                            <div class="d-inline-flex gap-2">
-                                <NuxtLink to="/" class="btn btn-sm btn-success text-white d-flex align-items-center">
-                                    <Icon name="bxs:detail" size="20" class="me-1" />Xem
-                                </NuxtLink>
-                                <NuxtLink :to="`/vehicle/edit/${vehicle.vehicle_id}`"
-                                    class="btn btn-sm btn-warning text-white d-flex align-items-center">
-                                    <Icon name="basil:edit-solid" size="20" class="me-1" /> Sửa
-                                </NuxtLink>
-                            </div>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+        </div>
+            <table class="table table-hover align-middle" style="table-layout: fixed; width: 100%;">
+        <thead class="table-light sticky-top" style="z-index: 1;">
+            <tr>
+                <th style="width: 15%;">Biển số xe</th>
+                <th style="width: 13%;">Loại xe</th>
+                <th style="width: 10%;">Vị trí đỗ</th>
+                <th style="width: 12%;">Mã căn hộ</th>
+                <th style="width: 15%;">Trạng thái</th>
+                <th style="width: 15%;">Cập nhật bởi</th>
+                <th style="width: 20%; text-align: center;">Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr v-for="(vehicle, index) in vehicleStore.vehicleList" :key="index">
+                <td>{{ vehicle.license_plate }}</td>
+                <td>{{ vehicle.vehicle_type }}</td>
+                <td>{{ vehicle.parking_slot ?? '----' }}</td>
+                <td>{{ vehicle.apartment_number }}</td>
+                <td>
+                    <span 
+                        :class="[
+                            'badge', 
+                            vehicle.status === 0 ? 'bg-success' : 'bg-secondary'
+                        ]"
+                    >
+                        {{ vehicle.status === 0 ? 'Đang hoạt động' : 'Ngừng hoạt động' }}
+                    </span>
+                </td>
+                <td>{{ vehicle.updated_by?.name ?? '----' }}</td>
+                <td class="text-center">
+                    <div class="btn-group gap-2">
+                        <NuxtLink 
+                            to="/" 
+                            class="btn btn-sm btn-outline-success d-flex align-items-center px-3 py-2"
+                        >
+                            <Icon name="bxs:detail" size="16" class="me-1" /> Xem
+                        </NuxtLink>
+                        <NuxtLink 
+                            :to="`/vehicle/edit/${vehicle.vehicle_id}`" 
+                            class="btn btn-sm btn-outline-warning d-flex align-items-center px-3 py-2"
+                        >
+                            <Icon name="basil:edit-solid" size="16" class="me-1" /> Sửa
+                        </NuxtLink>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
             <Pagination :pagination="vehicleStore.pagination" @page-change="handlePageChange" />
         </div>
     </div>

@@ -1,87 +1,154 @@
 <template>
-    <div v-if="isLoading" class="text-center">
-        <div class="spinner-border spinner-border-sm me-2" role="status">
-            <span class="visually-hidden">Đang tải dữ liệu...</span>
+    <div class="container mt-5">
+      <!-- Loading State -->
+      <div v-if="isLoading" class="text-center py-5">
+        <div class="spinner-border text-primary" role="status">
+          <span class="visually-hidden">Đang tải dữ liệu...</span>
         </div>
-        <p>Đang tải dữ liệu...</p>
-    </div>
-
-    <div v-else class="container">
-        <div class="card shadow-sm p-4">
-            <h4 class="mb-4">Thêm Xe Mới</h4>
-            <form @submit.prevent="createdVehicle">
-                <div v-for="(vehicle, index) in vehicles" :key="index" class="mb-4 border p-3 rounded">
-                    <h6>Xe {{ index + 1 }}</h6>
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Biển số xe</label>
-                            <input type="text" class="form-control" v-model="vehicle.license_plate">
-                            <small v-if="errors?.[`${index}.license_plate`]" class="text-danger">
-                                {{ errors?.[`${index}.license_plate`][0] }}
-                            </small>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Loại xe</label>
-                            <select class="form-select" v-model="vehicle.vehicle_type">
-                                <option value="">Chọn loại xe</option>
-                                <option value="car">Ô tô</option>
-                                <option value="motorbike">Xe máy</option>
-                                <option value="bicycle">Xe đạp</option>
-                            </select>
-                            <small v-if="errors?.[`${index}.vehicle_type`]" class="text-danger">
-                                {{ errors?.[`${index}.vehicle_type`][0] }}
-                            </small>
-                        </div>
+        <p class="text-muted mt-2">Đang tải dữ liệu...</p>
+      </div>
+  
+      <!-- Form Content -->
+      <div v-else class="card shadow-lg border-0 p-4" style="border-radius: 12px;">
+        <h4 class="fw-bold text-primary mb-4">Thêm xe mới</h4>
+        <form @submit.prevent="createdVehicle">
+          <!-- Danh sách xe -->
+          <fieldset class="mb-4">
+            <div v-for="(vehicle, index) in vehicles" :key="index" class="card mb-3 shadow-sm border-0" style="border-radius: 8px;">
+              <div class="card-header bg-light d-flex justify-content-between align-items-center">
+                <h6 class="mb-0 fw-semibold">Xe {{ index + 1 }}</h6>
+                <button 
+                  v-if="vehicles.length > 1" 
+                  type="button" 
+                  class="btn btn-sm btn-outline-danger" 
+                  style="padding: 0.25rem 0.5rem;" 
+                  @click="removeVehicle(index)"
+                >
+                  <Icon name="mdi:delete" size="16" /> Xóa
+                </button>
+              </div>
+              <div class="card-body">
+                <div class="row g-3">
+                  <div class="col-md-6">
+                    <label class="form-label fw-medium">Biển số xe <span class="text-danger">*</span></label>
+                    <input 
+                      v-model="vehicle.license_plate" 
+                      type="text" 
+                      class="form-control shadow-sm" 
+                      :class="{ 'is-invalid': errors?.[`${index}.license_plate`] }" 
+                      placeholder="Nhập biển số xe" 
+                      required 
+                    />
+                    <div v-if="errors?.[`${index}.license_plate`]" class="invalid-feedback">
+                      {{ errors[`${index}.license_plate`][0] }}
                     </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Vị trí đỗ</label>
-                            <input type="text" class="form-control" v-model="vehicle.parking_slot">
-                            <small v-if="errors?.[`${index}.parking_slot`]" class="text-danger">
-                                {{ errors?.[`${index}.parking_slot`][0] }}
-                            </small>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Số căn hộ</label>
-                            <input type="text" class="form-control" v-model="vehicle.apartment_number">
-                            <small v-if="errors?.[`${index}.apartment_number`]" class="text-danger">
-                                {{ errors?.[`${index}.apartment_number`][0] }}
-                            </small>
-                        </div>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label fw-medium">Loại xe <span class="text-danger">*</span></label>
+                    <select 
+                      v-model="vehicle.vehicle_type" 
+                      class="form-select shadow-sm" 
+                      :class="{ 'is-invalid': errors?.[`${index}.vehicle_type`] }" 
+                      required
+                    >
+                      <option value="">Chọn loại xe</option>
+                      <option value="car">Ô tô</option>
+                      <option value="motorbike">Xe máy</option>
+                      <option value="bicycle">Xe đạp</option>
+                    </select>
+                    <div v-if="errors?.[`${index}.vehicle_type`]" class="invalid-feedback">
+                      {{ errors[`${index}.vehicle_type`][0] }}
                     </div>
-
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Trạng thái</label>
-                            <select class="form-select" v-model="vehicle.status">
-                                <option :value="0">Đang hoạt động</option>
-                                <option :value="1">Ngừng hoạt động</option>
-                            </select>
-                            <small v-if="errors?.[`${index}.status`]" class="text-danger">
-                                {{ errors?.[`${index}.status`][0] }}
-                            </small>
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label">Ngày đăng ký</label>
-                            <input v-model="vehicle.created_at" type="date" class="form-control" />
-                            <small v-if="errors?.[`${index}.created_at`]" class="text-danger">
-                                {{ errors?.[`${index}.created_at`][0] }}
-                            </small>
-                        </div>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label fw-medium">Vị trí đỗ</label>
+                    <input 
+                      v-model="vehicle.parking_slot" 
+                      type="text" 
+                      class="form-control shadow-sm" 
+                      :class="{ 'is-invalid': errors?.[`${index}.parking_slot`] }" 
+                      placeholder="Nhập vị trí đỗ (nếu có)" 
+                    />
+                    <div v-if="errors?.[`${index}.parking_slot`]" class="invalid-feedback">
+                      {{ errors[`${index}.parking_slot`][0] }}
                     </div>
-                    <button type="button" class="btn btn-success me-2" @click="addVehicle">Thêm xe</button>
-                    <button type="button" class="btn btn-danger" @click="removeVehicle(index)"
-                        v-if="vehicles.length > 1">Xóa</button>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label fw-medium">Mã căn hộ <span class="text-danger">*</span></label>
+                    <input 
+                      v-model="vehicle.apartment_number" 
+                      type="text" 
+                      class="form-control shadow-sm" 
+                      :class="{ 'is-invalid': errors?.[`${index}.apartment_number`] }" 
+                      placeholder="Nhập mã căn hộ" 
+                      required 
+                    />
+                    <div v-if="errors?.[`${index}.apartment_number`]" class="invalid-feedback">
+                      {{ errors[`${index}.apartment_number`][0] }}
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label fw-medium">Trạng thái <span class="text-danger">*</span></label>
+                    <select 
+                      v-model="vehicle.status" 
+                      class="form-select shadow-sm" 
+                      :class="{ 'is-invalid': errors?.[`${index}.status`] }" 
+                      required
+                    >
+                      <option :value="0">Đang hoạt động</option>
+                      <option :value="1">Ngừng hoạt động</option>
+                    </select>
+                    <div v-if="errors?.[`${index}.status`]" class="invalid-feedback">
+                      {{ errors[`${index}.status`][0] }}
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <label class="form-label fw-medium">Ngày đăng ký <span class="text-danger">*</span></label>
+                    <input 
+                      v-model="vehicle.created_at" 
+                      type="date" 
+                      class="form-control shadow-sm" 
+                      :class="{ 'is-invalid': errors?.[`${index}.created_at`] }" 
+                      required 
+                    />
+                    <div v-if="errors?.[`${index}.created_at`]" class="invalid-feedback">
+                      {{ errors[`${index}.created_at`][0] }}
+                    </div>
+                  </div>
                 </div>
-                <div class="d-flex justify-content-end">
-                    <button type="button" style="margin-right: 5px;" class="btn btn-secondary" @click="goBack()">Hủy</button>
-                    <button type="submit" class="btn btn-primary me-2">Thêm danh sách xe</button>
-                </div>
-            </form>
-        </div>
+              </div>
+            </div>
+            <button 
+              type="button" 
+              class="btn btn-outline-success mb-3" 
+              @click="addVehicle"
+            >
+              <Icon name="ic:baseline-add-circle-outline" size="16" class="me-1" /> Thêm xe
+            </button>
+          </fieldset>
+  
+          <!-- Action Buttons -->
+          <div class="d-flex justify-content-end gap-2">
+            <button 
+              type="button" 
+              class="btn btn-outline-secondary" 
+              style="min-width: 120px;" 
+              @click="goBack()"
+            >
+              Hủy
+            </button>
+            <button 
+              type="submit" 
+              class="btn btn-primary" 
+              style="min-width: 120px;"
+            >
+              Thêm danh sách xe
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
-</template>
+  </template>
 
 <script setup>
 import { ref } from 'vue';
@@ -140,10 +207,31 @@ const createdVehicle = async () => {
 };
 </script>
 
-<style>
-.container {
-    max-width: 1140px;
-    overflow-y: auto;
-    scrollbar-width: thin;
+<style scoped>
+.form-label {
+  font-size: 0.95rem;
+  color: #495057;
+}
+.form-control, .form-select {
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+}
+.is-invalid {
+  border-color: #dc3545;
+}
+.invalid-feedback {
+  font-size: 0.85rem;
+}
+.card-header {
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #e9ecef;
+}
+.btn {
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  transition: all 0.2s ease;
+}
+.btn:hover {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 </style>

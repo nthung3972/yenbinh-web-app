@@ -51,3 +51,27 @@
 .btn-success, .btn-danger {
     font-weight: 500;
 }
+
+
+.card {
+    border-radius: 12px;
+    overflow: hidden;
+}
+.table th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #495057;
+}
+.table td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.btn-group .btn {
+    padding: 0.375rem 0.75rem;
+    border-radius: 8px;
+}
+.badge {
+    padding: 0.5em 1em;
+    font-size: 0.9em;
+}
