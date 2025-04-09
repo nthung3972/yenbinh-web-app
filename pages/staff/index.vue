@@ -23,14 +23,14 @@
                     <Icon name="ic:baseline-add-circle-outline" size="20" class="me-1" /> Thêm nhân viên
                 </NuxtLink>
             </div>
-            <table class="table table-striped table-hover align-middle" style="table-layout: fixed; width: 100%;">
+            <table class="table table-hover align-middle" style="table-layout: fixed; width: 100%;">
                 <thead class="table-light">
                     <tr>
                         <th style="width: 15%;">Tên nhân viên</th>
-                        <th style="width: 15%;">Email</th>
-                        <th style="width: 15%;">Vai trò</th>
-                        <th style="width: 15%;">Tòa nhà quản lý</th>
-                        <th style="width: 15%;">Chức vụ</th>
+                        <th style="width: 20%;">Email</th>
+                        <th style="width: 10%;">Vai trò</th>
+                        <th style="width: 20%;">Tòa nhà quản lý</th>
+                        <th style="width: 10%;">Chức vụ</th>
                         <th style="width: 25%; text-align: center;">Hành động</th>
                     </tr>
                 </thead>
@@ -41,14 +41,17 @@
                         <td>{{ staff.role }}</td>
                         <td>{{ staff.building_name }}</td>
                         <td>{{ staff.building_role }}</td>
-                        <td class="d-flex justify-content-center">
-                            <NuxtLink to="/" style="display: flex;" class="btn btn-sm btn-success text-white align-items-center">
-                                <Icon name="bxs:detail" size="18" class="me-1" />Xem
+                        <td class="d-flex justify-content-center align-items-center gap-2">
+                            <NuxtLink to="/"
+                                class="btn btn-sm btn-success d-flex align-items-center text-white text-decoration-none">
+                                <Icon name="bxs:detail" size="18" class="me-1" />
+                                <span>Xem</span>
                             </NuxtLink>
-                            <button type="button" style="display: flex;" class="btn btn-danger btn-sm" data-bs-toggle="modal"
-                                data-bs-target="#deleteApartmentModal"
+                            <button type="button" class="btn btn-sm btn-danger d-flex align-items-center"
+                                data-bs-toggle="modal" data-bs-target="#deleteApartmentModal"
                                 @click="setSelectedApartment(staff.id)">
-                                <Icon name="material-symbols:delete" size="18" class="me-1" />Xóa
+                                <Icon name="material-symbols:delete" size="18" class="me-1" />
+                                <span>Xóa</span>
                             </button>
                         </td>
                     </tr>
@@ -132,12 +135,3 @@ const deleteStaff = async () => {
 
 onMounted(fectStaffList)
 </script>
-
-<style scoped>
-.d-flex {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-}
-</style>

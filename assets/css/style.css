@@ -1,0 +1,53 @@
+
+/* Đảm bảo bảng cố định độ rộng cột */
+.table {
+    table-layout: fixed;
+    width: 100%;
+    border-collapse: collapse;
+}
+
+/* Căn chỉnh và kiểm soát nội dung trong các ô */
+.table th,
+.table td {
+    padding: 0.75rem;
+    text-align: left; /* Căn trái cho các cột, trừ cột Hành động */
+    vertical-align: middle;
+    white-space: nowrap; /* Ngăn nội dung xuống dòng */
+    overflow: hidden; /* Ẩn nội dung thừa */
+    text-overflow: ellipsis; /* Thêm dấu ... cho nội dung dài */
+}
+
+/* Cột Hành động đã được căn giữa trong HTML, không cần chỉnh lại */
+
+/* Tùy chỉnh giao diện cho thead */
+.table-light th {
+    background-color: #f8f9fa;
+    font-weight: 600;
+    color: #333;
+}
+
+/* Hover effect cho các dòng */
+.table-hover tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+/* Tùy chỉnh nút */
+.btn-sm {
+    padding: 0.25rem 0.75rem;
+    font-size: 0.875rem;
+    border-radius: 4px;
+    transition: all 0.2s ease;
+}
+
+.btn-sm:hover {
+    filter: brightness(90%);
+}
+
+/* Đảm bảo icon và text trong nút căn giữa */
+.btn-sm .me-1 {
+    display: inline-flex;
+    align-items: center;
+}
+.btn-success, .btn-danger {
+    font-weight: 500;
+}

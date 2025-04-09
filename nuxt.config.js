@@ -1,5 +1,6 @@
 export default defineNuxtConfig({
   css: [
+    '~/assets/css/style.css',
     'bootstrap/dist/css/bootstrap.min.css'
   ],
   app: {

@@ -115,7 +115,7 @@
                 </div>
             </div>
 
-            <div class="menu-group">
+            <!-- <div class="menu-group">
                 <h6 class="text-uppercase text-white-50">Dịch vụ</h6>
                 <div class="nav flex-column">
                     <li>
@@ -137,7 +137,7 @@
                             </span>Quảng cáo</a>
                     </li>
                 </div>
-            </div>
+            </div> -->
 
             <div class="menu-group" v-if="authStore.isStaff">
                 <h6 class="text-uppercase text-white-50">Báo cáo</h6>

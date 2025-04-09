@@ -53,6 +53,23 @@ export const useAdminReportStore = defineStore("admin-report", {
             } finally {
                 this.loading = false;
             }
+        },
+
+        async deleteDailyReport(id) {
+            this.loading = true
+            try {
+                const response = await ReportApi.deleteDailyReport(id)
+                if (response.data) {
+                    this.dailyReports = this.dailyReports.filter(report => report.report_id !== id);
+                    return response.data;
+                }
+                this.error = null;
+            } catch (error) {
+                console.log('error', error)
+                throw error;
+            } finally {
+                this.loading = false;
+            }
         }
     },
 

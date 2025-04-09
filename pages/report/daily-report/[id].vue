@@ -86,7 +86,7 @@
 </template>
 
 <script setup>
-import { useAdminReportStore } from '@/stores/admin-report'
+import { useReportStore } from '@/stores/report'
 import { onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -95,11 +95,11 @@ definePageMeta({
     layout: 'dashboard'
 })
 
-const adminReportStore = useAdminReportStore()
+const reportStore = useReportStore()
 const route = useRoute()
 const router = useRouter()
 const report_id = route.params.id
-const isLoading = computed(() => adminReportStore.isLoading);
+const isLoading = computed(() => reportStore.isLoading);
 
 
 // Giả lập dữ liệu mẫu (bạn nên thay bằng API call)
@@ -126,10 +126,9 @@ const back = () => {
 
 const fetchReportDetail = async () => {
     try {
-        const result = await adminReportStore.dailyReportDetail(report_id)
+        const result = await reportStore.getReportDetail(report_id)
         if (result) {
             report.value = result
-            console.log(report.value)
         }
     } catch (error) {
 

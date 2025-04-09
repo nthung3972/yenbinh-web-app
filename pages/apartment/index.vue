@@ -23,7 +23,7 @@
                     <Icon name="ic:baseline-add-circle-outline" size="20" class="me-1" /> Thêm căn hộ
                 </NuxtLink>
             </div>
-            <table class="table table-hover align-middle" style="table-layout: fixed; width: 100%;">
+            <table class="table table-hover" style="table-layout: fixed; width: 100%;">
                 <thead class="table-light">
                     <tr>
                         <th style="width: 10%;">Số căn hộ</th>
@@ -38,25 +38,27 @@
                 </thead>
                 <tbody>
                     <tr v-for="(apartment, index) in apartmentStore.apartmentList" :key="index">
-                        <td>{{ apartment.apartment_number }}</td>
-                        <td>{{ apartment.floor_number }}</td>
-                        <td>{{ apartment.ownership_type }}</td>
-                        <td>{{ apartment.area }}</td>
-                        <td>{{ apartment.residents[0]?.full_name ?? '' }}</td>
-                        <td>
+                        <td class="align-middle">{{ apartment.apartment_number }}</td>
+                        <td class="align-middle">{{ apartment.floor_number }}</td>
+                        <td class="align-middle">{{ apartment.ownership_type }}</td>
+                        <td class="align-middle">{{ apartment.area }}</td>
+                        <td class="align-middle">{{ apartment.residents[0]?.full_name ?? '' }}</td>
+                        <td class="align-middle">
                             <span :class="apartment.residents[0]?.full_name ? 'badge bg-info' : 'badge bg-danger'">
                                 {{ apartment.residents[0]?.full_name ? 'Đang sử dụng' : 'Căn hộ trống' }}
                             </span>
                         </td>
-                        <td>{{ apartment.updated_by?.name ? apartment.updated_by?.name : '' }}</td>
-                        <td class="d-flex justify-content-center">
-                            <NuxtLink to="/" class="btn btn-sm btn-success text-white d-flex align-items-center"
-                                style="min-width: 100px;">
-                                <Icon name="bxs:detail" size="20" class="me-1" /> Chi tiết
-                            </NuxtLink>
-                            <NuxtLink :to="`/apartment/${apartment.apartment_id}/edit`" class="btn btn-sm btn-warning text-white d-flex align-items-center">
-                                <Icon name="basil:edit-solid" size="20" class="me-1" /> Chỉnh sửa
-                            </NuxtLink>
+                        <td class="align-middle">{{ apartment.updated_by?.name ? apartment.updated_by?.name : '' }}</td>
+                        <td class="align-middle text-center">
+                            <div class="d-inline-flex gap-2">
+                                <NuxtLink to="/" class="btn btn-sm btn-success text-white d-flex align-items-center">
+                                    <Icon name="bxs:detail" size="20" class="me-1" /> Xem
+                                </NuxtLink>
+                                <NuxtLink :to="`/apartment/${apartment.apartment_id}/edit`"
+                                    class="btn btn-sm btn-warning text-white d-flex align-items-center">
+                                    <Icon name="basil:edit-solid" size="20" class="me-1" /> Sửa
+                                </NuxtLink>
+                            </div>
                         </td>
                     </tr>
                 </tbody>

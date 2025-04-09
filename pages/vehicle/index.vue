@@ -31,7 +31,7 @@
                     <Icon name="ic:baseline-add-circle-outline" size="20" class="me-1" /> Thêm xe
                 </NuxtLink>
             </div>
-            <table class="table table-hover align-middle" style="table-layout: fixed; width: 100%;">
+            <table class="table table-hover" style="table-layout: fixed; width: 100%;">
                 <thead class="table-light">
                     <tr>
                         <th style="width: 15%;">Biển số xe</th>
@@ -45,24 +45,26 @@
                 </thead>
                 <tbody>
                     <tr v-for="(vehicle, index) in vehicleStore.vehicleList" :key="index">
-                        <td>{{ vehicle.license_plate }}</td>
-                        <td>{{ vehicle.vehicle_type }}</td>
-                        <td>{{ vehicle.parking_slot ? vehicle.parking_slot : '' }}</td>
-                        <td>{{ vehicle.apartment_number }}</td>
-                        <td>
-                            <span :class="vehicle.status === 0 ? 'badge bg-info': 'badge bg-danger'">
+                        <td class="align-middle">{{ vehicle.license_plate }}</td>
+                        <td class="align-middle">{{ vehicle.vehicle_type }}</td>
+                        <td class="align-middle">{{ vehicle.parking_slot ? vehicle.parking_slot : '' }}</td>
+                        <td class="align-middle">{{ vehicle.apartment_number }}</td>
+                        <td class="align-middle">
+                            <span :class="vehicle.status === 0 ? 'badge bg-info' : 'badge bg-danger'">
                                 {{ vehicle.status === 0 ? 'Đang hoạt động' : 'Ngừng hoạt động' }}
                             </span>
                         </td>
-                        <td>{{ vehicle.updated_by?.name ? vehicle.updated_by?.name : '' }}</td>
-                        <td class="d-flex justify-content-center">
-                            <NuxtLink to="/" class="btn btn-sm btn-success text-white d-flex align-items-center"
-                                style="min-width: 100px;">
-                                <Icon name="bxs:detail" size="20" class="me-1" />Chi tiết
-                            </NuxtLink>
-                            <NuxtLink :to="`/vehicle/edit/${vehicle.vehicle_id}`" class="btn btn-sm btn-warning text-white d-flex align-items-center">
-                                <Icon name="basil:edit-solid" size="20" class="me-1"/> Chỉnh sửa
-                            </NuxtLink>
+                        <td class="align-middle">{{ vehicle.updated_by?.name ? vehicle.updated_by?.name : '' }}</td>
+                        <td class="align-middle text-center">
+                            <div class="d-inline-flex gap-2">
+                                <NuxtLink to="/" class="btn btn-sm btn-success text-white d-flex align-items-center">
+                                    <Icon name="bxs:detail" size="20" class="me-1" />Xem
+                                </NuxtLink>
+                                <NuxtLink :to="`/vehicle/edit/${vehicle.vehicle_id}`"
+                                    class="btn btn-sm btn-warning text-white d-flex align-items-center">
+                                    <Icon name="basil:edit-solid" size="20" class="me-1" /> Sửa
+                                </NuxtLink>
+                            </div>
                         </td>
                     </tr>
                 </tbody>
@@ -115,9 +117,9 @@ onMounted(fectVehicleList)
 
 <style scoped>
 .d-flex {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
 }
 </style>
