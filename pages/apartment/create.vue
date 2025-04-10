@@ -110,10 +110,10 @@ const apartment = ref({
 
 const reset = () => {
     apartment.value.apartment_number = '',
-    apartment.value.floor_number = '',
-    apartment.value.area = '',
-    apartment.value.ownership_type = '',
-    errors.value = ''
+        apartment.value.floor_number = '',
+        apartment.value.area = '',
+        apartment.value.ownership_type = '',
+        errors.value = ''
 }
 
 const goBack = () => {

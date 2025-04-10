@@ -1,9 +1,11 @@
 import { defineStore } from "pinia";
+import { toHandlerKey } from "vue";
 import { UserApi } from "~/services/api/user.api";
 
 export const useUserStore = defineStore("user", {
     state: () => ({
         user: null,
+        avatar: null,
         loading: false,
         error: null,
         success: null,
@@ -161,7 +163,46 @@ export const useUserStore = defineStore("user", {
             } finally {
                 this.loading = false;
             }
-        }
+        },
+
+        async getUserInfo() {
+            this.loading = true
+            try {
+                const response = await UserApi.userInfo()
+                if(response.data) {
+                    this.error = null
+                    this.avatar = response.data.data.user.avatar
+                    return response.data.data
+                }
+            } catch (error) {
+                console.log('Đã xảy ra lỗi khi lây thông tin người dùng!')
+                throw error
+            } finally {
+                this.loading = false
+            }
+        },
+
+        async updateUerInfo(data) {
+            this.loading = true
+            try {
+                const respone = await UserApi.updateUserInfo(data)
+                if(respone) {
+                    this.error = null
+                    return respone.data
+                }
+            } catch (error) {
+                console.log(error)
+                throw error
+            } finally {
+                this.loading = false
+            }
+        },
+
+        setAvatar(avatar) {
+            console.log('new:', avatar)
+            this.avatar = avatar;
+        },
+
 
     },
 

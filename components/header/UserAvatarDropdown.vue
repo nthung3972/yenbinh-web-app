@@ -2,7 +2,7 @@
     <div class="avatar-dropdown-container">
         <!-- Avatar button -->
         <div @click="toggleMenu" class="cursor-pointer rounded-full overflow-hidden">
-            <img :src="avatarSrc"
+            <img :src="props.avatar || defaultAvatar"
                 class="w-10 h-10 object-cover" />
         </div>
 
@@ -42,8 +42,6 @@ const props = defineProps({
         default: ''
     }
 })
-
-const avatarSrc = computed(() => props.avatar || defaultAvatar)
 
 // Emit events
 const emit = defineEmits(['menu-item-click'])
@@ -91,7 +89,7 @@ onUnmounted(() => {
 
 .menu {
     position: absolute;
-    z-index: 1;
+    z-index: 1000;
     right: 0;
     background-color: white;
     min-width: 180px;

@@ -51,19 +51,18 @@
                 </div>
             </div>
 
-            <!-- Bảng dữ liệu -->
             <div class="table-responsive">
-                <table class="table table-hover align-middle text-center">
-                    <thead class="table-light">
+                <table class="table table-hover align-middle" style="table-layout: fixed; width: 100%;">
+                    <thead class="table-light sticky-top" style="z-index: 1;">
                         <tr>
-                            <th>Tòa nhà</th>
-                            <th>Nội dung</th>
-                            <th>Ca trực</th>
-                            <th>Nhân viên</th>
-                            <th>Ngày tạo</th>
-                            <th>Người tạo</th>
-                            <th>Trạng thái</th>
-                            <th>Hành động</th>
+                            <th style="width: 15%;">Tòa nhà</th>
+                            <th style="width: 25%;">Nội dung</th>
+                            <th style="width: 10%;">Ca trực</th>
+                            <th style="width: 10%;">Nhân viên</th>
+                            <th style="width: 15%;">Ngày tạo</th>
+                            <th style="width: 15%;">Người tạo</th>
+                            <th style="width: 10%;">Trạng thái</th>
+                            <th style="width: 20%; text-align: center;">Hành động</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -73,33 +72,32 @@
                             <td>{{ report.total_shifts }}</td>
                             <td>{{ report.total_staff }}</td>
                             <td>{{ report.report_date }}</td>
-                            <td>{{ report.created_by }}</td>
+                            <td>{{ report.created_by ?? 'Chưa có' }}</td>
                             <td>
-                                <span :class="{
-                                    'badge bg-info': report.status === 'draft',
-                                    'badge bg-warning text-dark': report.status === 'submitted',
-                                    'badge bg-danger': report.status === 'cancelled'
-                                }">
+                                <span :class="[
+                                    'badge',
+                                    report.status === 'draft' ? 'bg-info' :
+                                        report.status === 'submitted' ? 'bg-success' :
+                                            'bg-danger'
+                                ]">
                                     {{
-                                        report.status === 'draft'
-                                            ? 'Kế hoạch'
-                                            : report.status === 'submitted'
-                                                ? 'Đã cập nhật'
-                                                : 'Đã hủy'
+                                        report.status === 'draft' ? 'Kế hoạch' :
+                                            report.status === 'submitted' ? 'Đã cập nhật' :
+                                                'Đã hủy'
                                     }}
                                 </span>
                             </td>
-                            <td class="align-middle text-center">
-                                <div class="d-inline-flex gap-2">
+                            <td class="text-center">
+                                <div class="btn-group gap-2">
                                     <NuxtLink :to="`/admin-report/daily-report/${report.report_id}`"
-                                        class="btn btn-sm btn-success align-items-center justify-content-center gap-1">
-                                        <Icon name="bxs:detail" size="18" /> Xem
+                                        class="btn btn-sm btn-outline-success d-flex align-items-center px-3 py-2">
+                                        <Icon name="bxs:detail" size="16" class="me-1" /> Xem
                                     </NuxtLink>
-                                    <button type="button" class="btn btn-sm btn-danger d-flex align-items-center"
+                                    <button type="button"
+                                        class="btn btn-sm btn-outline-danger d-flex align-items-center px-3 py-2"
                                         data-bs-toggle="modal" data-bs-target="#deleteDailyReportModal"
                                         @click="setSelectedDailyreport(report.report_id)">
-                                        <Icon name="material-symbols:delete" size="18" class="me-1" />
-                                        <span>Xóa</span>
+                                        <Icon name="material-symbols:delete" size="16" class="me-1" /> Xóa
                                     </button>
                                 </div>
                             </td>

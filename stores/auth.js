@@ -35,8 +35,8 @@ export const useAuthStore = defineStore('auth', {
     },
     
     setUser(user) {
-      this.user = user;
-      console.log('Thông tin user:', this.user)
+      this.user = user
+      console.log('Thông tin user:', this.avatar)
       if (process.client && user) {
         localStorage.setItem('auth_user', JSON.stringify(user));
       }

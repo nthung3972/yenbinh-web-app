@@ -8,40 +8,24 @@
           <div class="row g-3">
             <div class="col-md-4">
               <label class="form-label fw-medium">Mã căn hộ <span class="text-danger">*</span></label>
-              <input 
-                v-model="invoiceForm.apartment_number" 
-                type="text" 
-                class="form-control shadow-sm" 
-                :class="{ 'is-invalid': errors['apartment_number'] }" 
-                placeholder="Nhập mã căn hộ" 
-                required 
-              />
+              <input v-model="invoiceForm.apartment_number" type="text" class="form-control shadow-sm"
+                :class="{ 'is-invalid': errors['apartment_number'] }" placeholder="Nhập mã căn hộ" required />
               <div v-if="errors['apartment_number']" class="invalid-feedback">
                 {{ errors['apartment_number'] }}
               </div>
             </div>
             <div class="col-md-4">
               <label class="form-label fw-medium">Ngày phát hành <span class="text-danger">*</span></label>
-              <input 
-                v-model="invoiceForm.invoice_date" 
-                type="date" 
-                class="form-control shadow-sm" 
-                :class="{ 'is-invalid': errors['invoice_date'] }" 
-                required 
-              />
+              <input v-model="invoiceForm.invoice_date" type="date" class="form-control shadow-sm"
+                :class="{ 'is-invalid': errors['invoice_date'] }" required />
               <div v-if="errors['invoice_date']" class="invalid-feedback">
                 {{ errors['invoice_date'] }}
               </div>
             </div>
             <div class="col-md-4">
               <label class="form-label fw-medium">Hạn thanh toán <span class="text-danger">*</span></label>
-              <input 
-                v-model="invoiceForm.due_date" 
-                type="date" 
-                class="form-control shadow-sm" 
-                :class="{ 'is-invalid': errors['due_date'] }" 
-                required 
-              />
+              <input v-model="invoiceForm.due_date" type="date" class="form-control shadow-sm"
+                :class="{ 'is-invalid': errors['due_date'] }" required />
               <div v-if="errors['due_date']" class="invalid-feedback">
                 {{ errors['due_date'] }}
               </div>
@@ -53,12 +37,8 @@
         <fieldset class="mb-4">
           <div class="d-flex justify-content-between align-items-center mb-3">
             <legend class="h5 fw-semibold text-dark mb-0">Các khoản phí</legend>
-            <button 
-              type="button" 
-              class="btn btn-success d-flex align-items-center justify-content-center"
-              style="white-space: nowrap;"
-              @click="addInvoiceDetail"
-            >
+            <button type="button" class="btn btn-success d-flex align-items-center justify-content-center"
+              style="white-space: nowrap;" @click="addInvoiceDetail">
               <Icon name="ic:baseline-add-circle-outline" size="16" class="me-1" /> Thêm khoản phí
             </button>
           </div>
@@ -76,12 +56,8 @@
               <tbody>
                 <tr v-for="(detail, index) in invoiceDetailForm" :key="index">
                   <td>
-                    <select 
-                      v-model="detail.service_name" 
-                      class="form-select shadow-sm" 
-                      :class="{ 'is-invalid': errors[`invoice_detail.${index}.service_name`] }" 
-                      required
-                    >
+                    <select v-model="detail.service_name" class="form-select shadow-sm"
+                      :class="{ 'is-invalid': errors[`invoice_detail.${index}.service_name`] }" required>
                       <option value="">Chọn loại phí</option>
                       <option value="DIEN">Tiền điện</option>
                       <option value="NUOC">Tiền nước</option>
@@ -94,47 +70,27 @@
                     </div>
                   </td>
                   <td>
-                    <input 
-                      v-model.number="detail.quantity" 
-                      type="number" 
-                      class="form-control shadow-sm" 
-                      :class="{ 'is-invalid': errors[`invoice_detail.${index}.quantity`] }" 
-                      placeholder="Số lượng" 
-                      @input="countAmount(detail)" 
-                      required 
-                    />
+                    <input v-model.number="detail.quantity" type="number" class="form-control shadow-sm"
+                      :class="{ 'is-invalid': errors[`invoice_detail.${index}.quantity`] }" placeholder="Số lượng"
+                      @input="countAmount(detail)" required />
                     <div v-if="errors[`invoice_detail.${index}.quantity`]" class="invalid-feedback">
                       {{ errors[`invoice_detail.${index}.quantity`][0] }}
                     </div>
                   </td>
                   <td>
-                    <input 
-                      v-model.number="detail.price" 
-                      type="number" 
-                      class="form-control shadow-sm" 
-                      :class="{ 'is-invalid': errors[`invoice_detail.${index}.price`] }" 
-                      placeholder="Đơn giá" 
-                      @input="countAmount(detail)" 
-                      required 
-                    />
+                    <input v-model.number="detail.price" type="number" class="form-control shadow-sm"
+                      :class="{ 'is-invalid': errors[`invoice_detail.${index}.price`] }" placeholder="Đơn giá"
+                      @input="countAmount(detail)" required />
                     <div v-if="errors[`invoice_detail.${index}.price`]" class="invalid-feedback">
                       {{ errors[`invoice_detail.${index}.price`][0] }}
                     </div>
                   </td>
                   <td>
-                    <input 
-                      :value="formatCurrency(detail.amount)" 
-                      class="form-control shadow-sm bg-light" 
-                      placeholder="Thành tiền" 
-                      readonly 
-                    />
+                    <input :value="formatCurrency(detail.amount)" class="form-control shadow-sm bg-light"
+                      placeholder="Thành tiền" readonly />
                   </td>
                   <td class="text-center">
-                    <button 
-                      type="button" 
-                      class="btn btn-outline-danger btn-sm" 
-                      @click="removeInvoiceDetail(index)"
-                    >
+                    <button type="button" class="btn btn-outline-danger btn-sm" @click="removeInvoiceDetail(index)">
                       <Icon name="mdi:delete" size="16" />
                     </button>
                   </td>
@@ -149,19 +105,10 @@
 
         <!-- Action Buttons -->
         <div class="d-flex justify-content-end gap-2">
-          <button 
-            type="button" 
-            class="btn btn-outline-secondary" 
-            style="min-width: 120px;" 
-            @click="goBack()"
-          >
+          <button type="button" class="btn btn-outline-secondary" style="min-width: 120px;" @click="goBack()">
             Hủy tạo
           </button>
-          <button 
-            type="submit" 
-            class="btn btn-primary" 
-            style="min-width: 120px;"
-          >
+          <button type="submit" class="btn btn-primary" style="min-width: 120px;">
             Tạo hóa đơn
           </button>
         </div>
@@ -209,7 +156,7 @@ const invoiceDetailForm = ref([
 
 
 const goBack = () => {
-    router.back();
+  router.back();
 }
 
 // Tính thành tiền cho từng khoản phí
@@ -272,32 +219,41 @@ const taoHoaDon = async () => {
   font-size: 0.95rem;
   color: #495057;
 }
-.form-control, .form-select {
+
+.form-control,
+.form-select {
   border-radius: 8px;
   padding: 0.5rem 1rem;
 }
+
 .is-invalid {
   border-color: #dc3545;
 }
+
 .invalid-feedback {
   font-size: 0.85rem;
 }
+
 .table th {
   background-color: #f8f9fa;
   font-weight: 600;
   color: #495057;
 }
+
 .table td {
   vertical-align: middle;
 }
+
 .btn {
   border-radius: 8px;
   padding: 0.5rem 1rem;
   transition: all 0.2s ease;
 }
+
 .btn:hover {
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
+
 .total-section {
   font-size: 1.1rem;
   color: #212529;
