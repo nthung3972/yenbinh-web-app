@@ -4,18 +4,6 @@ import { UploadApi } from "~/services/api/upload.api";
 export const useUploadStore = defineStore("upload", {
     state: () => ({
         url: null
-        // vehicleList: [],
-        // vehicle: [],
-        // pagination: {
-        //     current_page: 1,
-        //     per_page: '',
-        //     total: 0,
-        //     last_page: 1,
-        // },
-        // keyword: '',
-        // vehicle_type: '',
-        // loading: false,
-        // error: null,
     }),
 
     actions: {
@@ -24,8 +12,7 @@ export const useUploadStore = defineStore("upload", {
             try {
                 const response = await UploadApi.uploadImage(formData);
                 if(response.data) {
-                    console.log('response', response.data.path);
-                    return response.data
+                    return response.data.data
                 }
             } catch (error) {
                 throw error;
@@ -34,9 +21,4 @@ export const useUploadStore = defineStore("upload", {
             }
         }
     },
-
-    // getters: {
-    //     isLoading: (state) => state.loading,
-    //     hasError: (state) => state.error
-    // }
 });

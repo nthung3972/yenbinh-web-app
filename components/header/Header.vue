@@ -5,21 +5,21 @@
             <p>Quyền truy cập: {{ role === 'admin' ? 'Quản lý' : 'Nhân viên'}}</p>
         </div>
 
-        <UserAvatarDropdown :avatar="avatar" :username="name" :email="email"
+        <UserAvatarDropdown :avatar="userStore.avatar" :username="name" :email="email"
                 @menu-item-click="handleMenuAction" />
     </nav>
 </template>
 
 <script setup>
+import { ref, onMounted } from 'vue'
 import AuthService from '~/services/auth.service'
 import UserAvatarDropdown from '~/components/header/UserAvatarDropdown.vue'
-import { useAuthStore } from '~/stores/auth'
+import { useUserStore } from '~/stores/user'
+const userStore = useUserStore();
 
-const authStore = useAuthStore();
-
-const name = authStore.user.name;
-const email = authStore.user.email;
-const role = authStore.user.role;
+const name = ref('')
+const email = ref('')
+const role = ref('')
 
 const handleMenuAction = (action) => {
   switch (action) {
@@ -45,6 +45,23 @@ const logout = async () => {
         console.error('Logout error:', error);
     }
 }
+
+const loadUserInfo = async () => {
+    try {
+        const result = await userStore.getUserInfo()
+        if(result) {
+            name.value = result.user.name
+            email.value = result.user.email
+            role.value = result.user.role
+        }
+    }catch (error) {
+        console.error('Lỗi tải sữ liệu:', error);
+    }
+}
+
+onMounted(() => {
+    loadUserInfo()
+});
 </script>
 
 <style scoped>

@@ -23,48 +23,53 @@
           <Icon name="ic:baseline-add-circle-outline" size="20" class="me-1" /> Thêm tòa nhà
         </NuxtLink>
       </div>
-      <table class="table table-hover" style="table-layout: fixed; width: 100%;">
-        <thead class="table-light">
-          <tr>
-            <th style="width: 15%;">Tòa nhà</th>
-            <th style="width: 15%;">Hình ảnh</th>
-            <th style="width: 10%;">Số tầng</th>
-            <th style="width: 10%;">Diện tích (m²)</th>
-            <th style="width: 15%;">Người quản lý</th>
-            <th style="width: 10%;">Trạng thái</th>
-            <th style="width: 25%; text-align: center;">Hành động</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr v-for="(building, index) in buildingStore.buildingList" :key="index">
-            <td class="align-middle">{{ building.name }}</td>
-            <td class="align-middle">
-              <img v-if="building.image" :src="building.image" class="building-image" alt="Hình ảnh tòa nhà"
-                loading="lazy">
-              <img v-else src="/images/buiding-default.jpg" class="building-image" alt="Không có hình ảnh">
-            </td>
-            <td class="align-middle">{{ building.floors }}</td>
-            <td class="align-middle">{{ building.total_area }}</td>
-            <td class="align-middle">{{ building.staff_names }}</td>
-            <td class="align-middle">
-              <span :class="building.status === 0 ? 'badge bg-info' : 'badge bg-danger'">
-                {{ building.status === 0 ? 'Đang hoạt động' : 'Ngừng hoạt động' }}
-              </span>
-            </td>
-            <td class="align-middle text-center">
-              <div class="d-inline-flex gap-2">
-                <NuxtLink to="/" class="btn btn-sm btn-success text-white text-decoration-none">
-                  <Icon name="bxs:detail" size="20" class="me-1" />Xem
-                </NuxtLink>
-                <NuxtLink :to="`/building/edit/${building.building_id}`"
-                  class="btn btn-sm btn-warning text-white text-decoration-none">
-                  <Icon name="bxs:edit-alt" size="20" class="me-1" />Sửa
-                </NuxtLink>
-              </div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="table-responsive">
+        <table class="table table-hover align-middle" style="table-layout: fixed; width: 100%;">
+          <thead class="table-light sticky-top" style="z-index: 1;">
+            <tr>
+              <th style="width: 20%;">Tòa nhà</th>
+              <th style="width: 15%;">Hình ảnh</th>
+              <th style="width: 10%;">Số tầng</th>
+              <th style="width: 10%;">Diện tích</th>
+              <th style="width: 15%;">Người quản lý</th>
+              <th style="width: 15%;">Trạng thái</th>
+              <th style="width: 20%; text-align: center;">Hành động</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(building, index) in buildingStore.buildingList" :key="index">
+              <td>{{ building.name }}</td>
+              <td style="height: 70px;">
+                <img v-if="building.image" :src="building.image" class="building-image rounded"
+                  alt="Hình ảnh tòa nhà" loading="lazy" />
+                <img v-else src="" alt="">
+              </td>
+              <td>{{ building.floors }}</td>
+              <td>{{ building.total_area }} (m²)</td>
+              <td>{{ building.staff_names? building.staff_names: '----'}}</td>
+              <td>
+                <span :class="[
+                  'badge',
+                  building.status === 0 ? 'bg-success' : 'bg-secondary'
+                ]">
+                  {{ building.status === 0 ? 'Đang hoạt động' : 'Ngừng hoạt động' }}
+                </span>
+              </td>
+              <td class="text-center">
+                <div class="btn-group gap-2">
+                  <NuxtLink to="/" class="btn btn-sm btn-outline-success d-flex align-items-center px-3 py-2">
+                    <Icon name="bxs:detail" size="16" class="me-1" /> Xem
+                  </NuxtLink>
+                  <NuxtLink :to="`/building/edit/${building.building_id}`"
+                    class="btn btn-sm btn-outline-warning d-flex align-items-center px-3 py-2">
+                    <Icon name="bxs:edit-alt" size="16" class="me-1" /> Sửa
+                  </NuxtLink>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
       <Pagination :pagination="buildingStore.pagination" @page-change="handlePageChange" />
     </div>
   </div>
@@ -106,8 +111,6 @@ definePageMeta({
 const buildingStore = useBuildingStore()
 const currentPage = ref(1)
 const searchKeyword = ref('')
-const building_id = ref('')
-const toast = useToast()
 
 const isLoading = computed(() => buildingStore.isLoading);
 const hasError = computed(() => buildingStore.hasError);
@@ -133,7 +136,6 @@ onMounted(fectBuildingList)
 /* Tùy chỉnh kích thước ảnh trong cột Hình ảnh */
 .building-image {
   width: 100px;
-  height: auto;
   max-height: 70px;
   object-fit: cover;
 }

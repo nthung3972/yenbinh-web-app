@@ -27,5 +27,13 @@ export const UserApi = {
 
     resetPassword(data) {
         return apiService.post('/auth/reset-password', data);
+    },
+
+    userInfo() {
+        return apiService.get('me/profile');
+    },
+
+    updateUserInfo(data) {
+        return apiService.put('me/profile-update', data);
     }
 };

@@ -1,6 +1,5 @@
 <template>
     <div class="card shadow-sm p-4 m-4">
-
         <div v-if="isLoading" class="text-center">
             <div class="spinner-border spinner-border-sm me-2" role="status">
                 <span class="visually-hidden">Đang tải dữ liệu...</span>
@@ -23,40 +22,47 @@
                     <Icon name="ic:baseline-add-circle-outline" size="20" class="me-1" /> Thêm nhân viên
                 </NuxtLink>
             </div>
-            <table class="table table-hover align-middle" style="table-layout: fixed; width: 100%;">
-                <thead class="table-light">
-                    <tr>
-                        <th style="width: 15%;">Tên nhân viên</th>
-                        <th style="width: 20%;">Email</th>
-                        <th style="width: 10%;">Vai trò</th>
-                        <th style="width: 20%;">Tòa nhà quản lý</th>
-                        <th style="width: 10%;">Chức vụ</th>
-                        <th style="width: 25%; text-align: center;">Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr v-for="(staff, index) in staffStore.staffList" :key="index">
-                        <td>{{ staff.name }}</td>
-                        <td>{{ staff.email }}</td>
-                        <td>{{ staff.role }}</td>
-                        <td>{{ staff.building_name }}</td>
-                        <td>{{ staff.building_role }}</td>
-                        <td class="d-flex justify-content-center align-items-center gap-2">
-                            <NuxtLink to="/"
-                                class="btn btn-sm btn-success d-flex align-items-center text-white text-decoration-none">
-                                <Icon name="bxs:detail" size="18" class="me-1" />
-                                <span>Xem</span>
-                            </NuxtLink>
-                            <button type="button" class="btn btn-sm btn-danger d-flex align-items-center"
-                                data-bs-toggle="modal" data-bs-target="#deleteApartmentModal"
-                                @click="setSelectedApartment(staff.id)">
-                                <Icon name="material-symbols:delete" size="18" class="me-1" />
-                                <span>Xóa</span>
-                            </button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="table-responsive">
+                <table class="table table-hover align-middle" style="table-layout: fixed; width: 100%;">
+                    <thead class="table-light sticky-top" style="z-index: 1;">
+                        <tr>
+                            <th style="width: 20%;">Tên nhân viên</th>
+                            <th style="width: 25%;">Email</th>
+                            <th style="width: 10%;">Vai trò</th>
+                            <th style="width: 20%;">Tòa nhà quản lý</th>
+                            <th style="width: 10%;">Chức vụ</th>
+                            <th style="width: 25%; text-align: center;">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(staff, index) in staffStore.staffList" :key="index">
+                            <td>{{ staff.name }}</td>
+                            <td>{{ staff.email }}</td>
+                            <td>{{ staff.role }}</td>
+                            <td>{{ staff.building_name ?? '----' }}</td>
+                            <td>{{ staff.building_role ?? '----' }}</td>
+                            <td class="text-center">
+                                <div class="btn-group gap-2">
+                                    <NuxtLink to="/"
+                                        class="btn btn-sm btn-outline-success d-flex align-items-center px-3 py-2">
+                                        <Icon name="bxs:detail" size="16" class="me-1" /> Xem
+                                    </NuxtLink>
+                                    <!-- <NuxtLink :to="`/staff/edit/${staff.id}`"
+                                        class="btn btn-sm btn-outline-warning d-flex align-items-center px-3 py-2">
+                                        <Icon name="bxs:edit-alt" size="16" class="me-1" /> Sửa
+                                    </NuxtLink> -->
+                                    <button type="button"
+                                        class="btn btn-sm btn-outline-danger d-flex align-items-center px-3 py-2"
+                                        data-bs-toggle="modal" data-bs-target="#deleteApartmentModal"
+                                        @click="setSelectedApartment(staff.id)">
+                                        <Icon name="material-symbols:delete" size="16" class="me-1" /> Xóa
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
             <Pagination :pagination="staffStore.pagination" @page-change="handlePageChange" />
         </div>
     </div>
