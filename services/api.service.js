@@ -19,7 +19,7 @@ class ApiService {
       baseURL,
       timeout: 15000,
       headers: {
-        Accept: "application/json",
+        // Accept: "application/json",
       },
     });
 
@@ -38,6 +38,17 @@ class ApiService {
       }
       return config;
     });
+
+    this.$http.interceptors.response.use(
+      (response) => {
+        // Không xử lý đặc biệt nếu responseType là blob
+        if (response.config.responseType === 'blob') {
+          return response;
+        }
+        return response;
+      },
+      (error) => this.handleError(error)
+    );
 
     // Thêm interceptor xử lý response
     this.$http.interceptors.response.use(
