@@ -1,108 +1,106 @@
 <template>
-    <div class="container mt-5">
-      <div class="invoice-display">
-        <!-- Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-          <h3 class="fw-bold text-primary">
-            <Icon name="mdi:receipt-text" size="24" class="me-2" />
-            Hóa Đơn Chi Tiết
-          </h3>
-          <button class="btn btn-outline-secondary" @click="goBack">
-            <Icon name="mdi:arrow-left-circle" size="20" class="me-2" />
-            Quay lại
-          </button>
-        </div>
-  
-        <!-- Invoice Card -->
-        <div class="card shadow-lg border-0">
-          <div class="card-header bg-primary text-white p-3 d-flex justify-content-between align-items-center">
-            <span class="fw-semibold">
-              <Icon name="mdi:home-city" size="20" class="me-2 text-white" />
-              Mã Căn Hộ: {{ invoice.apartment_number }}
-            </span>
-            <span class="badge bg-light text-primary">
-              <Icon name="mdi:tag" size="16" class="me-1" />
-              {{ getStatusText(invoice.status) }}
-            </span>
+  <div class="overview-container">
+      <div class="row">
+          <!-- Tòa nhà -->
+          <div class="col-md-3">
+              <div class="card shadow-sm p-3 d-flex flex-row align-items-center">
+                  <div class="icon-box bg-primary">
+                      <Icon name="mdi:building" size="24" class="text-white" />
+                  </div>
+                  <div class="ms-3">
+                      <h5 class="fw-bold mb-0">{{ processedData.length }}</h5>
+                      <p class="text-muted mb-0">{{ processedData.length > 1 ? 'Tòa nhà' : processedData[0].name }}
+                      </p>
+                  </div>
+              </div>
           </div>
-  
-          <div class="card-body p-4">
-            <!-- Thông tin hóa đơn -->
-            <div class="row mb-4">
-              <div class="col-md-6">
-                <p class="mb-2">
-                  <Icon name="mdi:calendar" size="18" class="me-2 text-muted" />
-                  <strong>Ngày Phát Hành:</strong> {{ formatDate(invoice.invoice_date) }}
-                </p>
+
+          <!-- Tổng số căn hộ -->
+          <div class="col-md-3">
+              <div class="card shadow-sm p-3 d-flex flex-row align-items-center">
+                  <div class="icon-box bg-warning">
+                      <Icon name="ion:home" size="24" class="text-white" />
+                  </div>
+                  <div class="ms-3">
+                      <h5 class="fw-bold mb-0">{{ totalApartments }}</h5>
+                      <p class="text-muted mb-0">Tổng số căn hộ</p>
+                  </div>
               </div>
-              <div class="col-md-6">
-                <p class="mb-2">
-                  <Icon name="mdi:calendar-check" size="18" class="me-2 text-muted" />
-                  <strong>Hạn Thanh Toán:</strong> {{ formatDate(invoice.due_date) }}
-                </p>
-              </div>
-            </div>
-  
-            <!-- Chi tiết các khoản phí -->
-            <div class="invoice-details bg-light p-3 rounded">
-              <h5 class="fw-semibold text-dark mb-3">
-                <Icon name="mdi:format-list-checks" size="20" class="me-2" />
-                Các Khoản Phí
-              </h5>
-              <div class="table-responsive">
-                <table class="table table-borderless table-hover">
-                  <thead class="table-light">
-                    <tr>
-                      <th>
-                        <Icon name="mdi:file-document" size="16" class="me-2" />
-                        Loại Phí
-                      </th>
-                      <th>
-                        <Icon name="mdi:numeric" size="16" class="me-2" />
-                        Số Lượng
-                      </th>
-                      <th>
-                        <Icon name="mdi:currency-usd" size="16" class="me-2" />
-                        Đơn Giá
-                      </th>
-                      <th>
-                        <Icon name="mdi:cash-multiple" size="16" class="me-2" />
-                        Thành Tiền
-                      </th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr v-for="(detail, index) in invoice.details" :key="index">
-                      <td>{{ getServiceName(detail.service_name) }}</td>
-                      <td>{{ detail.quantity }}</td>
-                      <td>{{ formatVND(detail.price) }}</td>
-                      <td>{{ formatVND(detail.amount) }}</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-  
-              <!-- Tổng tiền -->
-              <div class="text-end mt-4">
-                <h4 class="fw-bold text-success">
-                  <Icon name="mdi:cash-register" size="20" class="me-2" />
-                  Tổng Tiền: {{ formatVND(invoice.total_amount) }} VNĐ
-                </h4>
-              </div>
-            </div>
           </div>
-  
-          <!-- Footer -->
-          <div class="card-footer text-muted text-center">
-            <small>
-              <Icon name="mdi:information" size="16" class="me-1" />
-              Cảm ơn bạn đã sử dụng dịch vụ của chúng tôi!
-            </small>
+
+          <!-- Tổng số cư dân -->
+          <div class="col-md-3">
+              <div class="card shadow-sm p-3 d-flex flex-row align-items-center">
+                  <div class="icon-box bg-info">
+                      <Icon name="ic:baseline-people" size="24" class="text-white" />
+                  </div>
+                  <div class="ms-3">
+                      <h5 class="fw-bold mb-0">{{ totalResidents }}</h5>
+                      <p class="text-muted mb-0">Tổng số cư dân</p>
+                  </div>
+              </div>
           </div>
-        </div>
+
+          <!-- Yêu cầu bảo trì -->
+          <div class="col-md-3">
+              <div class="card shadow-sm p-3 d-flex flex-row align-items-center">
+                  <div class="icon-box bg-secondary">
+                      <Icon name="fluent-mdl2:service-off" size="24" class="text-white" />
+                  </div>
+                  <div class="ms-3">
+                      <h5 class="fw-bold mb-0">0</h5>
+                      <p class="text-muted mb-0">Yêu cầu bảo trì</p>
+                  </div>
+              </div>
+          </div>
       </div>
-    </div>
-  </template>
+
+      <div class="row pt-20">
+          <!-- Thẻ 1: Tỷ lệ thu phí -->
+          <div class="col-md-4">
+              <div class="card shadow-sm border-0">
+                  <div class="card-body card">
+                      <h6 class="card-title fw-bold">Tỷ lệ thu phí</h6>
+                      <h2 class="fw-bold">{{ totalCollectionRate }}%</h2>
+                      <p>
+                          <span v-if="totalCollectionRateChange >= 0" class="text-success small">
+                              ⬆ {{ totalCollectionRateChange }}% so với tháng trước
+                          </span>
+                          <span v-else class="text-danger small">
+                              ⬇ {{ totalCollectionRateChange }}% so với tháng trước
+                          </span>
+                      </p>
+                      <div class="bg-light text-center p-3 rounded">[Biểu đồ tỷ lệ thu phí]</div>
+                  </div>
+              </div>
+          </div>
+
+          <!-- Thẻ 2: Thời gian xử lý khiếu nại -->
+          <div class="col-md-4">
+              <div class="card shadow-sm border-0">
+                  <div class="card-body card">
+                      <h6 class="card-title fw-bold">Thời gian xử lý khiếu nại</h6>
+                      <h2 class="fw-bold">1.8 ngày</h2>
+                      <p class="text-danger small">⬇ 0.5 ngày so với tháng trước</p>
+                      <div class="bg-light text-center p-3 rounded">[Biểu đồ thời gian xử lý]</div>
+                  </div>
+              </div>
+          </div>
+
+          <!-- Thẻ 3: Đánh giá dịch vụ -->
+          <div class="col-md-4">
+              <div class="card shadow-sm border-0">
+                  <div class="card-body card">
+                      <h6 class="card-title fw-bold">Đánh giá dịch vụ</h6>
+                      <h2 class="fw-bold">4.7/5.0</h2>
+                      <p class="text-success small">⬆ 0.2 so với tháng trước</p>
+                      <div class="bg-light text-center p-3 rounded">[Biểu đồ đánh giá]</div>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+</template>
 
 <script setup>
 import { computed } from 'vue'
@@ -114,71 +112,71 @@ const totalCollectionRateChange = ref(0);
 
 // Nhận props từ component cha
 const props = defineProps({
-    data: {
-        type: [Array, Object],
-        default: () => []
-    }
+  data: {
+      type: [Array, Object],
+      default: () => []
+  }
 })
 
 
 
 // Tạo computed property để xử lý dữ liệu Proxy
 const processedData = computed(() => {
-    if (Array.isArray(props.data)) {
-        totalApartments.value = props.data.reduce((sum, building) => sum + building.apartments_count, 0);
-        totalResidents.value = props.data.reduce((sum, building) => sum + building.residents_count, 0);
-        
-        totalCollectionRate.value = props.data.length > 0
-            ? (props.data.reduce((sum, building) => sum + building.collectionRate, 0) / props.data.length).toFixed(2)
-            : "0.00";
-        totalCollectionRateChange.value = props.data.length > 0
-            ? (props.data.reduce((sum, building) => sum + building.collectionRateChange, 0) / props.data.length).toFixed(2)
-            : "0.00";
-        return props.data
-    }
-    return []
+  if (Array.isArray(props.data)) {
+      totalApartments.value = props.data.reduce((sum, building) => sum + building.apartments_count, 0);
+      totalResidents.value = props.data.reduce((sum, building) => sum + building.residents_count, 0);
+      
+      totalCollectionRate.value = props.data.length > 0
+          ? (props.data.reduce((sum, building) => sum + building.collectionRate, 0) / props.data.length).toFixed(2)
+          : "0.00";
+      totalCollectionRateChange.value = props.data.length > 0
+          ? (props.data.reduce((sum, building) => sum + building.collectionRateChange, 0) / props.data.length).toFixed(2)
+          : "0.00";
+      return props.data
+  }
+  return []
 })
 </script>
 
 <style>
 .card {
-    border-left: 5px solid #4cc9f0;
+  border-left: 5px solid #4cc9f0;
 }
 
 .pt-20 {
-    padding-top: 20px;
+  padding-top: 20px;
 }
 
 .progress {
-    margin: 5px 0 0 0;
+  margin: 5px 0 0 0;
 }
 
 .progress-bar {
-    background-color: #4cc9f0;
+  background-color: #4cc9f0;
 }
 
 .badge {
-    background-color: #4cc9f0;
-    border-radius: 20px;
-    padding: 7px 10px 10px 10px;
+  background-color: #4cc9f0;
+  border-radius: 20px;
+  padding: 7px 10px 10px 10px;
 }
 
 .fw-bold {
-    display: flex;
-    align-items: center;
+  display: flex;
+  align-items: center;
 }
 
 .fw-bold span {
-    padding: 0 5px 0 0;
+  padding: 0 5px 0 0;
 }
 
 .icon-box {
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 8px;
-    /* Bo góc */
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  /* Bo góc */
 }
 </style>

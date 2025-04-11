@@ -68,7 +68,7 @@
                         <td>{{ invoice.updated_by?.name ?? '----' }}</td>
                         <td class="text-center">
                             <div class="btn-group gap-2">
-                                <NuxtLink to="/"
+                                <NuxtLink :to="`/invoice/detail/${invoice.invoice_id}`"
                                     class="btn btn-sm btn-outline-success d-flex align-items-center px-3 py-2">
                                     <Icon name="bxs:detail" size="16" class="me-1" /> Xem
                                 </NuxtLink>
@@ -87,7 +87,7 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue';
+import { onMounted } from 'vue'
 import { useInvoiceStore } from '@/stores/invoice'
 import Pagination from '@/components/pagination/Pagination.vue'
 
