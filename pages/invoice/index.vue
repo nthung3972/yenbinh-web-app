@@ -1,5 +1,5 @@
 <template>
-    <div class="card shadow-sm p-4 m-4">
+    <div class="card shadow-sm p-4">
 
         <div v-if="isLoading" class="text-center">
             <div class="spinner-border spinner-border-sm me-2" role="status">
@@ -16,16 +16,18 @@
                 </h5>
 
                 <div class="d-flex align-items-center gap-3">
-                    <!-- Ô tìm kiếm -->
-                    <div class="input-group">
-                        <span class="input-group-text bg-white">
-                            <Icon name="material-symbols:search" />
-                        </span>
-                        <input v-model="searchKeyword" @keyup.enter="onSearch" type="text" class="form-control"
-                            placeholder="Nhập tên căn hộ..." />
-                        <button class="btn btn-outline-primary" @click="onSearch">
-                            Tìm
-                        </button>
+                    <div class="d-flex align-items-center gap-3">
+                        <!-- Ô tìm kiếm -->
+                        <div class="input-group">
+                            <span class="input-group-text bg-white">
+                                <Icon name="material-symbols:search" />
+                            </span>
+                            <input v-model="filters.key_search" @keyup.enter="onSearch" type="text" class="form-control"
+                                placeholder="Nhập tên căn hộ..." />
+                            <button class="btn btn-outline-primary" @click="onSearch">
+                                Tìm
+                            </button>
+                        </div>
                     </div>
                     <NuxtLink to="/invoice/create"
                         class="btn btn-primary d-flex align-items-center justify-content-center"
@@ -35,6 +37,39 @@
                     </NuxtLink>
                 </div>
             </div>
+
+            <!-- Bộ lọc -->
+            <div class="card mb-4 border shadow-sm">
+                <div class="card-body">
+                    <div class="row row-cols-1 row-cols-md-auto g-3 align-items-end">
+                        <!-- Trạng thái -->
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">Trạng thái</label>
+                            <select v-model="filters.status" @change="onFilter" class="form-select">
+                                <option value="">Tất cả</option>
+                                <option :value="0">Chưa thanh toán</option>
+                                <option :value="1">Đã thanh toán</option>
+                                <option :value="2">Đã quá hạn</option>
+                            </select>
+                        </div>
+
+                        <!-- Từ ngày -->
+                        <div class="col-md-2">
+                            <label class="form-label fw-semibold">Từ ngày</label>
+                            <input type="date" v-model="filters.invoice_date_from" @change="handleDateChange"
+                                class="form-control" />
+                        </div>
+
+                        <!-- Đến ngày -->
+                        <div class="col-md-2">
+                            <label class="form-label fw-semibold">Đến ngày</label>
+                            <input type="date" v-model="filters.invoice_date_to" @change="handleDateChange"
+                                class="form-control" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <table class="table table-hover align-middle" style="table-layout: fixed; width: 100%;">
                 <thead class="table-light sticky-top" style="z-index: 1;">
                     <tr>
@@ -50,7 +85,7 @@
                 <tbody>
                     <tr v-for="(invoice, index) in useInvoice.invoiceList" :key="index">
                         <td>{{ invoice.apartment.apartment_number }}</td>
-                        <td>{{ formatVND(invoice.total_amount) }}</td>
+                        <td>{{ formatVND(invoice.total_amount) }}đ</td>
                         <td>{{ invoice.invoice_date }}</td>
                         <td>{{ invoice.due_date }}</td>
                         <td>
@@ -72,9 +107,15 @@
                                     class="btn btn-sm btn-outline-success d-flex align-items-center px-3 py-2">
                                     <Icon name="bxs:detail" size="16" class="me-1" /> Xem
                                 </NuxtLink>
-                                <NuxtLink :to="`/invoice/edit/${invoice.invoice_id}`"
-                                    class="btn btn-sm btn-outline-warning d-flex align-items-center px-3 py-2">
-                                    <Icon name="basil:edit-solid" size="16" class="me-1" /> Sửa
+                                <NuxtLink :to="invoice.status !== 1 ? `/invoice/edit/${invoice.invoice_id}` : '#'"
+                                    :class="[
+                                        'btn', 'btn-sm', 'btn-outline-warning',
+                                        'd-flex', 'align-items-center',
+                                        { 'disabled opacity-50': invoice.status === 1 }
+                                    ]"
+                                    :title="invoice.status === 1 ? 'Báo cáo không thể chỉnh sửa vì trạng thái không phải draft' : 'Chỉnh sửa báo cáo'"
+                                    @click.prevent="invoice.status === 1 ? null : undefined">
+                                    <Icon name="bxs:edit-alt" size="16" class="me-1" /> Sửa
                                 </NuxtLink>
                             </div>
                         </td>
@@ -97,25 +138,50 @@ definePageMeta({
 })
 
 const useInvoice = useInvoiceStore()
-const currentPage = ref(1)
-const searchKeyword = ref('')
 const { formatVND } = useCurrencyFormat()
+
+const filters = ref({
+    invoice_date_from: '',
+    invoice_date_to: '',
+    status: '',
+    key_search: '',
+    page: 1,
+    per_page: 10,
+})
 
 const isLoading = computed(() => useInvoice.isLoading);
 const hasError = computed(() => useInvoice.hasError);
 
 const handlePageChange = (page) => {
-    currentPage.value = page;
-    loadApartments();
-};
-
-const onSearch = () => {
-    currentPage.value = 1;
+    filters.value.page = 1
     loadInvoices();
 };
 
+const onSearch = () => {
+    filters.value.page = 1
+    loadInvoices();
+};
+
+const onFilter = () => {
+    filters.value.page = 1
+    loadInvoices()
+}
+
+const handleDateChange = () => {
+    filters.value.page = 1
+    loadInvoices()
+}
+
 const loadInvoices = () => {
-    useInvoice.fetchtInvoiceList(currentPage.value, '', searchKeyword.value)
+    const params = { ...filters.value }
+    useInvoice.fetchtInvoiceList(
+        params.page,
+        params.per_page,
+        params.key_search,
+        params.status,
+        params.invoice_date_from,
+        params.invoice_date_to
+    )
 }
 
 onMounted(loadInvoices)

@@ -18,13 +18,13 @@ export const useInvoiceStore = defineStore("invoice", {
     }),
 
     actions: {
-        async fetchtInvoiceList(page = 1, perPage = '', keyword = '') {
+        async fetchtInvoiceList(page = 1, perPage = '', keyword = '', status ='', invoice_date_form ='', invoice_date_to='') {
             const dashboardStore = useDashboardStore();
             const building_id = dashboardStore.getSelectedBuildingId;
 
             this.loading = true;
             try {
-                const response = await InvoiceApi.getListInvoice(building_id, page, perPage, keyword);
+                const response = await InvoiceApi.getListInvoice(building_id, page, perPage, keyword, status, invoice_date_form, invoice_date_to);
                 if (response.data) {
                     this.invoiceList = response.data.data.data.data;
 

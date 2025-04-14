@@ -8,13 +8,22 @@
 
     <div v-else class="container">
         <div class="card shadow-sm p-4">
-            <h4 class="mb-4">Sửa thông tin xe</h4>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="fw-bold text-primary">
+                    <Icon name="mdi:receipt-text" size="24" class="me-2" />
+                    Sửa thông tin xe
+                </h4>
+                <button class="btn btn-secondary" @click="goBack">
+                    <Icon name="mdi:arrow-left-circle" size="20" class="me-2" />
+                    Quay lại
+                </button>
+            </div>
             <form @submit.prevent="updateVehicle">
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Biển số xe</label>
-                        <input type="text" class="form-control" v-model="vehicleForm.license_plate">
+                        <input type="text" class="form-control" v-model="vehicleForm.license_plate" @input="onChange">
                         <small v-if="errors?.['license_plate']" class="text-danger">
                             {{ errors?.['license_plate'][0] }}
                         </small>
@@ -71,20 +80,28 @@
                 </div>
 
                 <div class="d-flex justify-content-end">
-                    <button type="button" class="btn btn-secondary" @click="goBack()">Hủy</button>
+                    <button type="button" class="btn btn-secondary" @click="reset()">Làm mới</button>
                     <button type="submit" class="btn btn-primary me-2">Lưu thay đổi</button>
                 </div>
             </form>
         </div>
     </div>
+
+    <!-- Modal xác nhận chuyển hướng -->
+    <ConfirmNavigationModal
+      v-model="showConfirmModal"
+      @confirm="confirmNavigation"
+      @cancel="cancelNavigation"
+    />
 </template>
 
 <script setup>
-import { ref , onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useToast } from 'vue-toastification'
 import { useVehicleStore } from '@/stores/vehicle'
 import { useDashboardStore } from '@/stores/dashboard'
 import { useRouter, useRoute } from 'vue-router'
+import ConfirmNavigationModal from '@/components/modal/UnsavedChangesModal.vue'
 
 definePageMeta({
     middleware: "auth",
@@ -99,6 +116,7 @@ const dashboardStore = useDashboardStore()
 const building_id = dashboardStore.getSelectedBuildingId
 const vehicle_id = route.params.id
 const errors = ref({})
+const originalVehicleForm = ref({})
 
 const vehicleForm = ref({
     license_plate: '',
@@ -110,8 +128,38 @@ const vehicleForm = ref({
     building_id: building_id,
 })
 
+// const {
+//     showConfirmModal,
+//     // hasUnsavedChanges,
+//     trigger,
+//     confirmProceed,
+//     cancelProceed
+// } = useUnsavedChangesWarning(vehicleForm, originalVehicleForm)
+const { 
+  hasUnsavedChanges,
+  showConfirmModal, 
+  setupRouteGuard,
+  setEditing,
+  confirmNavigation,
+  cancelNavigation
+} = useUnsavedChangesGuard()
+
+const reset = () => {
+    vehicleForm.value.license_plate = ''
+    vehicleForm.value.vehicle_type = ''
+    vehicleForm.value.parking_slot = ''
+    vehicleForm.value.apartment_number = ''
+    vehicleForm.value.status = 0,
+    vehicleForm.value.created_at = ''
+    setEditing(false)
+}
+
+function onChange() {
+  setEditing(true)
+}
+
 const goBack = () => {
-    router.back();
+    router.back()
 }
 
 const isLoading = computed(() => vehicleStore.isLoading);
@@ -119,6 +167,7 @@ const isLoading = computed(() => vehicleStore.isLoading);
 const getVehicle = async () => {
     try {
         await vehicleStore.fechVehicle(vehicle_id)
+        originalVehicleForm.value = { ...vehicleStore.vehicle }
         vehicleForm.value = vehicleStore.vehicle
     } catch (error) {
         toast.error('Không tìm thấy xe!')
@@ -131,6 +180,7 @@ const updateVehicle = async () => {
         const result = await vehicleStore.updateVehicle(vehicleForm.value, vehicle_id);
         if (result) {
             toast.success('Cập nhật dữ liệu xe thành công!')
+            setEditing(false)
             router.push('/vehicle')
         }
     } catch (error) {
@@ -146,6 +196,7 @@ const updateVehicle = async () => {
 
 onMounted(() => {
     getVehicle()
+    setupRouteGuard()
 })
 </script>
 

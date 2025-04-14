@@ -10,7 +10,16 @@
 
     <!-- Form Content -->
     <div v-else class="card shadow-lg border-0 p-4" style="border-radius: 12px;">
-      <h4 class="fw-bold text-primary mb-4">Thêm xe mới</h4>
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold text-primary">
+          <Icon name="mdi:receipt-text" size="24" class="me-2" />
+          Thêm xe mới
+        </h4>
+        <button class="btn btn-secondary" @click="goBack">
+          <Icon name="mdi:arrow-left-circle" size="20" class="me-2" />
+          Quay lại
+        </button>
+      </div>
       <form @submit.prevent="createdVehicle">
         <!-- Danh sách xe -->
         <fieldset class="mb-4">
@@ -94,11 +103,11 @@
 
         <!-- Action Buttons -->
         <div class="d-flex justify-content-end gap-2">
-          <button type="button" class="btn btn-outline-secondary" style="min-width: 120px;" @click="goBack()">
-            Hủy
+          <button type="button" class="btn btn-secondary" style="min-width: 120px;" @click="reset()">
+            Làm mới
           </button>
           <button type="submit" class="btn btn-primary" style="min-width: 120px;">
-            Thêm danh sách xe
+            Lư thay đổi
           </button>
         </div>
       </form>
@@ -138,6 +147,12 @@ const addVehicle = () => {
 const removeVehicle = (index) => {
   vehicles.value.splice(index, 1);
 };
+
+const reset = () => {
+  vehicles.value = [
+    { license_plate: '', vehicle_type: '', parking_slot: '', amapartment_numberount: '', status: 0,  created_at:''}
+  ]
+}
 
 const goBack = () => {
   router.back();

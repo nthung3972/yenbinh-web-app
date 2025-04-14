@@ -16,13 +16,6 @@
                 </h5>
 
                 <div class="d-flex align-items-center gap-3">
-                    <select v-model="vehicleType" @change="onFilter" class="form-select w-25">
-                        <option value="">Loại xe</option>
-                        <option value="car">Ô tô</option>
-                        <option value="motorbike">Xe máy</option>
-                        <option value="bicycle">Xe đạp</option>
-                    </select>
-
                     <!-- Ô tìm kiếm -->
                     <div class="input-group">
                         <span class="input-group-text bg-white">
@@ -42,6 +35,25 @@
                     </NuxtLink>
                 </div>
             </div>
+
+            <!-- Bộ lọc -->
+            <div class="card mb-4 border shadow-sm">
+                <div class="card-body">
+                    <div class="row row-cols-1 row-cols-md-auto g-3 align-items-end">
+                        <!-- Trạng thái -->
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">Loại xe</label>
+                            <select v-model="vehicleType" @change="onFilter" class="form-select">
+                                <option value="">Loại xe</option>
+                                <option value="car">Ô tô</option>
+                                <option value="motorbike">Xe máy</option>
+                                <option value="bicycle">Xe đạp</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <table class="table table-hover align-middle" style="table-layout: fixed; width: 100%;">
                 <thead class="table-light sticky-top" style="z-index: 1;">
                     <tr>
@@ -124,7 +136,6 @@ const onSearch = () => {
 
 const fectVehicleList = () => {
     vehicleStore.fetchVehicleList(currentPage.value, '', searchKeyword.value, vehicleType.value)
-    console.log(vehicleStore.vehicleList)
 }
 
 onMounted(fectVehicleList)
