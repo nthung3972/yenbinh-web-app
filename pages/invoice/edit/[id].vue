@@ -6,15 +6,24 @@
     <p>Đang tải dữ liệu...</p>
   </div>
   <div v-else>
-    <div class="invoice-container container mt-4">
-      <h4>Chỉnh sửa hóa đơn</h4>
+    <div class="invoice-container container mt-4 ">
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold text-primary">
+          <Icon name="mdi:receipt-text" size="24" class="me-2" />
+          Hóa Đơn Chi Tiết
+        </h4>
+        <button class="btn btn-secondary" @click="goBack">
+          <Icon name="mdi:arrow-left-circle" size="20" class="me-2" />
+          Quay lại
+        </button>
+      </div>
       <div class="card p-4 shadow-sm">
         <form @submit.prevent="updateInvoice">
           <div class="form-group">
             <label>Mã Căn Hộ</label>
             <input v-model="invoiceForm.apartment_number" type="text" class="form-control" disabled>
-            <small v-if="errors['apartment_number']" class="text-danger">
-              {{ errors['apartment_number'] }}
+            <small v-if="errors?.['apartment_number']" class="text-danger">
+              {{ errors?.['apartment_number'] }}
             </small>
           </div>
 
@@ -23,8 +32,8 @@
               <div class="form-group">
                 <label>Ngày Phát hành</label>
                 <input v-model="invoiceForm.invoice_date" type="date" class="form-control">
-                <small v-if="errors['invoice_date']" class="text-danger">
-                  {{ errors['invoice_date'] }}
+                <small v-if="errors?.['invoice_date']" class="text-danger">
+                  {{ errors?.['invoice_date'] }}
                 </small>
               </div>
             </div>
@@ -32,8 +41,8 @@
               <div class="form-group">
                 <label>Hạn thanh toán</label>
                 <input v-model="invoiceForm.due_date" type="date" class="form-control">
-                <small v-if="errors['due_date']" class="text-danger">
-                  {{ errors['due_date'] }}
+                <small v-if="errors?.['due_date']" class="text-danger">
+                  {{ errors?.['due_date'] }}
                 </small>
               </div>
             </div>
@@ -44,10 +53,9 @@
             <select v-model="invoiceForm.status" class="form-control">
               <option value="0">Chưa thanh toán</option>
               <option value="1">Đã thanh toán</option>
-              <option value="2">Đã quá hạn</option>
             </select>
-            <small v-if="errors['status']" class="text-danger">
-              {{ errors['status'] }}
+            <small v-if="errors?.['status']" class="text-danger">
+              {{ errors?.['status'] }}
             </small>
           </div>
 
@@ -69,8 +77,8 @@
                     <option value="GUIXE">Phí gửi xe</option>
                     <option value="PHIKHAC">Phí khác</option>
                   </select>
-                  <small v-if="errors[`invoice_detail.${index}.service_name`]" class="text-danger">
-                    {{ errors[`invoice_detail.${index}.service_name`][0] }}
+                  <small v-if="errors?.[`invoice_detail.${index}.service_name`]" class="text-danger">
+                    {{ errors?.[`invoice_detail.${index}.service_name`][0] }}
                   </small>
                 </div>
 
@@ -78,8 +86,8 @@
                 <div class="col-md-2">
                   <input v-model.number="detail.quantity" type="number" class="form-control" placeholder="Số lượng"
                     @input="countAmount(detail)">
-                  <small v-if="errors[`invoice_detail.${index}.quantity`]" class="text-danger">
-                    {{ errors[`invoice_detail.${index}.quantity`][0] }}
+                  <small v-if="errors?.[`invoice_detail.${index}.quantity`]" class="text-danger">
+                    {{ errors?.[`invoice_detail.${index}.quantity`][0] }}
                   </small>
                 </div>
 
@@ -87,8 +95,8 @@
                 <div class="col-md-3">
                   <input v-model.number="detail.price" type="text" class="form-control" placeholder="Đơn giá"
                     @input="countAmount(detail)">
-                  <small v-if="errors[`invoice_detail.${index}.price`]" class="text-danger">
-                    {{ errors[`invoice_detail.${index}.price`][0] }}
+                  <small v-if="errors?.[`invoice_detail.${index}.price`]" class="text-danger">
+                    {{ errors?.[`invoice_detail.${index}.price`][0] }}
                   </small>
                 </div>
 
@@ -112,7 +120,7 @@
           </div>
 
           <div class="form-group d-flex" style="margin-top: 20px;">
-            <button type="button" class="btn btn-secondary" @click="goBack()">Hủy bỏ</button>
+            <button type="button" class="btn btn-secondary" @click="reset()">Tạo lại</button>
             <button type="submit" class="btn btn-primary">Cập nhật</button>
           </div>
         </form>
@@ -150,6 +158,19 @@ const invoiceForm = ref({
   invoice_detail: []
 })
 const invoiceDetailForm = ref([])
+
+const reset = () => {
+  invoiceForm.value.apartment_number = ''
+  invoiceForm.value.invoice_date = ''
+  invoiceForm.value.due_date = ''
+  invoiceForm.value.total_amount = 0
+  invoiceForm.value.status = 0
+  invoiceForm.value.invoice_detail = []
+
+  invoiceDetailForm.value = [
+    { service_name: '', quantity: '', price: '', amount: 0, description: '' }
+  ]
+}
 
 const goBack = () => {
   router.push('/invoice')

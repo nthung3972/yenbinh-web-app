@@ -1,7 +1,16 @@
 <template>
   <div class="container">
     <div class="card shadow-lg border-0 p-4" style="border-radius: 12px;">
-      <h4 class="fw-bold text-primary mb-4">Tạo hóa đơn căn hộ</h4>
+      <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4 class="fw-bold text-primary">
+          <Icon name="mdi:receipt-text" size="24" class="me-2" />
+          Hóa Đơn Chi Tiết
+        </h4>
+        <button class="btn btn-secondary" @click="goBack">
+          <Icon name="mdi:arrow-left-circle" size="20" class="me-2" />
+          Quay lại
+        </button>
+      </div>
       <form @submit.prevent="taoHoaDon">
         <!-- Thông tin hóa đơn -->
         <fieldset class="mb-4">
@@ -105,11 +114,11 @@
 
         <!-- Action Buttons -->
         <div class="d-flex justify-content-end gap-2">
-          <button type="button" class="btn btn-outline-secondary" style="min-width: 120px;" @click="goBack()">
-            Hủy tạo
+          <button type="button" class="btn btn-outline-secondary" style="min-width: 120px;" @click="reset()">
+            Làm mới
           </button>
           <button type="submit" class="btn btn-primary" style="min-width: 120px;">
-            Tạo hóa đơn
+            Thêm hóa đơn
           </button>
         </div>
       </form>
@@ -159,6 +168,19 @@ const goBack = () => {
   router.back();
 }
 
+const reset = () => {
+  invoiceForm.value.apartment_number = ''
+  invoiceForm.value.invoice_date = ''
+  invoiceForm.value.due_date = ''
+  invoiceForm.value.total_amount = 0
+  invoiceForm.value.status = 0
+  invoiceForm.value.invoice_detail = []
+
+  invoiceDetailForm.value = [
+    { service_name: '', quantity: '', price: '', amount: 0, description: '' }
+  ]
+}
+
 // Tính thành tiền cho từng khoản phí
 const countAmount = (detail) => {
   detail.amount = detail.quantity * detail.price
@@ -204,7 +226,7 @@ const taoHoaDon = async () => {
     const result = await invoiceStore.createInvoice(submissionData)
     if (result) {
       toast.success('Tạo hóa đơn thành công')
-      router.push('/invoice')
+      reset()
     }
   } catch (error) {
     toast.error('Lỗi khi tạo hóa đơn: ' + error.message)

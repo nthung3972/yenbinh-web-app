@@ -32,8 +32,10 @@
             <Icon name="mdi:tag" size="16" class="me-1" />
             {{ getStatusText(invoiceStore.invoice.status) }}
           </span>
-          <button @click="downloadInvoice(id)" class="btn btn-success">
-            <Icon name="mdi:file-excel" class="me-1" /> Tải Hóa Đơn Excel
+          <button @click="downloadInvoice(id)" class="btn btn-success" :disabled="loading" >
+            <Icon name="mdi:file-excel" class="me-1" />
+            <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span>
+                {{ loading ? "Đang xử lý..." : "Xuất excel" }}
           </button>
         </div>
 
@@ -145,8 +147,10 @@ const route = useRoute()
 const router = useRouter()
 const id = route.params.id
 const authStore = useAuthStore();
+const loading  = ref(false)
 
 const downloadInvoice = async (id) => {
+  loading.value = true
   try {
     const response = await axios.get(
       `http://localhost:8000/api/admin/export/invoices/${id}`, // Thay bằng đúng URL của bạn
@@ -173,6 +177,8 @@ const downloadInvoice = async (id) => {
     document.body.removeChild(link)
   } catch (error) {
     console.error('Export error:', error)
+  } finally {
+    loading.value = false
   }
 };
 
@@ -213,57 +219,6 @@ const loadInvoice = async () => {
 }
 
 onMounted(loadInvoice)
-// export default {
-//   data() {
-//     return {
-//       invoice: {
-//         apartment_number: "A101",
-//         invoice_date: "2025-04-01",
-//         due_date: "2025-04-15",
-//         status: "0",
-//         total_amount: 3500000,
-//         details: [
-//           { service_name: "DIEN", quantity: 150, price: 3000, amount: 450000 },
-//           { service_name: "NUOC", quantity: 10, price: 15000, amount: 150000 },
-//           { service_name: "QUANLY", quantity: 1, price: 2000000, amount: 2000000 },
-//           { service_name: "GUIXE", quantity: 1, price: 900000, amount: 900000 },
-//         ],
-//       },
-//     };
-//   },
-//   methods: {
-//     goBack() {
-//       // Logic để quay lại trang trước
-//       this.$router.push("/invoices");
-//     },
-//     formatDate(date) {
-//       return new Date(date).toLocaleDateString("vi-VN");
-//     },
-//     formatVND(amount) {
-//       return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(amount);
-//     },
-//     getServiceName(code) {
-// const services = {
-//   DIEN: "Tiền điện",
-//   NUOC: "Tiền nước",
-//   QUANLY: "Phí quản lý",
-//   GUIXE: "Phí gửi xe",
-//   PHIKHAC: "Phí khác",
-// };
-// return services[code] || "Không xác định";
-//     },
-//     getStatusText(status) {
-// const statuses = {
-//   "0": "Chưa thanh toán",
-//   "1": "Đã thanh toán",
-//   "2": "Đã quá hạn",
-// };
-//       return statuses[status] || "Không xác định";
-//     },
-//   },
-// };
-
-
 </script>
 
 <style scoped>
