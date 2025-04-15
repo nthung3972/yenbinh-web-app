@@ -96,12 +96,12 @@ export const useResidentStore = defineStore("resident", {
         },
 
         async updateResident(data, id) {
+            this.loading = true
             try {
-                console.log(data)
                 const response = await ResidentApi.update(data, id)
                 return response.data
             }catch (error) {
-                this.error = "Đã xảy ra lỗi khi khi xóa cư dân khỏi căn hộ";
+                this.error = "Đã xảy ra lỗi khi cập nhật thông tin cư dân";
                 throw error;
             } finally {
                 this.loading = false;

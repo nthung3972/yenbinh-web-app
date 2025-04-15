@@ -10,7 +10,16 @@
 
         <!-- Form Content -->
         <div v-else class="card shadow-lg border-0 p-4" style="border-radius: 12px;">
-            <h4 class="fw-bold text-primary mb-4">Thêm cư dân vào căn hộ</h4>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="fw-bold text-primary">
+                    <Icon name="mdi:receipt-text" size="24" class="me-2" />
+                    Thêm cư dân
+                </h4>
+                <button class="btn btn-outline-secondary" @click="goBack()">
+                    <Icon name="mdi:arrow-left-circle" size="20" class="me-2" />
+                    Quay lại
+                </button>
+            </div>
             <form @submit.prevent="handleSubmit">
                 <!-- Thông tin cư dân -->
                 <fieldset class="mb-4">
@@ -18,85 +27,51 @@
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label fw-medium">Họ và tên <span class="text-danger">*</span></label>
-                            <input 
-                                v-model="residentForm.full_name" 
-                                type="text" 
-                                class="form-control shadow-sm" 
-                                :class="{ 'is-invalid': errors.full_name }" 
-                                placeholder="Nhập họ và tên" 
-                                required 
-                            />
-                            <div v-if="errors.full_name" class="invalid-feedback">{{ errors.full_name }}</div>
+                            <input v-model="residentForm.full_name" type="text" class="form-control shadow-sm"
+                                :class="{ 'is-invalid': errors?.full_name }" placeholder="Nhập họ và tên"
+                                @input="onChange()" />
+                            <div v-if="errors?.full_name" class="invalid-feedback">{{ errors.full_name }}</div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-medium">Căn cước công dân</label>
-                            <input 
-                                v-model="residentForm.id_card_number" 
-                                class="form-control shadow-sm" 
-                                :class="{ 'is-invalid': errors.id_card_number }" 
-                                placeholder="Nhập số CCCD (nếu có)" 
-                            />
-                            <div v-if="errors.id_card_number" class="invalid-feedback">{{ errors.id_card_number }}</div>
+                            <input v-model="residentForm.id_card_number" class="form-control shadow-sm"
+                                :class="{ 'is-invalid': errors?.id_card_number }" @input="onChange()"
+                                placeholder="Nhập số CCCD (nếu có)" />
+                            <div v-if="errors?.id_card_number" class="invalid-feedback">{{ errors.id_card_number }}</div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-medium">Ngày sinh <span class="text-danger">*</span></label>
-                            <input 
-                                v-model="residentForm.date_of_birth" 
-                                type="date" 
-                                class="form-control shadow-sm" 
-                                :class="{ 'is-invalid': errors.date_of_birth }" 
-                                required 
-                            />
-                            <div v-if="errors.date_of_birth" class="invalid-feedback">{{ errors.date_of_birth }}</div>
+                            <input v-model="residentForm.date_of_birth" type="date" class="form-control shadow-sm"
+                                :class="{ 'is-invalid': errors?.date_of_birth }" @input="onChange()" />
+                            <div v-if="errors?.date_of_birth" class="invalid-feedback">{{ errors.date_of_birth }}</div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-medium">Giới tính</label>
                             <div class="d-flex gap-3">
                                 <div class="form-check">
-                                    <input 
-                                        v-model="residentForm.gender" 
-                                        class="form-check-input" 
-                                        type="radio" 
-                                        value="Nam" 
-                                        id="genderMale" 
-                                    />
+                                    <input v-model="residentForm.gender" class="form-check-input" type="radio"
+                                        value="Nam" id="genderMale" @input="onChange()" />
                                     <label class="form-check-label" for="genderMale">Nam</label>
                                 </div>
                                 <div class="form-check">
-                                    <input 
-                                        v-model="residentForm.gender" 
-                                        class="form-check-input" 
-                                        type="radio" 
-                                        value="Nữ" 
-                                        id="genderFemale" 
-                                    />
+                                    <input v-model="residentForm.gender" class="form-check-input" type="radio"
+                                        value="Nữ" id="genderFemale" @input="onChange()" />
                                     <label class="form-check-label" for="genderFemale">Nữ</label>
                                 </div>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-medium">Số điện thoại <span class="text-danger">*</span></label>
-                            <input 
-                                v-model="residentForm.phone_number" 
-                                type="tel" 
-                                class="form-control shadow-sm" 
-                                :class="{ 'is-invalid': errors.phone_number }" 
-                                placeholder="Nhập số điện thoại" 
-                                required 
-                            />
-                            <div v-if="errors.phone_number" class="invalid-feedback">{{ errors.phone_number }}</div>
+                            <input v-model="residentForm.phone_number" type="tel" class="form-control shadow-sm"
+                                :class="{ 'is-invalid': errors?.phone_number }" @input="onChange()"
+                                placeholder="Nhập số điện thoại" />
+                            <div v-if="errors?.phone_number" class="invalid-feedback">{{ errors.phone_number }}</div>
                         </div>
                         <div class="col-md-6">
                             <label class="form-label fw-medium">Email <span class="text-danger">*</span></label>
-                            <input 
-                                v-model="residentForm.email" 
-                                type="email" 
-                                class="form-control shadow-sm" 
-                                :class="{ 'is-invalid': errors.email }" 
-                                placeholder="Nhập email" 
-                                required 
-                            />
-                            <div v-if="errors.email" class="invalid-feedback">{{ errors.email }}</div>
+                            <input v-model="residentForm.email" type="email" class="form-control shadow-sm"
+                                :class="{ 'is-invalid': errors?.email }" @input="onChange()" placeholder="Nhập email" />
+                            <div v-if="errors?.email" class="invalid-feedback">{{ errors.email }}</div>
                         </div>
                     </div>
                 </fieldset>
@@ -104,38 +79,39 @@
                 <!-- Thông tin căn hộ -->
                 <fieldset class="mb-4">
                     <legend class="h5 fw-semibold text-dark mb-3">Thông tin căn hộ</legend>
-                    <div v-if="errors.apartments" class="alert alert-danger mb-3">{{ errors.apartments }}</div>
-                    <div v-for="(apartment, index) in apartments" :key="index" class="card mb-3 shadow-sm border-0" style="border-radius: 8px;">
+                    <div v-if="errors?.apartments" class="alert alert-danger mb-3">{{ errors.apartments }}</div>
+                    <div v-for="(apartment, index) in defaultApartment" :key="index"
+                        class="card mb-3 shadow-sm border-0" style="border-radius: 8px;">
                         <div class="card-header bg-light d-flex justify-content-between align-items-center">
                             <h6 class="mb-0 fw-semibold">Căn hộ {{ index + 1 }}</h6>
-                            <button 
-                                v-if="apartments.length > 1" 
-                                @click.prevent="removeResident(index)" 
-                                class="btn btn-sm btn-outline-danger" 
-                                style="padding: 0.25rem 0.5rem;"
-                            >
+                            <button v-if="defaultApartment.length > 1" @click.prevent="removeResident(index)"
+                                class="btn btn-sm btn-outline-danger" style="padding: 0.25rem 0.5rem;">
                                 <Icon name="mdi:delete" size="16" /> Xóa
                             </button>
                         </div>
                         <div class="card-body">
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <label class="form-label fw-medium">Mã căn hộ <span class="text-danger">*</span></label>
-                                    <input 
-                                        v-model="apartment.apartment_number" 
-                                        type="text" 
-                                        class="form-control shadow-sm" 
-                                        placeholder="Nhập mã căn hộ" 
-                                        required 
-                                    />
+                                    <label class="form-label fw-medium">Mã căn hộ <span
+                                            class="text-danger">*</span></label>
+                                    <input v-model="apartment.apartment_number" type="text"
+                                        class="form-control shadow-sm" @input="onChange()" placeholder="Nhập mã căn hộ"
+                                        :class="{ 'is-invalid': errors?.apartments }" />
+                                    <div v-if="errors?.[`apartments.${index}.apartment_number`]" class="invalid-feedback">
+                                        Lỗi khi nhập mã căn hộ</div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label fw-medium">Vai trò <span class="text-danger">*</span></label>
-                                    <select v-model="apartment.role_in_apartment" class="form-select shadow-sm" required>
+                                    <label class="form-label fw-medium">Vai trò <span
+                                            class="text-danger">*</span></label>
+                                    <select v-model="apartment.role_in_apartment" class="form-select shadow-sm" :class="{ 'is-invalid': errors?.apartments }"
+                                        @change="onChange()">
+                                        <option value="">Vai trò trong căn hộ</option>
                                         <option value="0">Chủ hộ</option>
                                         <option value="1">Người thuê chính</option>
                                         <option value="2">Người thân</option>
                                     </select>
+                                    <div v-if="errors?.[`apartments.${index}.role_in_apartment`]" class="invalid-feedback">
+                                        Lỗi khi chọn vai trò trong căn hộ</div>
                                 </div>
                             </div>
                         </div>
@@ -147,34 +123,28 @@
 
                 <!-- Action Buttons -->
                 <div class="d-flex justify-content-end gap-2">
-                    <button 
-                        type="button" 
-                        class="btn btn-outline-secondary" 
-                        style="min-width: 120px;" 
-                        @click="redirectToApartment"
-                    >
-                        Bỏ qua
+                    <button type="button" class="btn btn-outline-secondary" style="min-width: 120px;" @click="reset()">
+                        Làm mới
                     </button>
-                    <button 
-                        type="submit" 
-                        class="btn btn-primary" 
-                        style="min-width: 120px;" 
-                        :disabled="isSubmitting"
-                    >
+                    <button type="submit" class="btn btn-primary" style="min-width: 120px;" :disabled="isSubmitting">
                         {{ isSubmitting ? 'Đang thêm...' : 'Thêm cư dân' }}
                     </button>
                 </div>
             </form>
         </div>
     </div>
+
+    <!-- Modal xác nhận chuyển hướng -->
+    <ConfirmNavigationModal v-model="showConfirmModal" @confirm="confirmNavigation" @cancel="cancelNavigation" />
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useResidentStore } from '@/stores/resident'
 import { useToast } from 'vue-toastification';
 import { useFormErrors } from '~/composables/useFormErrors'
+import ConfirmNavigationModal from '@/components/modal/UnsavedChangesModal.vue'
 
 definePageMeta({
     middleware: "auth",
@@ -198,63 +168,94 @@ const residentForm = ref({
     apartments: [],
 })
 
-const defaultApartment = () => ({
-    apartment_number: '',
-    role_in_apartment: 0,
-})
+const defaultApartment = ref([
+    { apartment_number: '', role_in_apartment: '' }
+])
 
-const apartments = ref([defaultApartment()])
+// const apartments = ref([defaultApartment()])
 const isSubmitting = ref(false)
+
+const reset = () => {
+    residentForm.value.full_name = ''
+    residentForm.value.id_card_number = ''
+    residentForm.value.date_of_birth = ''
+    residentForm.value.gender = 'Nam'
+    residentForm.value.phone_number = ''
+    residentForm.value.email = ''
+
+    defaultApartment.value = [
+        { apartment_number: '', role_in_apartment: '' }
+    ]
+
+    setEditing(false)
+    errors.value = null
+}
+
+const {
+    hasUnsavedChanges,
+    showConfirmModal,
+    setupRouteGuard,
+    setEditing,
+    confirmNavigation,
+    cancelNavigation,
+    navigateSafely
+} = useUnsavedChangesGuard()
+
+const onChange = () => {
+    setEditing(true)
+}
+
+const goBack = () => {
+    router.back();
+}
 
 // Thêm một cư dân mới
 const addResident = () => {
-    apartments.value.push(defaultApartment())
+    defaultApartment.value.push(
+        {
+            apartment_number: '',
+            role_in_apartment: ''
+        }
+    )
 }
 
 // Xóa cư dân khỏi danh sách
 const removeResident = (index) => {
-    apartments.value.splice(index, 1)
-}
-
-const redirectToApartment = () => {
-    router.push(`/resident`)
+    defaultApartment.value.splice(index, 1)
 }
 
 // Gửi dữ liệu lên API
 const handleSubmit = async () => {
     const submissionData = {
         ...residentForm.value,
-        apartments: apartments.value.filter(apt =>
-            apt.apartment_number.trim() !== ''
-        )
+        apartments: defaultApartment.value
     }
 
     isLoading.value = true
     try {
-        // Reset errors before making the API call
-        errors.value = null;
-
         const result = await useResident.createResident(submissionData);
         if (result) {
             toast.success("Thêm cư dân thành công!", { timeout: 3000 });
-            router.push(`/resident`);
+            errors.value = null;
+            reset()
         }
     } catch (error) {
-        // Kiểm tra xem error có tồn tại và có thuộc tính errors không
         if (error && error.errors) {
             errors.value = formatErrors(error.errors);
         } else {
-            // Xử lý các trường hợp lỗi khác
             errors.value = {
                 general: error.message || "Đã có lỗi xảy ra khi thêm cư dân"
             };
         }
-
         toast.error("Thêm cư dân thất bại!", { timeout: 3000 });
     } finally {
         isLoading.value = false;
     }
 }
+
+onMounted(() => {
+    setupRouteGuard()
+})
 </script>
 
 <style scoped>
@@ -262,25 +263,32 @@ const handleSubmit = async () => {
     font-size: 0.95rem;
     color: #495057;
 }
-.form-control, .form-select {
+
+.form-control,
+.form-select {
     border-radius: 8px;
     padding: 0.5rem 1rem;
 }
+
 .is-invalid {
     border-color: #dc3545;
 }
+
 .invalid-feedback {
     font-size: 0.85rem;
 }
+
 .card-header {
     padding: 0.75rem 1rem;
     border-bottom: 1px solid #e9ecef;
 }
+
 .btn {
     border-radius: 8px;
     padding: 0.5rem 1rem;
     transition: all 0.2s ease;
 }
+
 .btn:hover {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }

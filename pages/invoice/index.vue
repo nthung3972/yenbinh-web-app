@@ -91,7 +91,7 @@
                         <td>
                             <span :class="[
                                 'badge',
-                                invoice.status === 0 ? 'bg-info'
+                                invoice.status === 0 ? 'bg-warning'
                                     : invoice.status === 1 ? 'bg-success'
                                         : 'bg-danger'
                             ]">

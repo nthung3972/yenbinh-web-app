@@ -18,7 +18,8 @@ export default defineNuxtConfig({
   },
   plugins: [
     '~/plugins/chart.js',
-    '~/plugins/bootstrap.client.js'
+    '~/plugins/bootstrap.client.js',
+    '~/plugins/unsavedChangesGuard.js'
   ],
 
   compatibilityDate: '2025-03-13'

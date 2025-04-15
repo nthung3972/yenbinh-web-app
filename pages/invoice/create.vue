@@ -6,7 +6,7 @@
           <Icon name="mdi:receipt-text" size="24" class="me-2" />
           Hóa Đơn Chi Tiết
         </h4>
-        <button class="btn btn-secondary" @click="goBack">
+        <button class="btn btn-outline-secondary" @click="goBack()">
           <Icon name="mdi:arrow-left-circle" size="20" class="me-2" />
           Quay lại
         </button>
@@ -17,7 +17,7 @@
           <div class="row g-3">
             <div class="col-md-4">
               <label class="form-label fw-medium">Mã căn hộ <span class="text-danger">*</span></label>
-              <input v-model="invoiceForm.apartment_number" type="text" class="form-control shadow-sm"
+              <input v-model="invoiceForm.apartment_number" type="text" class="form-control shadow-sm" @input="onChange()"
                 :class="{ 'is-invalid': errors['apartment_number'] }" placeholder="Nhập mã căn hộ" required />
               <div v-if="errors['apartment_number']" class="invalid-feedback">
                 {{ errors['apartment_number'] }}
@@ -25,7 +25,7 @@
             </div>
             <div class="col-md-4">
               <label class="form-label fw-medium">Ngày phát hành <span class="text-danger">*</span></label>
-              <input v-model="invoiceForm.invoice_date" type="date" class="form-control shadow-sm"
+              <input v-model="invoiceForm.invoice_date" type="date" class="form-control shadow-sm" @input="onChange()"
                 :class="{ 'is-invalid': errors['invoice_date'] }" required />
               <div v-if="errors['invoice_date']" class="invalid-feedback">
                 {{ errors['invoice_date'] }}
@@ -33,7 +33,7 @@
             </div>
             <div class="col-md-4">
               <label class="form-label fw-medium">Hạn thanh toán <span class="text-danger">*</span></label>
-              <input v-model="invoiceForm.due_date" type="date" class="form-control shadow-sm"
+              <input v-model="invoiceForm.due_date" type="date" class="form-control shadow-sm" @input="onChange()"
                 :class="{ 'is-invalid': errors['due_date'] }" required />
               <div v-if="errors['due_date']" class="invalid-feedback">
                 {{ errors['due_date'] }}
@@ -65,7 +65,7 @@
               <tbody>
                 <tr v-for="(detail, index) in invoiceDetailForm" :key="index">
                   <td>
-                    <select v-model="detail.service_name" class="form-select shadow-sm"
+                    <select v-model="detail.service_name" class="form-select shadow-sm" @change="onChange()"
                       :class="{ 'is-invalid': errors[`invoice_detail.${index}.service_name`] }" required>
                       <option value="">Chọn loại phí</option>
                       <option value="DIEN">Tiền điện</option>
@@ -79,9 +79,9 @@
                     </div>
                   </td>
                   <td>
-                    <input v-model.number="detail.quantity" type="number" class="form-control shadow-sm"
+                    <input v-model.number="detail.quantity" type="number" class="form-control shadow-sm" 
                       :class="{ 'is-invalid': errors[`invoice_detail.${index}.quantity`] }" placeholder="Số lượng"
-                      @input="countAmount(detail)" required />
+                      @input="countAmount(detail), onChange()" required />
                     <div v-if="errors[`invoice_detail.${index}.quantity`]" class="invalid-feedback">
                       {{ errors[`invoice_detail.${index}.quantity`][0] }}
                     </div>
@@ -89,7 +89,7 @@
                   <td>
                     <input v-model.number="detail.price" type="number" class="form-control shadow-sm"
                       :class="{ 'is-invalid': errors[`invoice_detail.${index}.price`] }" placeholder="Đơn giá"
-                      @input="countAmount(detail)" required />
+                      @input="countAmount(detail), onChange()" required />
                     <div v-if="errors[`invoice_detail.${index}.price`]" class="invalid-feedback">
                       {{ errors[`invoice_detail.${index}.price`][0] }}
                     </div>
@@ -124,14 +124,22 @@
       </form>
     </div>
   </div>
+
+  <!-- Modal xác nhận chuyển hướng -->
+  <ConfirmNavigationModal
+      v-model="showConfirmModal"
+      @confirm="confirmNavigation"
+      @cancel="cancelNavigation"
+    />
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useToast } from 'vue-toastification'
 import { useDashboardStore } from '@/stores/dashboard'
 import { useInvoiceStore } from '@/stores/invoice'
-import { useRouter } from 'vue-router';
+import { useRouter } from 'vue-router'
+import ConfirmNavigationModal from '@/components/modal/UnsavedChangesModal.vue'
 
 definePageMeta({
   middleware: "auth",
@@ -163,6 +171,19 @@ const invoiceDetailForm = ref([
   { service_name: '', quantity: '', price: '', amount: 0, description: '' }
 ])
 
+const { 
+  hasUnsavedChanges,
+  showConfirmModal, 
+  setupRouteGuard,
+  setEditing,
+  confirmNavigation,
+  cancelNavigation,
+  navigateSafely
+} = useUnsavedChangesGuard()
+
+const onChange = () => {
+  setEditing(true)
+}
 
 const goBack = () => {
   router.back();
@@ -179,6 +200,8 @@ const reset = () => {
   invoiceDetailForm.value = [
     { service_name: '', quantity: '', price: '', amount: 0, description: '' }
   ]
+
+  setEditing(false)
 }
 
 // Tính thành tiền cho từng khoản phí
@@ -226,6 +249,7 @@ const taoHoaDon = async () => {
     const result = await invoiceStore.createInvoice(submissionData)
     if (result) {
       toast.success('Tạo hóa đơn thành công')
+      errors.value = null
       reset()
     }
   } catch (error) {
@@ -234,6 +258,9 @@ const taoHoaDon = async () => {
   }
 }
 
+onMounted(() => {
+    setupRouteGuard()
+})
 </script>
 
 <style scoped>
