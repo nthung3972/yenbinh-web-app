@@ -1,6 +1,5 @@
 <template>
     <div class="card shadow-lg p-4 m-4 border-0">
-        <!-- Loading State -->
         <div v-if="isLoading" class="text-center py-5">
             <div class="spinner-border text-primary" role="status">
                 <span class="visually-hidden">Đang tải dữ liệu...</span>
@@ -8,25 +7,20 @@
             <p class="text-muted mt-2">Đang tải dữ liệu...</p>
         </div>
 
-        <!-- Error State -->
         <div v-else-if="hasError" class="alert alert-danger text-center">{{ hasError }}</div>
 
-        <!-- Main Content -->
         <div v-else>
-            <!-- Header Section -->
             <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
-                <!-- <h5 class="fw-bold text-primary mb-0">Danh Sách Căn Hộ</h5> -->
                 <h5 class="fw-bold text-primary mb-0">
-                    🏠 Danh sách căn hộ
+                    <Icon name="ion:home" size="24" /> Danh sách căn hộ
                 </h5>
 
                 <div class="d-flex align-items-center gap-3">
-                    <!-- Ô tìm kiếm -->
                     <div class="input-group">
                         <span class="input-group-text bg-white">
                             <Icon name="material-symbols:search" />
                         </span>
-                        <input v-model="searchKeyword" @keyup.enter="onSearch" type="text" class="form-control"
+                        <input v-model="filters.key_search" @keyup.enter="onSearch" type="text" class="form-control"
                             placeholder="Nhập mã căn hộ..." />
                         <button class="btn btn-outline-primary" @click="onSearch">
                             Tìm
@@ -38,6 +32,35 @@
                         <Icon name="ic:baseline-add-circle-outline" size="20" class="me-1" />
                         Thêm căn hộ
                     </NuxtLink>
+                </div>
+            </div>
+
+            <!-- Bộ lọc -->
+            <div class="card mb-4 border shadow-sm">
+                <div class="card-body">
+                    <div class="row row-cols-1 row-cols-md-auto g-3 align-items-end">
+                        <!-- Loại căn hộ -->
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">Loại căn hộ</label>
+                            <select v-model="filters.apartment_type" @change="onFilter" class="form-select">
+                                <option value="">Tất cả</option>
+                                <option :value="0">Chưa thanh toán</option>
+                                <option :value="1">Đã thanh toán</option>
+                                <option :value="2">Đã quá hạn</option>
+                            </select>
+                        </div>
+
+                        <!-- Trạng thái -->
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">Tình trạng</label>
+                            <select v-model="filters.status" @change="onFilter" class="form-select">
+                                <option value="">Tất cả</option>
+                                <option :value="0">Chưa thanh toán</option>
+                                <option :value="1">Đã thanh toán</option>
+                                <option :value="2">Đã quá hạn</option>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -70,7 +93,7 @@
                             <td>{{ apartment.updated_by?.name ?? '---' }}</td>
                             <td class="text-center">
                                 <div class="btn-group gap-2">
-                                    <NuxtLink to="/" class="btn btn-sm btn-outline-success d-flex align-items-center">
+                                    <NuxtLink :to="`/apartment/detail/${apartment.apartment_id}`" class="btn btn-sm btn-outline-success d-flex align-items-center">
                                         <Icon name="bxs:detail" size="16" class="me-1" /> Xem
                                     </NuxtLink>
                                     <NuxtLink :to="`/apartment/${apartment.apartment_id}/edit`"
@@ -102,26 +125,42 @@ definePageMeta({
 
 const apartmentStore = useApartmentStore();
 
-const currentPage = ref(1);
-const searchKeyword = ref('');
+const filters = ref({
+    apartment_type: '',
+    status: '',
+    key_search: '',
+    page: 1,
+    per_page: 10,
+})
 
 const isLoading = computed(() => apartmentStore.isLoading);
 const hasError = computed(() => apartmentStore.hasError);
 
-const loadApartments = () => {
-    apartmentStore.fetchApartmentListByBuilding(currentPage.value, '', searchKeyword.value);
-}
-
 const handlePageChange = (page) => {
-    currentPage.value = page;
+    filters.value.page = 1
     loadApartments();
 };
-
 
 const onSearch = () => {
-    currentPage.value = 1;
+    filters.value.page = 1
     loadApartments();
 };
+
+const onFilter = () => {
+    filters.value.page = 1
+    loadApartments()
+}
+
+const loadApartments = () => {
+    const params = { ...filters.value }
+    apartmentStore.fetchApartmentListByBuilding(
+        params.page,
+        params.per_page,
+        params.key_search,
+        params.status,
+        params.apartment_type
+    )
+}
 
 onMounted(loadApartments);
 </script>

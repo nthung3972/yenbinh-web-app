@@ -18,13 +18,13 @@ export const useApartmentStore = defineStore("apartment", {
     }),
 
     actions: {
-        async fetchApartmentListByBuilding(page = 1, perPage = '', keyword = '') {
+        async fetchApartmentListByBuilding(page = 1, perPage = '', keyword = '', status = '', apartment_type = '') {
             const dashboardStore = useDashboardStore();
             const building_id = dashboardStore.getSelectedBuildingId;
 
             this.loading = true;
             try {
-                const response = await ApartmentApi.getListByBuilding(building_id, page, perPage, keyword);
+                const response = await ApartmentApi.getListByBuilding(building_id, page, perPage, keyword, status, apartment_type);
                 if (response) {
                     this.apartmentList = response.data.data.data.data;
                     this.pagination = {
@@ -66,6 +66,7 @@ export const useApartmentStore = defineStore("apartment", {
             this.loading = true;
             try {
                 const response = await ApartmentApi.edit(id);
+                console.log(response)
                 if(response.data.data) {
                     this.apartment = response.data.data[0]
                 }

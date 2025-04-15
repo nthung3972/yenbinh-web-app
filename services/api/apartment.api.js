@@ -1,8 +1,8 @@
 import apiService from "@/services/api.service";
 
 export const ApartmentApi = {
-    getListByBuilding(building_id, page = 1, per_page = 5, keyword = '') {
-        return apiService.get(`/apartment/list-by-building/${building_id}?page=${page}&per_page=${per_page}&keyword=${encodeURIComponent(keyword)}`);
+    getListByBuilding(building_id, page, per_page, keyword, status, apartment_type) {
+        return apiService.get(`/apartment/list-by-building/${building_id}?page=${page}&per_page=${per_page}&keyword=${encodeURIComponent(keyword)}&status=${status}&apartment_type=${apartment_type}`);
     },
 
     create(data) {

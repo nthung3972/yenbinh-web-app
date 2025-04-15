@@ -1,4 +1,3 @@
-<!-- pages/residents/[id].vue -->
 <template>
     <div v-if="isLoading" class="text-center">
         <div class="spinner-border spinner-border-sm me-2" role="status">
@@ -156,7 +155,7 @@
                                             >
                                                 {{
                                                     apartment.pivot.role_in_apartment === 0
-                                                    ? 'Chủ hộ'
+                                                    ? 'Chủ căn hộ'
                                                     : apartment.pivot.role_in_apartment === 1
                                                     ? 'Người thuê'
                                                     : apartment.pivot.role_in_apartment === 2
