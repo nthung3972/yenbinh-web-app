@@ -15,7 +15,7 @@
           <Icon name="mdi:receipt-text" size="24" class="me-2" />
           Thêm xe mới
         </h4>
-        <button class="btn btn-secondary" @click="goBack">
+        <button class="btn btn-outline-secondary" @click="goBack">
           <Icon name="mdi:arrow-left-circle" size="20" class="me-2" />
           Quay lại
         </button>
@@ -37,7 +37,7 @@
                 <div class="col-md-6">
                   <label class="form-label fw-medium">Biển số xe <span class="text-danger">*</span></label>
                   <input v-model="vehicle.license_plate" type="text" class="form-control shadow-sm"
-                    :class="{ 'is-invalid': errors?.[`${index}.license_plate`] }" placeholder="Nhập biển số xe"
+                    :class="{ 'is-invalid': errors?.[`${index}.license_plate`] }" placeholder="Nhập biển số xe" @input="onChange()"
                     required />
                   <div v-if="errors?.[`${index}.license_plate`]" class="invalid-feedback">
                     {{ errors[`${index}.license_plate`][0] }}
@@ -46,7 +46,7 @@
                 <div class="col-md-6">
                   <label class="form-label fw-medium">Loại xe <span class="text-danger">*</span></label>
                   <select v-model="vehicle.vehicle_type" class="form-select shadow-sm"
-                    :class="{ 'is-invalid': errors?.[`${index}.vehicle_type`] }" required>
+                    :class="{ 'is-invalid': errors?.[`${index}.vehicle_type`] }" @change="onChange()" required>
                     <option value="">Chọn loại xe</option>
                     <option value="car">Ô tô</option>
                     <option value="motorbike">Xe máy</option>
@@ -59,7 +59,7 @@
                 <div class="col-md-6">
                   <label class="form-label fw-medium">Vị trí đỗ</label>
                   <input v-model="vehicle.parking_slot" type="text" class="form-control shadow-sm"
-                    :class="{ 'is-invalid': errors?.[`${index}.parking_slot`] }"
+                    :class="{ 'is-invalid': errors?.[`${index}.parking_slot`] }" @input="onChange()"
                     placeholder="Nhập vị trí đỗ (nếu có)" />
                   <div v-if="errors?.[`${index}.parking_slot`]" class="invalid-feedback">
                     {{ errors[`${index}.parking_slot`][0] }}
@@ -68,7 +68,7 @@
                 <div class="col-md-6">
                   <label class="form-label fw-medium">Mã căn hộ <span class="text-danger">*</span></label>
                   <input v-model="vehicle.apartment_number" type="text" class="form-control shadow-sm"
-                    :class="{ 'is-invalid': errors?.[`${index}.apartment_number`] }" placeholder="Nhập mã căn hộ"
+                    :class="{ 'is-invalid': errors?.[`${index}.apartment_number`] }" placeholder="Nhập mã căn hộ" @input="onChange()"
                     required />
                   <div v-if="errors?.[`${index}.apartment_number`]" class="invalid-feedback">
                     {{ errors[`${index}.apartment_number`][0] }}
@@ -76,7 +76,7 @@
                 </div>
                 <div class="col-md-6">
                   <label class="form-label fw-medium">Trạng thái <span class="text-danger">*</span></label>
-                  <select v-model="vehicle.status" class="form-select shadow-sm"
+                  <select v-model="vehicle.status" class="form-select shadow-sm" @change="onChange()"
                     :class="{ 'is-invalid': errors?.[`${index}.status`] }" required>
                     <option :value="0">Đang hoạt động</option>
                     <option :value="1">Ngừng hoạt động</option>
@@ -88,7 +88,7 @@
                 <div class="col-md-6">
                   <label class="form-label fw-medium">Ngày đăng ký <span class="text-danger">*</span></label>
                   <input v-model="vehicle.created_at" type="date" class="form-control shadow-sm"
-                    :class="{ 'is-invalid': errors?.[`${index}.created_at`] }" required />
+                    :class="{ 'is-invalid': errors?.[`${index}.created_at`] }" @input="onChange()" required />
                   <div v-if="errors?.[`${index}.created_at`]" class="invalid-feedback">
                     {{ errors[`${index}.created_at`][0] }}
                   </div>
@@ -107,20 +107,28 @@
             Làm mới
           </button>
           <button type="submit" class="btn btn-primary" style="min-width: 120px;">
-            Lư thay đổi
+            Lưu thay đổi
           </button>
         </div>
       </form>
     </div>
   </div>
+
+  <!-- Modal xác nhận chuyển hướng -->
+  <ConfirmNavigationModal
+      v-model="showConfirmModal"
+      @confirm="confirmNavigation"
+      @cancel="cancelNavigation"
+    />
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useDashboardStore } from '@/stores/dashboard';
 import { useVehicleStore } from '@/stores/vehicle';
 import { useToast } from 'vue-toastification'
 import { useRouter } from 'vue-router';
+import ConfirmNavigationModal from '@/components/modal/UnsavedChangesModal.vue'
 
 definePageMeta({
   middleware: "auth",
@@ -133,6 +141,20 @@ const building_id = dashboardStore.getSelectedBuildingId
 const toast = useToast()
 const router = useRouter()
 const errors = ref({})
+
+const { 
+  hasUnsavedChanges,
+  showConfirmModal, 
+  setupRouteGuard,
+  setEditing,
+  confirmNavigation,
+  cancelNavigation,
+  navigateSafely
+} = useUnsavedChangesGuard()
+
+const onChange = () => {
+  setEditing(true)
+}
 
 const isLoading = computed(() => vehicleStore.isLoading);
 
@@ -152,6 +174,7 @@ const reset = () => {
   vehicles.value = [
     { license_plate: '', vehicle_type: '', parking_slot: '', amapartment_numberount: '', status: 0,  created_at:''}
   ]
+  setEditing(false)
 }
 
 const goBack = () => {
@@ -163,7 +186,8 @@ const createdVehicle = async () => {
     const result = await vehicleStore.create(vehicles.value)
     if (result) {
       toast.success('Thêm danh sách xe thành công!')
-      router.back()
+      errors.value = null
+      reset()
     }
   } catch (error) {
     console.log('Lỗi khi thêm danh sách xe: ', error)
@@ -176,6 +200,10 @@ const createdVehicle = async () => {
     toast.error('Thêm danh sách xe thất bại!')
   }
 };
+
+onMounted(() => {
+    setupRouteGuard()
+})
 </script>
 
 <style scoped>

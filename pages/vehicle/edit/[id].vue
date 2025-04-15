@@ -13,7 +13,7 @@
                     <Icon name="mdi:receipt-text" size="24" class="me-2" />
                     Sửa thông tin xe
                 </h4>
-                <button class="btn btn-secondary" @click="goBack">
+                <button class="btn btn-outline-secondary" @click="goBack">
                     <Icon name="mdi:arrow-left-circle" size="20" class="me-2" />
                     Quay lại
                 </button>
@@ -30,7 +30,7 @@
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Loại xe</label>
-                        <select class="form-select" v-model="vehicleForm.vehicle_type">
+                        <select class="form-select" v-model="vehicleForm.vehicle_type" @change="onChange">
                             <option value="">Chọn loại xe</option>
                             <option value="car">Ô tô</option>
                             <option value="motorbike">Xe máy</option>
@@ -45,14 +45,14 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Vị trí đỗ</label>
-                        <input type="text" class="form-control" v-model="vehicleForm.parking_slot">
+                        <input type="text" class="form-control" v-model="vehicleForm.parking_slot" @input="onChange">
                         <small v-if="errors?.['parking_slot']" class="text-danger">
                             {{ errors?.['parking_slot'][0] }}
                         </small>
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Số căn hộ</label>
-                        <input type="text" class="form-control" v-model="vehicleForm.apartment_number">
+                        <input type="text" class="form-control" v-model="vehicleForm.apartment_number" @input="onChange">
                         <small v-if="errors?.['apartment_number']" class="text-danger">
                             {{ errors?.['apartment_number'][0] }}
                         </small>
@@ -62,7 +62,7 @@
                 <div class="row">
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Trạng thái</label>
-                        <select class="form-select" v-model="vehicleForm.status">
+                        <select class="form-select" v-model="vehicleForm.status" @change="onChange">
                             <option :value="0">Đang hoạt động</option>
                             <option :value="1">Ngừng hoạt động</option>
                         </select>
@@ -72,7 +72,7 @@
                     </div>
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Ngày đăng ký</label>
-                        <input v-model="vehicleForm.created_at" type="date" class="form-control" />
+                        <input v-model="vehicleForm.created_at" type="date" class="form-control" @input="onChange"/>
                         <small v-if="errors?.['created_at']" class="text-danger">
                             {{ errors?.['created_at'][0] }}
                         </small>
@@ -128,20 +128,14 @@ const vehicleForm = ref({
     building_id: building_id,
 })
 
-// const {
-//     showConfirmModal,
-//     // hasUnsavedChanges,
-//     trigger,
-//     confirmProceed,
-//     cancelProceed
-// } = useUnsavedChangesWarning(vehicleForm, originalVehicleForm)
 const { 
   hasUnsavedChanges,
   showConfirmModal, 
   setupRouteGuard,
   setEditing,
   confirmNavigation,
-  cancelNavigation
+  cancelNavigation,
+  navigateSafely
 } = useUnsavedChangesGuard()
 
 const reset = () => {
@@ -151,7 +145,6 @@ const reset = () => {
     vehicleForm.value.apartment_number = ''
     vehicleForm.value.status = 0,
     vehicleForm.value.created_at = ''
-    setEditing(false)
 }
 
 function onChange() {

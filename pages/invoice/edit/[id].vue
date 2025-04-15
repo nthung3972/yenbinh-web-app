@@ -31,7 +31,7 @@
             <div class="col-md-6 mb-3">
               <div class="form-group">
                 <label>Ngày Phát hành</label>
-                <input v-model="invoiceForm.invoice_date" type="date" class="form-control">
+                <input v-model="invoiceForm.invoice_date" type="date" class="form-control" @input="onChange()">
                 <small v-if="errors?.['invoice_date']" class="text-danger">
                   {{ errors?.['invoice_date'] }}
                 </small>
@@ -40,7 +40,7 @@
             <div class="col-md-6 mb-3">
               <div class="form-group">
                 <label>Hạn thanh toán</label>
-                <input v-model="invoiceForm.due_date" type="date" class="form-control">
+                <input v-model="invoiceForm.due_date" type="date" class="form-control" @input="onChange()">
                 <small v-if="errors?.['due_date']" class="text-danger">
                   {{ errors?.['due_date'] }}
                 </small>
@@ -50,7 +50,7 @@
 
           <div class="col-md-3">
             <label>Tình trạng hóa đơn</label>
-            <select v-model="invoiceForm.status" class="form-control">
+            <select v-model="invoiceForm.status" class="form-control" @change="onChange()">
               <option value="0">Chưa thanh toán</option>
               <option value="1">Đã thanh toán</option>
             </select>
@@ -69,7 +69,7 @@
               <div class="row">
                 <!-- Cột 1: Loại phí -->
                 <div class="col-md-3">
-                  <select v-model="detail.service_name" class="form-control">
+                  <select v-model="detail.service_name" class="form-control" @change="onChange()">
                     <option value="">Chọn loại phí</option>
                     <option value="DIEN">Tiền điện</option>
                     <option value="NUOC">Tiền nước</option>
@@ -85,7 +85,7 @@
                 <!-- Cột 2: Số lượng -->
                 <div class="col-md-2">
                   <input v-model.number="detail.quantity" type="number" class="form-control" placeholder="Số lượng"
-                    @input="countAmount(detail)">
+                    @input="countAmount(detail), onChange()">
                   <small v-if="errors?.[`invoice_detail.${index}.quantity`]" class="text-danger">
                     {{ errors?.[`invoice_detail.${index}.quantity`][0] }}
                   </small>
@@ -94,7 +94,7 @@
                 <!-- Cột 3: Đơn giá -->
                 <div class="col-md-3">
                   <input v-model.number="detail.price" type="text" class="form-control" placeholder="Đơn giá"
-                    @input="countAmount(detail)">
+                    @input="countAmount(detail), onChange()">
                   <small v-if="errors?.[`invoice_detail.${index}.price`]" class="text-danger">
                     {{ errors?.[`invoice_detail.${index}.price`][0] }}
                   </small>
@@ -127,6 +127,13 @@
       </div>
     </div>
   </div>
+
+  <!-- Modal xác nhận chuyển hướng -->
+  <ConfirmNavigationModal
+      v-model="showConfirmModal"
+      @confirm="confirmNavigation"
+      @cancel="cancelNavigation"
+    />
 </template>
 
 <script setup>
@@ -134,6 +141,7 @@ import { ref, onMounted } from 'vue'
 import { useToast } from 'vue-toastification'
 import { useInvoiceStore } from '@/stores/invoice'
 import { useRouter, useRoute } from 'vue-router'
+import ConfirmNavigationModal from '@/components/modal/UnsavedChangesModal.vue'
 
 definePageMeta({
   middleware: "auth",
@@ -170,6 +178,20 @@ const reset = () => {
   invoiceDetailForm.value = [
     { service_name: '', quantity: '', price: '', amount: 0, description: '' }
   ]
+}
+
+const { 
+  hasUnsavedChanges,
+  showConfirmModal, 
+  setupRouteGuard,
+  setEditing,
+  confirmNavigation,
+  cancelNavigation,
+  navigateSafely
+} = useUnsavedChangesGuard()
+
+const onChange = () => {
+  setEditing(true)
 }
 
 const goBack = () => {
@@ -237,6 +259,7 @@ const updateInvoice = async () => {
     const result = await invoiceStore.updateInvoice(invoice_id, updateData)
     if (result) {
       toast.success('Cập nhật hóa đơn thành công')
+      setEditing(false)
       router.push('/invoice')
     }
   } catch (error) {
@@ -248,6 +271,7 @@ const updateInvoice = async () => {
 
 onMounted(() => {
   getInvoiceDetail()
+  setupRouteGuard()
 })
 
 </script>
