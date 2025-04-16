@@ -178,6 +178,7 @@ const reset = () => {
   invoiceDetailForm.value = [
     { service_name: '', quantity: '', price: '', amount: 0, description: '' }
   ]
+  setEditing(true)
 }
 
 const { 

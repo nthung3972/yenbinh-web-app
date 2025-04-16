@@ -19,13 +19,13 @@ export const useVehicleStore = defineStore("vehicle", {
     }),
 
     actions: {
-        async fetchVehicleList(page = 1, perPage = '', keyword = '', vehicle_type= '') {
+        async fetchVehicleList(page = 1, perPage = '', keyword = '', vehicle_type= '', status) {
             const dashboardStore = useDashboardStore();
             const building_id = dashboardStore.getSelectedBuildingId;
 
             this.loading = true;
             try {
-                const response = await VehicleApi.getListVehicle(building_id, page, perPage, keyword, vehicle_type);
+                const response = await VehicleApi.getListVehicle(building_id, page, perPage, keyword, vehicle_type, status);
                 if (response.data && response.data.data) {
                     this.vehicleList = response.data?.data?.data?.data
                     this.pagination = {
@@ -65,7 +65,6 @@ export const useVehicleStore = defineStore("vehicle", {
                 if(response.data) {
                     this.vehicle = response.data.data.data
                 }
-                
             } catch (error) {
                 throw error;
             } finally {

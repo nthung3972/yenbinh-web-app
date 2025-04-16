@@ -21,7 +21,7 @@
                         <span class="input-group-text bg-white">
                             <Icon name="material-symbols:search" />
                         </span>
-                        <input v-model="searchKeyword" @keyup.enter="onSearch" type="text" class="form-control"
+                        <input v-model="filters.key_search" @keyup.enter="onSearch" type="text" class="form-control"
                             placeholder="Nhập biển số xe..." />
                         <button class="btn btn-outline-primary" @click="onSearch">
                             Tìm
@@ -40,14 +40,22 @@
             <div class="card mb-4 border shadow-sm">
                 <div class="card-body">
                     <div class="row row-cols-1 row-cols-md-auto g-3 align-items-end">
-                        <!-- Trạng thái -->
                         <div class="col-md-3">
                             <label class="form-label fw-semibold">Loại xe</label>
-                            <select v-model="vehicleType" @change="onFilter" class="form-select">
-                                <option value="">Loại xe</option>
+                            <select v-model="filters.vehicle_type" @change="onFilter" class="form-select">
+                                <option value="">Tất cả</option>
                                 <option value="car">Ô tô</option>
                                 <option value="motorbike">Xe máy</option>
                                 <option value="bicycle">Xe đạp</option>
+                            </select>
+                        </div>
+
+                        <div class="col-md-3">
+                            <label class="form-label fw-semibold">Trạng thái xe</label>
+                            <select v-model="filters.status" @change="onFilter" class="form-select">
+                                <option value="">Tất cả</option>
+                                <option :value="0">Đang hoạt động</option>
+                                <option :value="1">Ngừng hoạt động</option>
                             </select>
                         </div>
                     </div>
@@ -83,7 +91,7 @@
                         <td>{{ vehicle.updated_by?.name ?? '----' }}</td>
                         <td class="text-center">
                             <div class="btn-group gap-2">
-                                <NuxtLink to="/"
+                                <NuxtLink :to="`/vehicle/detail/${vehicle.vehicle_id}`"
                                     class="btn btn-sm btn-outline-success d-flex align-items-center px-3 py-2">
                                     <Icon name="bxs:detail" size="16" class="me-1" /> Xem
                                 </NuxtLink>
@@ -112,30 +120,42 @@ definePageMeta({
 })
 
 const vehicleStore = useVehicleStore()
-const currentPage = ref(1)
-const searchKeyword = ref('')
-const vehicleType = ref('')
+
+const filters = ref({
+    status: '',
+    vehicle_type: '',
+    key_search: '',
+    page: 1,
+    per_page: 10,
+})
 
 const isLoading = computed(() => vehicleStore.isLoading);
 const hasError = computed(() => vehicleStore.hasError);
 
 const handlePageChange = (page) => {
-    currentPage.value = page;
+    filters.value.page = page;
     fectVehicleList();
 };
 
 const onFilter = () => {
-    currentPage.value = 1;
+    filters.value.page = 1;
     fectVehicleList();
 }
 
 const onSearch = () => {
-    currentPage.value = 1;
+    filters.value.page = 1;
     fectVehicleList();
 };
 
 const fectVehicleList = () => {
-    vehicleStore.fetchVehicleList(currentPage.value, '', searchKeyword.value, vehicleType.value)
+    const params = { ...filters.value }
+    vehicleStore.fetchVehicleList(
+        params.page,
+        params.per_page,
+        params.key_search,
+        params.vehicle_type,
+        params.status,
+    )
 }
 
 onMounted(fectVehicleList)

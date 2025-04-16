@@ -8,11 +8,17 @@
     </div>
 
     <div v-else class="container form-container animate-fade">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="fw-bold text-primary">
+                <Icon name="mdi:receipt-text" size="24" class="me-2" />
+                Sửa thông tin căn hộ
+            </h4>
+            <button class="btn btn-secondary" @click="goBack">
+                <Icon name="mdi:arrow-left-circle" size="20" class="me-2" />
+                Quay lại
+            </button>
+        </div>
         <div class="card">
-            <div class="card-header d-flex align-items-center">
-                <i class="fas fa-home header-icon fs-4 text-white"></i>
-                <h4 class="mb-0 text-white">Sửa thông tin căn hộ</h4>
-            </div>
             <div class="card-body">
                 <form @submit.prevent="updateApartment">
                     <div class="form-section">
@@ -21,21 +27,21 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <div class="form-label-group">
-                                    <input v-model="apartmentForm.apartment_number" type="text" class="form-control"
+                                    <input v-model="apartmentForm.apartment_number" type="text" class="form-control" @input="onChange()"
                                         id="apartmentNumber" placeholder=" ">
                                     <label for="apartmentNumber">Số căn hộ<span class="required-mark">*</span></label>
                                     <div class="help-text">Ví dụ: A101, B202, v.v.</div>
-                                    <small v-if="errors.apartment_number" class="text-danger">{{
+                                    <small v-if="errors?.apartment_number" class="text-danger">{{
                                         errors.apartment_number }}
                                     </small>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-label-group">
-                                    <input v-model="apartmentForm.floor_number" type="number" min="1"
+                                    <input v-model="apartmentForm.floor_number" type="number" min="1" @input="onChange()"
                                         class="form-control" id="floorInput" placeholder=" ">
                                     <label for="floorInput">Số tầng<span class="required-mark">*</span></label>
-                                    <small v-if="errors.floor_number" class="text-danger">{{
+                                    <small v-if="errors?.floor_number" class="text-danger">{{
                                         errors.floor_number }}
                                     </small>
                                 </div>
@@ -45,18 +51,18 @@
                         <div class="row g-3 mt-2">
                             <div class="col-md-6">
                                 <div class="form-label-group input-with-unit">
-                                    <input v-model="apartmentForm.area" type="number" min="1" step="0.1"
+                                    <input v-model="apartmentForm.area" type="number" min="1" step="0.1" @input="onChange()"
                                         class="form-control" id="areaInput" placeholder=" ">
                                     <span class="input-unit">m²</span>
                                     <label for="areaInput">Diện tích<span class="required-mark">*</span></label>
-                                    <small v-if="errors.area" class="text-danger">{{
+                                    <small v-if="errors?.area" class="text-danger">{{
                                         errors.area }}
                                     </small>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-label-group">
-                                    <select v-model="apartmentForm.ownership_type" class="form-select" id="typeSelect">
+                                    <select v-model="apartmentForm.ownership_type" class="form-select" id="typeSelect" @change="onChange()">
                                         <option value="" disabled selected>Chọn loại căn hộ</option>
                                         <option value="studio">Studio</option>
                                         <option value="2bedroom">2 Phòng ngủ</option>
@@ -66,7 +72,7 @@
                                         <option value="duplex">Duplex</option>
                                     </select>
                                     <label for="typeSelect">Loại căn hộ<span class="required-mark">*</span></label>
-                                    <small v-if="errors.ownership_type" class="text-danger">{{
+                                    <small v-if="errors?.ownership_type" class="text-danger">{{
                                         errors.ownership_type }}
                                     </small>
                                 </div>
@@ -75,7 +81,7 @@
                     </div>
 
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                        <button type="button" class="btn btn-secondary" @click="goBack()">Hủy</button>
+                        <button type="button" class="btn btn-secondary" @click="reset()">Làm mới</button>
                         <button type="submit" class="btn btn-primary px-4">
                             <i class="fas fa-save me-1"></i> Lưu thay đổi
                         </button>
@@ -84,13 +90,17 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal xác nhận chuyển hướng -->
+    <ConfirmNavigationModal v-model="showConfirmModal" @confirm="confirmNavigation" @cancel="cancelNavigation" />
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
-import { useRouter, useRoute } from 'vue-router';
-import { useApartmentStore } from '@/stores/apartment';
-import { useToast } from 'vue-toastification';
+import { ref, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { useApartmentStore } from '@/stores/apartment'
+import { useToast } from 'vue-toastification'
+import ConfirmNavigationModal from '@/components/modal/UnsavedChangesModal.vue'
 
 
 definePageMeta({
@@ -116,6 +126,28 @@ const apartmentId = route.params.id
 
 const errors = ref({});
 
+const reset = () => {
+    apartmentForm.value.apartment_number = ''
+    apartmentForm.value.floor_number = ''
+    apartmentForm.value.area = ''
+    apartmentForm.value.ownership_type = ''
+    errors.value = null
+}
+
+const { 
+  hasUnsavedChanges,
+  showConfirmModal, 
+  setupRouteGuard,
+  setEditing,
+  confirmNavigation,
+  cancelNavigation,
+  navigateSafely
+} = useUnsavedChangesGuard()
+
+const onChange = () => {
+  setEditing(true)
+}
+
 const goBack = () => {
     router.back();
 }
@@ -128,10 +160,10 @@ onMounted(async () => {
         originalApartment.value = JSON.stringify(apartmentStore.apartment);
     }
     isLoading.value = false;
+    setupRouteGuard()
 });
 
 const updateApartment = async () => {
-    console.log('apartmentForm.value', apartmentForm.value)
     const currentData = JSON.stringify(apartmentForm.value);
     if (currentData === originalApartment.value) {
         toast.info("Bạn chưa thay đổi dữ liệu!", { timeout: 3000 });
@@ -143,6 +175,9 @@ const updateApartment = async () => {
         const result = await apartmentStore.updateApartment(apartmentId, apartmentForm.value)
         if (result) {
             toast.success("Cập nhật căn hộ thành công!", { timeout: 3000 });
+            errors.value = null
+            setEditing(false)
+            router.push('/apartment')
         }
     } catch (error) {
         if (error && error.errors) {

@@ -44,9 +44,12 @@
                             <label class="form-label fw-semibold">Loại căn hộ</label>
                             <select v-model="filters.apartment_type" @change="onFilter" class="form-select">
                                 <option value="">Tất cả</option>
-                                <option :value="0">Chưa thanh toán</option>
-                                <option :value="1">Đã thanh toán</option>
-                                <option :value="2">Đã quá hạn</option>
+                                <option value="studio">Phòng thu</option>
+                                <option value="2bedroom">2 Phòng ngủ</option>
+                                <option value="3bedroom">3 Phòng ngủ</option>
+                                <option value="4bedroom">4 Phòng ngủ</option>
+                                <option value="penthouse">Penthouse</option>
+                                <option value="duplex">Duplex</option>
                             </select>
                         </div>
 
@@ -55,9 +58,8 @@
                             <label class="form-label fw-semibold">Tình trạng</label>
                             <select v-model="filters.status" @change="onFilter" class="form-select">
                                 <option value="">Tất cả</option>
-                                <option :value="0">Chưa thanh toán</option>
-                                <option :value="1">Đã thanh toán</option>
-                                <option :value="2">Đã quá hạn</option>
+                                <option value="occupied">Đang sử dụng</option>
+                                <option value="vacant">Căn hộ trống</option>
                             </select>
                         </div>
                     </div>
@@ -78,16 +80,16 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(apartment, index) in apartmentStore.apartmentList" :key="index">
+                        <tr v-for="(apartment, index) in apartmentStore.apartmentsWithStatus" :key="index">
                             <td>{{ apartment.apartment_number }}</td>
-                            <td>{{ apartment.ownership_type }}</td>
+                            <td>{{ getApartmentTypeLabel(apartment.ownership_type) }}</td>
                             <td>{{ apartment.residents[0]?.full_name ?? '---' }}</td>
                             <td>
                                 <span :class="[
                                     'badge rounded-pill px-3 py-2',
-                                    apartment.residents[0]?.full_name ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-muted'
+                                    apartment.status === 'occupied' ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-muted'
                                 ]">
-                                    {{ apartment.residents[0]?.full_name ? 'Đang sử dụng' : 'Căn hộ trống' }}
+                                    {{ apartment.status === 'occupied' ? 'Đang sử dụng' : 'Căn hộ trống' }}
                                 </span>
                             </td>
                             <td>{{ apartment.updated_by?.name ?? '---' }}</td>
@@ -133,11 +135,25 @@ const filters = ref({
     per_page: 10,
 })
 
-const isLoading = computed(() => apartmentStore.isLoading);
-const hasError = computed(() => apartmentStore.hasError);
+const getApartmentTypeLabel = (type) => {
+  const labels = {
+    'studio': 'Phòng thu',
+    '1bedroom': '1 Phòng ngủ',
+    '2bedroom': '2 Phòng ngủ',
+    '3bedroom': '3 Phòng ngủ',
+    '4bedroom': '4 Phòng ngủ',
+    'penthouse': 'Penthouse',
+    'duplex': 'Duplex'
+  }
+
+  return labels[type] || 'Không xác định'
+}
+
+const isLoading = computed(() => apartmentStore.isLoading)
+const hasError = computed(() => apartmentStore.hasError)
 
 const handlePageChange = (page) => {
-    filters.value.page = 1
+    filters.value.page = page
     loadApartments();
 };
 
@@ -153,12 +169,12 @@ const onFilter = () => {
 
 const loadApartments = () => {
     const params = { ...filters.value }
-    apartmentStore.fetchApartmentListByBuilding(
+    apartmentStore.apartmentsByBuilding(
         params.page,
         params.per_page,
         params.key_search,
-        params.status,
-        params.apartment_type
+        params.apartment_type,
+        params.status
     )
 }
 

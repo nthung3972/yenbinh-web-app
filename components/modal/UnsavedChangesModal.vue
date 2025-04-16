@@ -7,7 +7,7 @@
                     <button class="close-btn" @click="onCancel">×</button>
                 </div>
                 <div class="modal-body">
-                    <p>Bạn có thay đổi chưa được lưu. Nếu rời đi, các thay đổi của bạn sẽ bị mất.</p>
+                    <p>Thay đổi chưa lưu! Nếu rời đi, các thay đổi sẽ bị mất!</p>
                     <p>Bạn có chắc chắn muốn rời đi không?</p>
                 </div>
                 <div class="modal-footer">
