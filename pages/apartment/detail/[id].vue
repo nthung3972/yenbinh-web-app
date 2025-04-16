@@ -43,7 +43,7 @@
                     <h5 class="card-title mb-3">
                         <Icon name="ic:baseline-people" size="24" /> Danh sách cư dân
                     </h5>
-                    <div v-if="useApartment.apartment.residents.length > 0">
+                    <div v-if="useApartment.apartment.residents?.length > 0">
                         <div class="table-responsive">
                             <table class="table table-bordered table-hover">
                                 <thead class="table-light">

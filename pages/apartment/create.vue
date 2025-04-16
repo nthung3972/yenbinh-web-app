@@ -7,11 +7,17 @@
     </div>
 
     <div v-else class="container form-container animate-fade">
-        <div class="card">
-            <div class="card-header d-flex align-items-center">
-                <i class="fas fa-home header-icon fs-4 text-white"></i>
-                <h4 class="mb-0 text-white">Thêm căn hộ mới</h4>
+        <div class="d-flex justify-content-between align-items-center mb-4">
+                <h4 class="fw-bold text-primary">
+                    <Icon name="mdi:receipt-text" size="24" class="me-2" />
+                    Thêm căn hộ
+                </h4>
+                <button class="btn btn-outline-secondary" @click="goBack()">
+                    <Icon name="mdi:arrow-left-circle" size="20" class="me-2" />
+                    Quay lại
+                </button>
             </div>
+        <div class="card">
             <div class="card-body">
                 <form @submit.prevent="handleSubmit">
                     <div class="form-section">
@@ -20,7 +26,7 @@
                             <div class="col-md-6">
                                 <div class="form-label-group">
                                     <input v-model="apartment.apartment_number" type="text" class="form-control"
-                                        id="apartmentNumber" placeholder=" ">
+                                        @input="onChange()" id="apartmentNumber" placeholder=" ">
                                     <label for="apartmentNumber">Số căn hộ<span class="required-mark">*</span></label>
                                     <div class="help-text">Ví dụ: A101, B202, v.v.</div>
                                     <small v-if="errors?.['apartment_number']" class="text-danger">
@@ -31,7 +37,7 @@
                             <div class="col-md-6">
                                 <div class="form-label-group">
                                     <input v-model="apartment.floor_number" type="number" min="1" class="form-control"
-                                        id="floorInput" placeholder=" ">
+                                        @input="onChange()" id="floorInput" placeholder=" ">
                                     <label for="floorInput">Số tầng<span class="required-mark">*</span></label>
                                     <small v-if="errors?.['floor_number']" class="text-danger">
                                         {{ errors?.['floor_number'][0] }}
@@ -43,7 +49,7 @@
                         <div class="row g-3 mt-2">
                             <div class="col-md-6">
                                 <div class="form-label-group input-with-unit">
-                                    <input v-model="apartment.area" type="number" min="1" step="0.1"
+                                    <input v-model="apartment.area" type="number" min="1" step="0.1" @input="onChange()"
                                         class="form-control" id="areaInput" placeholder=" ">
                                     <span class="input-unit">m²</span>
                                     <label for="areaInput">Diện tích<span class="required-mark">*</span></label>
@@ -54,7 +60,8 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-label-group">
-                                    <select v-model="apartment.ownership_type" class="form-select" id="typeSelect">
+                                    <select v-model="apartment.ownership_type" class="form-select" id="typeSelect"
+                                        @change="onChange()">
                                         <option value="" disabled selected>Chọn loại căn hộ</option>
                                         <option value="studio">Studio</option>
                                         <option value="1bedroom">1 Phòng ngủ</option>
@@ -73,7 +80,7 @@
                     </div>
 
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                        <button type="button" class="btn btn-secondary" @click="goBack()">Hủy</button>
+                        <button type="button" class="btn btn-secondary" @click="reset()">Làm mới</button>
                         <button type="submit" class="btn btn-primary px-4">
                             <i class="fas fa-save me-1"></i> Thêm căn hộ
                         </button>
@@ -82,13 +89,17 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal xác nhận chuyển hướng -->
+    <ConfirmNavigationModal v-model="showConfirmModal" @confirm="confirmNavigation" @cancel="cancelNavigation" />
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useApartmentStore } from '@/stores/apartment'
-import { useToast } from 'vue-toastification';
-import { useRouter } from 'vue-router';
+import { useToast } from 'vue-toastification'
+import { useRouter } from 'vue-router'
+import ConfirmNavigationModal from '@/components/modal/UnsavedChangesModal.vue'
 
 definePageMeta({
     middleware: "auth",
@@ -110,10 +121,25 @@ const apartment = ref({
 
 const reset = () => {
     apartment.value.apartment_number = '',
-        apartment.value.floor_number = '',
-        apartment.value.area = '',
-        apartment.value.ownership_type = '',
-        errors.value = ''
+    apartment.value.floor_number = '',
+    apartment.value.area = '',
+    apartment.value.ownership_type = '',
+    errors.value = ''
+    setEditing(false)
+}
+
+const {
+    hasUnsavedChanges,
+    showConfirmModal,
+    setupRouteGuard,
+    setEditing,
+    confirmNavigation,
+    cancelNavigation,
+    navigateSafely
+} = useUnsavedChangesGuard()
+
+const onChange = () => {
+    setEditing(true)
 }
 
 const goBack = () => {
@@ -126,6 +152,8 @@ const handleSubmit = async () => {
         const result = await apartmentStore.createApartment(apartment.value)
         if (result) {
             toast.success("Thêm căn hộ thành công!", { timeout: 3000 })
+            setEditing(false)
+            errors.value = null
             reset()
         }
     } catch (error) {
@@ -134,6 +162,10 @@ const handleSubmit = async () => {
     }
     isLoading.value = false
 }
+
+onMounted(() => {
+    setupRouteGuard()
+})
 </script>
 
 <style scoped>

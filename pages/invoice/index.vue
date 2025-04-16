@@ -153,7 +153,7 @@ const isLoading = computed(() => useInvoice.isLoading);
 const hasError = computed(() => useInvoice.hasError);
 
 const handlePageChange = (page) => {
-    filters.value.page = 1
+    filters.value.page = page
     loadInvoices();
 };
 

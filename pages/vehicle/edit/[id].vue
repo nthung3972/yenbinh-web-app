@@ -145,6 +145,7 @@ const reset = () => {
     vehicleForm.value.apartment_number = ''
     vehicleForm.value.status = 0,
     vehicleForm.value.created_at = ''
+    setEditing(true)
 }
 
 function onChange() {

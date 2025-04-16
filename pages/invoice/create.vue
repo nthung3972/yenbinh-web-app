@@ -249,6 +249,7 @@ const taoHoaDon = async () => {
     const result = await invoiceStore.createInvoice(submissionData)
     if (result) {
       toast.success('Tạo hóa đơn thành công')
+      setEditing(false)
       errors.value = null
       reset()
     }
