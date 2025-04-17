@@ -64,9 +64,9 @@
                                         @change="onChange()">
                                         <option value="" disabled selected>Chọn loại căn hộ</option>
                                         <option value="studio">Studio</option>
-                                        <option value="1bedroom">1 Phòng ngủ</option>
-                                        <option value="2bedroom">2 Phòng ngủ</option>
-                                        <option value="3bedroom">3 Phòng ngủ</option>
+                                        <option value="2bedroom">1 Phòng ngủ</option>
+                                        <option value="3bedroom">2 Phòng ngủ</option>
+                                        <option value="4bedroom">3 Phòng ngủ</option>
                                         <option value="penthouse">Penthouse</option>
                                         <option value="duplex">Duplex</option>
                                     </select>

@@ -77,7 +77,7 @@
                 <tbody>
                     <tr v-for="(vehicle, index) in vehicleStore.vehicleList" :key="index">
                         <td>{{ vehicle.license_plate }}</td>
-                        <td>{{ vehicle.vehicle_type }}</td>
+                        <td>{{ vehicle.vehicle_type?.vehicle_type_name }}</td>
                         <td>{{ vehicle.parking_slot ?? '----' }}</td>
                         <td>{{ vehicle.apartment_number }}</td>
                         <td>

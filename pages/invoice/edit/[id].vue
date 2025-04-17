@@ -332,7 +332,7 @@ const updateInvoice = async () => {
     }
 
     await invoiceStore.updateInvoice(route.params.id, data)
-    setEditing(true)
+    setEditing(false)
     toast.success('Cập nhật hóa đơn thành công')
     router.push('/invoice')
   } catch (error) {

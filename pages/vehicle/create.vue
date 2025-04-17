@@ -50,12 +50,11 @@
 
                 <div class="col-md-6">
                   <label class="form-label fw-medium">Loại xe <span class="text-danger">*</span></label>
-                  <select v-model="vehicle.vehicle_type" class="form-select shadow-sm"
-                    :class="{ 'is-invalid': errors?.[`${index}.vehicle_type`] }" @change="onChange()" required>
-                    <option value="">Chọn loại xe</option>
-                    <option value="car">Ô tô</option>
-                    <option value="motorbike">Xe máy</option>
-                    <option value="bicycle">Xe đạp</option>
+                  <select v-model="vehicle.vehicle_type_id" class="form-select shadow-sm" @change="onChange()" required>
+                    <option value="" disabled>Chọn loại xe</option>
+                    <option v-for="vehicle_type in vehicleTypes" :key="vehicle_type.vehicle_type_id" :value="vehicle_type.vehicle_type_id">
+                      {{ vehicle_type.vehicle_type_name }}
+                    </option>
                   </select>
                   <div v-if="errors?.[`${index}.vehicle_type`]" class="invalid-feedback">
                     {{ errors[`${index}.vehicle_type`][0] }}
@@ -190,6 +189,7 @@ import { onMounted, ref } from 'vue';
 import { useDashboardStore } from '@/stores/dashboard';
 import { useVehicleStore } from '@/stores/vehicle';
 import { useApartmentStore } from '@/stores/apartment';
+import { useVeicleTypeStore } from '@/stores/vehicle-type';
 import { useToast } from 'vue-toastification'
 import { useRouter } from 'vue-router';
 import ConfirmNavigationModal from '@/components/modal/UnsavedChangesModal.vue'
@@ -202,7 +202,9 @@ definePageMeta({
 const vehicleStore = useVehicleStore()
 const apartmentStore = useApartmentStore()
 const dashboardStore = useDashboardStore()
+const vehicleTypeStore = useVeicleTypeStore()
 const building_id = dashboardStore.getSelectedBuildingId
+const vehicleTypes = ref({})
 const toast = useToast()
 const router = useRouter()
 const errors = ref({})
@@ -226,7 +228,7 @@ const isLoading = computed(() => vehicleStore.isLoading);
 const vehicles = ref([
   {
     license_plate: '',
-    vehicle_type: '',
+    vehicle_type_id: '',
     parking_slot: '',
     apartment_number: '',
     status: 0,
@@ -251,6 +253,11 @@ const fetchApartments = async () => {
 const fetchResidents = async (apartmentCode, index) => {
   const data = await apartmentStore.getResidentsByApartment(apartmentCode)
   vehicles.value[index].residents = data
+}
+
+const getVehicleTypes = async () => {
+  const data = await vehicleTypeStore.getList() 
+  vehicleTypes.value = data
 }
 
 // Khi người dùng gõ mã căn hộ
@@ -314,6 +321,7 @@ const createdVehicle = async () => {
 };
 
 onMounted(() => {
+  getVehicleTypes()
   fetchApartments()
   setupRouteGuard()
 })
