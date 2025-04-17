@@ -1,135 +1,143 @@
 <template>
-  <div v-if="isLoading" class="text-center">
-    <div class="spinner-border spinner-border-sm me-2" role="status">
-      <span class="visually-hidden">Đang tải dữ liệu...</span>
-    </div>
-    <p>Đang tải dữ liệu...</p>
-  </div>
-  <div v-else>
-    <div class="invoice-container container mt-4 ">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="fw-bold text-primary">
+  <div class="container mt-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="fw-bold text-primary">
           <Icon name="mdi:receipt-text" size="24" class="me-2" />
-          Hóa Đơn Chi Tiết
-        </h4>
-        <button class="btn btn-secondary" @click="goBack">
+          Sửa hóa đơn
+        </h3>
+        <button class="btn btn-outline-secondary" @click="goBack()">
           <Icon name="mdi:arrow-left-circle" size="20" class="me-2" />
           Quay lại
         </button>
       </div>
-      <div class="card p-4 shadow-sm">
-        <form @submit.prevent="updateInvoice">
-          <div class="form-group">
-            <label>Mã Căn Hộ</label>
-            <input v-model="invoiceForm.apartment_number" type="text" class="form-control" disabled>
-            <small v-if="errors?.['apartment_number']" class="text-danger">
-              {{ errors?.['apartment_number'] }}
-            </small>
-          </div>
 
-          <div class="row">
-            <div class="col-md-6 mb-3">
-              <div class="form-group">
-                <label>Ngày Phát hành</label>
-                <input v-model="invoiceForm.invoice_date" type="date" class="form-control" @input="onChange()">
-                <small v-if="errors?.['invoice_date']" class="text-danger">
-                  {{ errors?.['invoice_date'] }}
-                </small>
-              </div>
+    <!-- Card chính -->
+    <div v-if="invoice" class="card shadow-sm">
+      <div class="card-body">
+        <!-- Thông tin hóa đơn -->
+        <div class="mb-4">
+          <div class="row row-cols-1 row-cols-md-auto g-3 align-items-end">
+            <div class="col-md-3">
+              <label for="apartment" class="form-label fw-bold">Căn hộ</label>
+              <input :value="invoice.apartment_number" class="form-control" readonly />
             </div>
-            <div class="col-md-6 mb-3">
-              <div class="form-group">
-                <label>Hạn thanh toán</label>
-                <input v-model="invoiceForm.due_date" type="date" class="form-control" @input="onChange()">
-                <small v-if="errors?.['due_date']" class="text-danger">
-                  {{ errors?.['due_date'] }}
-                </small>
-              </div>
+            <div class="col-md-3">
+              <label class="form-label fw-medium">Ngày ban hành<span class="text-danger">*</span></label>
+              <input v-model="invoice_date" type="date" class="form-control shadow-sm" @input="onChange()"
+                :class="{ 'is-invalid': errors?.invoice_date }" />
             </div>
-          </div>
-
-          <div class="col-md-3">
-            <label>Tình trạng hóa đơn</label>
-            <select v-model="invoiceForm.status" class="form-control" @change="onChange()">
-              <option value="0">Chưa thanh toán</option>
-              <option value="1">Đã thanh toán</option>
-            </select>
-            <small v-if="errors?.['status']" class="text-danger">
-              {{ errors?.['status'] }}
-            </small>
-          </div>
-
-          <div class="invoice-details">
-            <div class="invoice-details-header">
-              <span>Các Khoản Phí</span>
-              <button type="button" class="btn btn-success" @click="addInvoiceDetail">+ Thêm Khoản Phí</button>
+            <div class="col-md-3">
+              <label class="form-label fw-medium">Hạn thanh toán<span class="text-danger">*</span></label>
+              <input v-model="due_date" type="date" class="form-control shadow-sm" @input="onChange()"
+                :class="{ 'is-invalid': errors?.due_date }" />
             </div>
 
-            <div v-for="(detail, index) in invoiceDetailForm" :key="index" class="invoice-detail-row">
-              <div class="row">
-                <!-- Cột 1: Loại phí -->
-                <div class="col-md-3">
-                  <select v-model="detail.service_name" class="form-control" @change="onChange()">
-                    <option value="">Chọn loại phí</option>
-                    <option value="DIEN">Tiền điện</option>
-                    <option value="NUOC">Tiền nước</option>
-                    <option value="QUANLY">Phí quản lý</option>
-                    <option value="GUIXE">Phí gửi xe</option>
-                    <option value="PHIKHAC">Phí khác</option>
-                  </select>
-                  <small v-if="errors?.[`invoice_detail.${index}.service_name`]" class="text-danger">
-                    {{ errors?.[`invoice_detail.${index}.service_name`][0] }}
-                  </small>
-                </div>
-
-                <!-- Cột 2: Số lượng -->
-                <div class="col-md-2">
-                  <input v-model.number="detail.quantity" type="number" class="form-control" placeholder="Số lượng"
-                    @input="countAmount(detail), onChange()">
-                  <small v-if="errors?.[`invoice_detail.${index}.quantity`]" class="text-danger">
-                    {{ errors?.[`invoice_detail.${index}.quantity`][0] }}
-                  </small>
-                </div>
-
-                <!-- Cột 3: Đơn giá -->
-                <div class="col-md-3">
-                  <input v-model.number="detail.price" type="text" class="form-control" placeholder="Đơn giá"
-                    @input="countAmount(detail), onChange()">
-                  <small v-if="errors?.[`invoice_detail.${index}.price`]" class="text-danger">
-                    {{ errors?.[`invoice_detail.${index}.price`][0] }}
-                  </small>
-                </div>
-
-                <!-- Cột 4: Thành tiền (readonly) -->
-                <div class="col-md-3">
-                  <input :value="formatVND(detail.amount)" class="form-control" placeholder="Thành tiền" readonly>
-                </div>
-
-                <!-- Cột 5: Nút xóa -->
-                <div class="col-md-1 text-center">
-                  <button type="button" class="btn btn-danger btn-sm" @click="removeInvoiceDetail(index)">
-                    Xóa
-                  </button>
-                </div>
-              </div>
+            <div class="col-md-3">
+              <label class="form-label fw-semibold">Trạng thái</label>
+              <select v-model="status" class="form-select" @change="onChange()">
+                <option :value="0">Chưa thanh toán</option>
+                <option :value="1">Đã thanh toán</option>
+              </select>
             </div>
 
-            <div class="total-section">
-              Tổng Tiền: {{ formatVND(invoiceForm.total_amount) }} VNĐ
+          </div>
+        </div>
+
+        <!-- Phí cố định -->
+        <div v-if="fees" class="mb-4">
+          <h5 class="fw-bold mb-3">Phí cố định</h5>
+          <table class="table table-bordered">
+            <thead class="table-light">
+              <tr>
+                <th>Loại phí</th>
+                <th>Số tiền (VNĐ)</th>
+                <th>Mô tả</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(fee, index) in fees" :key="index">
+                <td>{{ fee.type }}</td>
+                <td>{{ formatCurrency(fee.amount) }}</td>
+                <td>{{ fee.description }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Phí linh hoạt -->
+        <div class="mb-4">
+          <h5 class="fw-bold mb-3">Phí linh hoạt</h5>
+          <div v-for="(fee, index) in flexibleFees" :key="index" class="row mb-2 align-items-end">
+            <div class="col-md-2">
+              <label :for="'fee-type-' + index" class="form-label">Loại phí</label>
+              <select :id="'fee-type-' + index" v-model="fee.fee_type_id" class="form-select" @change="onChange()">
+                <option value="" disabled>Chọn loại phí</option>
+                <option v-for="feeType in flexibleFeeTypes" :key="feeType.fee_type_id" :value="feeType.fee_type_id">
+                  {{ feeType.fee_name }}
+                </option>
+              </select>
+            </div>
+            <div class="col-md-2">
+              <label :for="'fee-quantity-' + index" class="form-label">Số lượng</label>
+              <input :id="'fee-quantity-' + index" v-model.number="fee.quantity" type="number" class="form-control"
+                min="0" @input="calculateAmount(index)" />
+            </div>
+            <div class="col-md-2">
+              <label :for="'fee-price-' + index" class="form-label">Đơn giá (VNĐ)</label>
+              <input :id="'fee-price-' + index" v-model.number="fee.price" type="number" class="form-control" min="0"
+                @input="calculateAmount(index)" />
+            </div>
+            <div class="col-md-2">
+              <label :for="'fee-amount-' + index" class="form-label">Số tiền (VNĐ)</label>
+              <input :id="'fee-amount-' + index" :value="fee.amount" type="number" class="form-control" readonly />
+            </div>
+            <div class="col-md-2">
+              <label :for="'fee-description-' + index" class="form-label">Mô tả</label>
+              <input :id="'fee-description-' + index" v-model="fee.description" type="text" class="form-control" @input="onChange()" />
+            </div>
+            <div class="col-md-2">
+              <button class="btn btn-outline-danger w-100" @click="removeFlexibleFee(index)">
+                <Icon name="ep:remove-filled" size="20" class="me-2" />Xóa
+              </button>
             </div>
           </div>
+          <button class="btn btn-outline-success mt-2" @click="addFlexibleFee">
+            <Icon name="gridicons:add" size="20" class="me-2" />Thêm phí linh hoạt
+          </button>
+        </div>
 
-          <div class="form-group d-flex" style="margin-top: 20px;">
-            <button type="button" class="btn btn-secondary" @click="reset()">Tạo lại</button>
-            <button type="submit" class="btn btn-primary">Cập nhật</button>
+        <!-- Tóm tắt hóa đơn -->
+        <div v-if="fees" class="mb-4">
+          <h5 class="fw-bold mb-3">Tóm tắt hóa đơn</h5>
+          <div class="alert alert-info">
+            <p class="mb-1">
+              <strong>Tổng phí cố định:</strong> {{ formatCurrency(totalFixedFees) }}
+            </p>
+            <p class="mb-1">
+              <strong>Tổng phí linh hoạt:</strong> {{ formatCurrency(totalFlexibleFees) }}
+            </p>
+            <p class="mb-0 fw-bold">
+              <strong>Tổng cộng:</strong> {{ formatCurrency(totalFees) }}
+            </p>
           </div>
-        </form>
+        </div>
+
+        <!-- Nút lưu thay đổi -->
+        <div class="text-end">
+          <button class="btn btn-primary" :disabled="!canSaveInvoice" @click="updateInvoice">
+            <Icon name="lsicon:submit-filled" size="20" class="me-2" />Lưu thay đổi
+          </button>
+        </div>
       </div>
+    </div>
+    <div v-else class="alert alert-warning">
+      Hóa đơn không tồn tại hoặc đang tải...
     </div>
   </div>
 
-  <!-- Modal xác nhận chuyển hướng -->
-  <ConfirmNavigationModal
+   <!-- Modal xác nhận chuyển hướng -->
+   <ConfirmNavigationModal
       v-model="showConfirmModal"
       @confirm="confirmNavigation"
       @cancel="cancelNavigation"
@@ -137,53 +145,41 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { onMounted, ref, computed } from 'vue'
 import { useToast } from 'vue-toastification'
 import { useInvoiceStore } from '@/stores/invoice'
+import { useFeeStore } from '@/stores/fee'
 import { useRouter, useRoute } from 'vue-router'
 import ConfirmNavigationModal from '@/components/modal/UnsavedChangesModal.vue'
 
 definePageMeta({
-  middleware: "auth",
-  layout: "dashboard"
+  middleware: 'auth',
+  layout: 'dashboard'
 })
 
-const invoiceStore = useInvoiceStore()
-const router = useRouter()
+// State
 const route = useRoute()
-const toast = useToast()
-const isLoading = computed(() => invoiceStore.isLoading);
-const invoice_id = route.params.id
+const router = useRouter()
+const invoice = ref(null)
+const selectedApartmentId = ref('')
+const fees = ref(null)
+const flexibleFees = ref([])
+const flexibleFeeTypes = ref([])
+const invoiceStore = useInvoiceStore()
+const feeStore = useFeeStore()
+const invoice_date = ref(null)
+const due_date = ref(null)
+const status = ref(null)
 const errors = ref({})
-const { formatVND, unformatVND  } = useCurrencyFormat()
+const toast = useToast()
 
-const invoiceForm = ref({
-  apartment_number: '',
-  invoice_date: '',
-  due_date: '',
-  total_amount: 0,
-  status: 0,
-  invoice_detail: []
-})
-const invoiceDetailForm = ref([])
-
-const reset = () => {
-  invoiceForm.value.apartment_number = ''
-  invoiceForm.value.invoice_date = ''
-  invoiceForm.value.due_date = ''
-  invoiceForm.value.total_amount = 0
-  invoiceForm.value.status = 0
-  invoiceForm.value.invoice_detail = []
-
-  invoiceDetailForm.value = [
-    { service_name: '', quantity: '', price: '', amount: 0, description: '' }
-  ]
-  setEditing(true)
+const goBack = () => {
+  router.back()
 }
 
-const { 
+const {
   hasUnsavedChanges,
-  showConfirmModal, 
+  showConfirmModal,
   setupRouteGuard,
   setEditing,
   confirmNavigation,
@@ -195,172 +191,205 @@ const onChange = () => {
   setEditing(true)
 }
 
-const goBack = () => {
-  router.push('/invoice')
+// Tính toán phí
+const totalFixedFees = computed(() => {
+  if (!fees.value || !Array.isArray(fees.value)) return 0
+  return fees.value.reduce((sum, fee) => {
+    return sum + Number(fee.amount || 0)
+  }, 0)
+})
+
+const totalFlexibleFees = computed(() => {
+  return flexibleFees.value.reduce((sum, fee) => sum + (fee.amount || 0), 0)
+})
+
+const totalFees = computed(() => {
+  return totalFixedFees.value + totalFlexibleFees.value
+})
+
+const canSaveInvoice = computed(() => {
+  return (
+    selectedApartmentId.value &&
+    invoice_date.value &&
+    due_date.value &&
+    flexibleFees.value.every(
+      (fee) => fee.fee_type_id && fee.amount > 0 && fee.description
+    )
+  )
+})
+
+// Hàm định dạng tiền tệ
+const formatCurrency = (value) => {
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+  }).format(value)
 }
 
-// Tính thành tiền
-const countAmount = (detail) => {
-  detail.amount = detail.quantity * detail.price
-  countTotalAmount()
+// Tính amount tự động
+const calculateAmount = (index) => {
+  const fee = flexibleFees.value[index]
+  fee.amount = (fee.quantity || 0) * (fee.price || 0)
 }
 
-// Thêm khoản phí
-const addInvoiceDetail = () => {
-  invoiceDetailForm.value.push({
-    service_name: '',
-    quantity: '',
-    price: '',
+// Lấy phí cố định và thông tin hóa đơn
+const fetchInvoiceData = async () => {
+  try {
+    const data = await invoiceStore.fetchInvoice(route.params.id)
+    invoice.value = data
+    selectedApartmentId.value = data.apartment_id
+    invoice_date.value = data.invoice_date
+    due_date.value = data.due_date
+    status.value = data.status
+    // Lấy phí cố định từ invoice_details
+    fees.value = data.invoice_details
+      .filter(detail => detail.fee_types.is_fixed === 1)
+      .map(detail => ({
+        type: detail.fee_name,
+        amount: detail.amount,
+        description: detail.description
+      }))
+    // Lấy phí linh hoạt
+    flexibleFees.value = data.invoice_details
+      .filter(detail => detail.fee_types.is_fixed === 0)
+      .map(detail => ({
+        fee_type_id: detail.fee_type_id,
+        quantity: detail.quantity || 0,
+        price: detail.price || 0,
+        amount: detail.amount,
+        description: detail.description
+      }))
+  } catch (error) {
+    toast.error('Lỗi khi lấy thông tin hóa đơn')
+    invoice.value = null
+  }
+}
+
+// Lấy danh sách loại phí linh hoạt
+const fetchFlexibleFeeTypes = async () => {
+  try {
+    const data = await feeStore.getFlexibleFee()
+    flexibleFeeTypes.value = data
+  } catch (error) {
+    toast.error('Lỗi khi lấy loại phí linh hoạt')
+  }
+}
+
+// Thêm phí linh hoạt
+const addFlexibleFee = () => {
+  flexibleFees.value.push({
+    fee_type_id: '',
+    quantity: 0,
+    price: 0,
     amount: 0,
     description: ''
   })
 }
 
-// Xóa khoản phí
-const removeInvoiceDetail = (index) => {
-  if (invoiceDetailForm.value.length > 1) {
-    invoiceDetailForm.value.splice(index, 1)
-    countTotalAmount()
-  } else {
-    toast.warning('Phải có ít nhất một khoản phí')
-  }
+// Xóa phí linh hoạt
+const removeFlexibleFee = (index) => {
+  flexibleFees.value.splice(index, 1)
 }
 
-// Tính tổng tiền
-const countTotalAmount = () => {
-  invoiceForm.value.total_amount = invoiceDetailForm.value.reduce((total, phi) => total + (phi.quantity * phi.price), 0)
-}
-
-const getInvoiceDetail = async () => {
-  isLoading.value = true
-  try {
-    const response = await invoiceStore.fetchInvoice(invoice_id)
-    console.log('response', response)
-    invoiceForm.value = {
-      ...response,
-      invoice_detail: response.invoice_details
+// Chuẩn bị phí cố định
+const getFixedFees = () => {
+  return (fees.value || []).map(fee => {
+    let fee_type_id = null
+    if (fee.type === 'Phí quản lý vận hành') {
+      fee_type_id = 1
+    } else if (fee.type === 'Phí gửi xe') {
+      fee_type_id = 2
     }
-    invoiceDetailForm.value = response.invoice_details
-  } catch (error) {
-    toast.error('Không tìm thấy hóa đơn!')
-    router.push('/invoice')
-  }
-  isLoading.value = false
+    return {
+      fee_type_id,
+      amount: fee.amount,
+      description: fee.description
+    }
+  })
 }
 
 // Cập nhật hóa đơn
 const updateInvoice = async () => {
-  console.log(invoiceForm.value)
-  isLoading.value = true
   try {
-    const updateData = {
-      ...invoiceForm.value,
-      invoice_detail: invoiceDetailForm.value
+    const allFees = [
+      ...getFixedFees(),
+      ...flexibleFees.value.map(fee => ({
+        fee_type_id: fee.fee_type_id,
+        quantity: fee.quantity,
+        price: fee.price,
+        amount: fee.amount,
+        description: fee.description
+      }))
+    ]
+
+    const data = {
+      invoice_id: route.params.id,
+      total_amount: totalFees.value,
+      invoice_date: invoice_date.value,
+      due_date: due_date.value,
+      status: status.value,
+      fees: allFees
     }
-    const result = await invoiceStore.updateInvoice(invoice_id, updateData)
-    if (result) {
-      toast.success('Cập nhật hóa đơn thành công')
-      setEditing(false)
-      router.push('/invoice')
-    }
+
+    await invoiceStore.updateInvoice(route.params.id, data)
+    setEditing(true)
+    toast.success('Cập nhật hóa đơn thành công')
+    router.push('/invoice')
   } catch (error) {
-    toast.error('Lỗi khi cập nhật hóa đơn: ' + error.message)
-    errors.value = error.errors
+    toast.error('Lỗi khi cập nhật hóa đơn')
   }
-  isLoading.value = false
 }
 
+// Khởi tạo
 onMounted(() => {
-  getInvoiceDetail()
+  fetchFlexibleFeeTypes()
+  fetchInvoiceData()
   setupRouteGuard()
 })
-
 </script>
 
 <style scoped>
-.invoice-container {
-  background-color: white;
-  max-width: 1140px;
-  margin: 0 auto;
-  padding: 30px;
-  border-radius: 10px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.form-label {
+  font-size: 0.95rem;
+  color: #495057;
 }
 
-.invoice-header {
-  text-align: center;
-  margin-bottom: 30px;
+.form-control,
+.form-select {
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
 }
 
-.invoice-header h1 {
-  color: #333;
-  margin-bottom: 10px;
+.is-invalid {
+  border-color: #dc3545;
 }
 
-.form-group {
-  margin-bottom: 15px;
+.invalid-feedback {
+  font-size: 0.85rem;
 }
 
-.form-group label {
-  display: block;
-  margin-bottom: 5px;
-  color: #555;
+.table th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+  color: #495057;
 }
 
-.form-control {
-  width: 100%;
-  padding: 10px;
-  border: 1px solid #ddd;
-  border-radius: 5px;
-}
-
-.invoice-details {
-  margin-top: 20px;
-  border-top: 1px solid #eee;
-  padding-top: 20px;
-}
-
-.invoice-details-header {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-  font-weight: bold;
-}
-
-.invoice-detail-row {
-  display: flex;
-  justify-content: center;
-  gap: 5px;
-  margin-bottom: 10px;
-  padding: 10px;
-  background-color: #f9f9f9;
-  border-radius: 5px;
+.table td {
+  vertical-align: middle;
 }
 
 .btn {
-  display: inline-block;
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  margin-right: 10px;
+  border-radius: 8px;
+  padding: 0.5rem 1rem;
+  transition: all 0.2s ease;
 }
 
 .btn:hover {
-  opacity: 0.9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.total-section {
-  margin-top: 20px;
-  text-align: right;
-  font-weight: bold;
-}
-
-.d-flex {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 5px;
+.alert-info {
+  background-color: #e7f1ff;
+  border-color: #d3e2ff;
 }
 </style>

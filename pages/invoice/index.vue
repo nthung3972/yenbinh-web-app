@@ -174,6 +174,7 @@ const handleDateChange = () => {
 
 const loadInvoices = () => {
     const params = { ...filters.value }
+    console.log(params)
     useInvoice.fetchtInvoiceList(
         params.page,
         params.per_page,
