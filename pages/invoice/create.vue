@@ -1,143 +1,154 @@
 <template>
-  <div class="container">
-    <div class="card shadow-lg border-0 p-4" style="border-radius: 12px;">
-      <div class="d-flex justify-content-between align-items-center mb-4">
-        <h4 class="fw-bold text-primary">
-          <Icon name="mdi:receipt-text" size="24" class="me-2" />
-          Hóa Đơn Chi Tiết
-        </h4>
-        <button class="btn btn-outline-secondary" @click="goBack()">
-          <Icon name="mdi:arrow-left-circle" size="20" class="me-2" />
-          Quay lại
-        </button>
-      </div>
-      <form @submit.prevent="taoHoaDon">
-        <!-- Thông tin hóa đơn -->
-        <fieldset class="mb-4">
-          <div class="row g-3">
-            <div class="col-md-4">
-              <label class="form-label fw-medium">Mã căn hộ <span class="text-danger">*</span></label>
-              <input v-model="invoiceForm.apartment_number" type="text" class="form-control shadow-sm" @input="onChange()"
-                :class="{ 'is-invalid': errors['apartment_number'] }" placeholder="Nhập mã căn hộ" required />
-              <div v-if="errors['apartment_number']" class="invalid-feedback">
-                {{ errors['apartment_number'] }}
-              </div>
+  <div class="container mt-4">
+    <!-- Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <h3 class="fw-bold text-primary">
+        <Icon name="mdi:receipt-text" size="24" class="me-2" />
+        Tạo hóa đơn mới
+      </h3>
+      <button class="btn btn-outline-secondary" @click="goBack">
+        <Icon name="mdi:arrow-left-circle" size="20" class="me-2" />
+        Quay lại
+      </button>
+    </div>
+
+    <!-- Card chính -->
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <!-- Form chọn căn hộ -->
+        <h5 class="fw-bold mb-3">Căn hộ</h5>
+        <div class="mb-4">
+          <div class="row row-cols-1 row-cols-md-auto g-3 align-items-end">
+            <div class="col-md-6">
+              <label for="apartment" class="form-label fw-bold">Chọn căn hộ<span class="text-danger">*</span></label>
+              <select id="apartment" v-model="selectedApartmentId" class="form-select" @change="fetchApartmentFees">
+                <option value="" disabled>Chọn một căn hộ</option>
+                <option v-for="apartment in apartments" :key="apartment.apartment_id" :value="apartment.apartment_id">
+                  {{ apartment.apartment_number }}
+                </option>
+              </select>
             </div>
-            <div class="col-md-4">
-              <label class="form-label fw-medium">Ngày phát hành <span class="text-danger">*</span></label>
-              <input v-model="invoiceForm.invoice_date" type="date" class="form-control shadow-sm" @input="onChange()"
-                :class="{ 'is-invalid': errors['invoice_date'] }" required />
-              <div v-if="errors['invoice_date']" class="invalid-feedback">
-                {{ errors['invoice_date'] }}
-              </div>
+
+            <div class="col-md-3">
+              <label class="form-label fw-medium">Ngày ban hành <span class="text-danger">*</span></label>
+              <input v-model="invoice_date" type="date" class="form-control shadow-sm" @input="onChange()"
+                :class="{ 'is-invalid': errors?.invoice_date }" />
+              <div v-if="errors?.invoice_date" class="invalid-feedback">{{ errors.invoice_date[0] }}</div>
             </div>
-            <div class="col-md-4">
+
+            <div class="col-md-3">
               <label class="form-label fw-medium">Hạn thanh toán <span class="text-danger">*</span></label>
-              <input v-model="invoiceForm.due_date" type="date" class="form-control shadow-sm" @input="onChange()"
-                :class="{ 'is-invalid': errors['due_date'] }" required />
-              <div v-if="errors['due_date']" class="invalid-feedback">
-                {{ errors['due_date'] }}
-              </div>
+              <input v-model="due_date" type="date" class="form-control shadow-sm" @input="onChange()"
+                :class="{ 'is-invalid': errors?.due_date }" />
+              <div v-if="errors?.due_date" class="invalid-feedback">{{ errors.due_date[0] }}</div>
             </div>
           </div>
-        </fieldset>
+        </div>
 
-        <!-- Chi tiết hóa đơn -->
-        <fieldset class="mb-4">
-          <div class="d-flex justify-content-between align-items-center mb-3">
-            <legend class="h5 fw-semibold text-dark mb-0">Các khoản phí</legend>
-            <button type="button" class="btn btn-success d-flex align-items-center justify-content-center"
-              style="white-space: nowrap;" @click="addInvoiceDetail">
-              <Icon name="ic:baseline-add-circle-outline" size="16" class="me-1" /> Thêm khoản phí
-            </button>
-          </div>
-          <div class="table-responsive">
-            <table class="table table-hover align-middle">
-              <thead class="table-light">
-                <tr>
-                  <th style="width: 20%;">Loại phí</th>
-                  <th style="width: 20%;">Số lượng</th>
-                  <th style="width: 20%;">Đơn giá (VNĐ)</th>
-                  <th style="width: 20%;">Thành tiền (VNĐ)</th>
-                  <th style="width: 20%;"></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr v-for="(detail, index) in invoiceDetailForm" :key="index">
-                  <td>
-                    <select v-model="detail.service_name" class="form-select shadow-sm" @change="onChange()"
-                      :class="{ 'is-invalid': errors[`invoice_detail.${index}.service_name`] }" required>
-                      <option value="">Chọn loại phí</option>
-                      <option value="DIEN">Tiền điện</option>
-                      <option value="NUOC">Tiền nước</option>
-                      <option value="QUANLY">Phí quản lý</option>
-                      <option value="GUIXE">Phí gửi xe</option>
-                      <option value="PHIKHAC">Phí khác</option>
-                    </select>
-                    <div v-if="errors[`invoice_detail.${index}.service_name`]" class="invalid-feedback">
-                      {{ errors[`invoice_detail.${index}.service_name`][0] }}
-                    </div>
-                  </td>
-                  <td>
-                    <input v-model.number="detail.quantity" type="number" class="form-control shadow-sm" 
-                      :class="{ 'is-invalid': errors[`invoice_detail.${index}.quantity`] }" placeholder="Số lượng"
-                      @input="countAmount(detail), onChange()" required />
-                    <div v-if="errors[`invoice_detail.${index}.quantity`]" class="invalid-feedback">
-                      {{ errors[`invoice_detail.${index}.quantity`][0] }}
-                    </div>
-                  </td>
-                  <td>
-                    <input v-model.number="detail.price" type="number" class="form-control shadow-sm"
-                      :class="{ 'is-invalid': errors[`invoice_detail.${index}.price`] }" placeholder="Đơn giá"
-                      @input="countAmount(detail), onChange()" required />
-                    <div v-if="errors[`invoice_detail.${index}.price`]" class="invalid-feedback">
-                      {{ errors[`invoice_detail.${index}.price`][0] }}
-                    </div>
-                  </td>
-                  <td>
-                    <input :value="formatCurrency(detail.amount)" class="form-control shadow-sm bg-light"
-                      placeholder="Thành tiền" readonly />
-                  </td>
-                  <td class="text-center">
-                    <button type="button" class="btn btn-outline-danger btn-sm" @click="removeInvoiceDetail(index)">
-                      <Icon name="mdi:delete" size="16" />
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="total-section text-end mt-3">
-            <strong>Tổng tiền: {{ formatCurrency(invoiceForm.total_amount) }} VNĐ</strong>
-          </div>
-        </fieldset>
+        <!-- Phí cố định -->
+        <div v-if="fees" class="mb-4">
+          <h5 class="fw-bold mb-3">Phí cố định</h5>
+          <table class="table table-bordered">
+            <thead class="table-light">
+              <tr>
+                <th>Loại phí</th>
+                <th>Số tiền (VNĐ)</th>
+                <th>Mô tả</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr v-for="(fee, index) in fees" :key="index">
+                <td>{{ fee.type }}</td>
+                <td>{{ formatCurrency(fee.amount) }}</td>
+                <td>{{ fee.description }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
 
-        <!-- Action Buttons -->
-        <div class="d-flex justify-content-end gap-2">
-          <button type="button" class="btn btn-outline-secondary" style="min-width: 120px;" @click="reset()">
-            Làm mới
-          </button>
-          <button type="submit" class="btn btn-primary" style="min-width: 120px;">
-            Thêm hóa đơn
+        <!-- Phí linh hoạt -->
+        <div class="mb-4">
+          <h5 class="fw-bold mb-3">Phí linh hoạt</h5>
+          <div v-for="(fee, index) in flexibleFees" :key="index" class="row mb-2 align-items-end">
+            <div class="col-md-2">
+              <label :for="'fee-type-' + index" class="form-label">Loại phí</label>
+              <select :id="'fee-type-' + index" v-model="fee.fee_type_id" class="form-select" @change="onChange()">
+                <option value="" disabled>Chọn loại phí</option>
+                <option v-for="feeType in flexibleFeeTypes" :key="feeType.fee_type_id" :value="feeType.fee_type_id">
+                  {{ feeType.fee_name }}
+                </option>
+              </select>
+            </div>
+            <div class="col-md-2">
+              <label :for="'fee-quantity-' + index" class="form-label">Số lượng</label>
+              <input :id="'fee-quantity-' + index" v-model.number="fee.quantity" type="number" class="form-control"
+                min="0" @input="calculateAmount(index), onChange()" />
+            </div>
+            <div class="col-md-2">
+              <label :for="'fee-price-' + index" class="form-label">Đơn giá (VNĐ)</label>
+              <input :id="'fee-price-' + index" v-model.number="fee.price" type="number" class="form-control" min="0"
+                @input="calculateAmount(index), onChange()" />
+            </div>
+            <div class="col-md-2">
+              <label :for="'fee-amount-' + index" class="form-label">Số tiền (VNĐ)</label>
+              <input :id="'fee-amount-' + index" :value="fee.amount" type="number" class="form-control" readonly />
+            </div>
+            <div class="col-md-2">
+              <label :for="'fee-description-' + index" class="form-label">Mô tả</label>
+              <input :id="'fee-description-' + index" v-model="fee.description" type="text" class="form-control"
+                @input="onChange()" />
+            </div>
+            <div class="col-md-2">
+              <button class="btn btn-outline-danger w-100" @click="removeFlexibleFee(index)">
+                <Icon name="ep:remove-filled" size="20" class="me-2" />Xóa
+              </button>
+            </div>
+          </div>
+          <button class="btn btn-outline-success" @click="addFlexibleFee">
+            <Icon name="gridicons:add" size="20" class="me-2" />Thêm phí linh hoạt
           </button>
         </div>
-      </form>
+
+        <!-- Tóm tắt hóa đơn -->
+        <div v-if="fees" class="mb-4">
+          <h5 class="fw-bold mb-3">Thông tin hóa đơn</h5>
+          <div class="alert alert-info">
+            <p class="mb-1">
+              <strong>Tổng phí cố định:</strong> {{ formatCurrency(totalFixedFees) }}
+            </p>
+            <p class="mb-1">
+              <strong>Tổng phí linh hoạt:</strong> {{ formatCurrency(totalFlexibleFees) }}
+            </p>
+            <p class="mb-0 fw-bold">
+              <strong>Tổng cộng:</strong> {{ formatCurrency(totalFees) }}
+            </p>
+          </div>
+        </div>
+
+        <!-- Nút tạo hóa đơn -->
+        <div class="text-end">
+          <button style="margin-right: 5px;" class="btn btn-secondary" @click="reset()">
+            <Icon name="bx:reset" size="20" class="me-2" />Làm mới
+          </button>
+          <button class="btn btn-primary" :disabled="!canCreateInvoice" @click="createInvoice">
+            <Icon name="lsicon:submit-filled" size="20" class="me-2" />Tạo hóa đơn
+          </button>
+        </div>
+      </div>
     </div>
   </div>
 
   <!-- Modal xác nhận chuyển hướng -->
-  <ConfirmNavigationModal
-      v-model="showConfirmModal"
-      @confirm="confirmNavigation"
-      @cancel="cancelNavigation"
-    />
+  <ConfirmNavigationModal v-model="showConfirmModal" @confirm="confirmNavigation" @cancel="cancelNavigation" />
 </template>
 
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useToast } from 'vue-toastification'
 import { useDashboardStore } from '@/stores/dashboard'
+import { useApartmentStore } from '@/stores/apartment'
 import { useInvoiceStore } from '@/stores/invoice'
+import { useFeeStore } from '@/stores/fee'
 import { useRouter } from 'vue-router'
 import ConfirmNavigationModal from '@/components/modal/UnsavedChangesModal.vue'
 
@@ -146,34 +157,30 @@ definePageMeta({
   layout: "dashboard"
 })
 
-const formatCurrency = (value) => {
-  return value.toLocaleString('vi-VN');
-};
-
-const dashboardStore = useDashboardStore();
-const invoiceStore = useInvoiceStore();
+// State
+const apartments = ref([])
+const selectedApartmentId = ref('')
+const fees = ref(null)
+const flexibleFees = ref([])
+const flexibleFeeTypes = ref([])
+const dashboardStore = useDashboardStore()
+const apartmentStore = useApartmentStore()
+const invoiceStore = useInvoiceStore()
+const feeStore = useFeeStore()
+const invoice_date = ref(null)
+const due_date = ref(null)
 const router = useRouter()
 const building_id = dashboardStore.getSelectedBuildingId;
-const errors = ref({});
 const toast = useToast()
+const errors = ref({})
 
-const invoiceForm = ref({
-  apartment_number: '',
-  invoice_date: '',
-  due_date: '',
-  total_amount: 0,
-  status: 0,
-  building_id: building_id,
-  invoice_detail: [],
-})
+const goBack = () => {
+  router.back()
+}
 
-const invoiceDetailForm = ref([
-  { service_name: '', quantity: '', price: '', amount: 0, description: '' }
-])
-
-const { 
+const {
   hasUnsavedChanges,
-  showConfirmModal, 
+  showConfirmModal,
   setupRouteGuard,
   setEditing,
   confirmNavigation,
@@ -185,82 +192,159 @@ const onChange = () => {
   setEditing(true)
 }
 
-const goBack = () => {
-  router.back();
-}
-
 const reset = () => {
-  invoiceForm.value.apartment_number = ''
-  invoiceForm.value.invoice_date = ''
-  invoiceForm.value.due_date = ''
-  invoiceForm.value.total_amount = 0
-  invoiceForm.value.status = 0
-  invoiceForm.value.invoice_detail = []
-
-  invoiceDetailForm.value = [
-    { service_name: '', quantity: '', price: '', amount: 0, description: '' }
-  ]
-
+  selectedApartmentId.value = ''
+  fees.value = null
+  flexibleFees.value = []
+  totalFees.value = 0
+  invoice_date.value = null
+  due_date.value = null
   setEditing(false)
 }
 
-// Tính thành tiền cho từng khoản phí
-const countAmount = (detail) => {
-  detail.amount = detail.quantity * detail.price
-  countTotalAmount()
+// Tính toán phí
+const totalFixedFees = computed(() => {
+  if (!fees.value || !Array.isArray(fees.value)) return 0
+  return fees.value.reduce((sum, fee) => {
+    return sum + Number(fee.amount || 0)
+  }, 0)
+})
+
+const totalFlexibleFees = computed(() => {
+  return flexibleFees.value.reduce((sum, fee) => sum + (fee.amount || 0), 0)
+})
+
+const totalFees = computed(() => {
+  return totalFixedFees.value + totalFlexibleFees.value
+})
+
+const canCreateInvoice = computed(() => {
+  return (
+    selectedApartmentId.value &&
+    flexibleFees.value.every(
+      (fee) => fee.fee_type_id && fee.amount > 0 && fee.description
+    )
+  )
+})
+
+// Hàm định dạng tiền tệ
+const formatCurrency = (value) => {
+  return new Intl.NumberFormat('vi-VN', {
+    style: 'currency',
+    currency: 'VND',
+  }).format(value)
 }
 
-// Thêm khoản phí
-const addInvoiceDetail = () => {
-  invoiceDetailForm.value.push({
-    service_name: '',
-    quantity: '',
-    price: '',
+// Tính amount tự động
+const calculateAmount = (index) => {
+  const fee = flexibleFees.value[index]
+  fee.amount = (fee.quantity || 0) * (fee.price || 0)
+}
+
+// Lấy danh sách căn hộ
+const fetchApartments = async () => {
+  try {
+    const data = await apartmentStore.getCodeApartments(building_id)
+    apartments.value = data
+  } catch (error) {
+    toast.error('Lỗi khi lấy danh sách căn hộ')
+  }
+}
+
+// Lấy phí cố định
+const fetchApartmentFees = async () => {
+  if (!selectedApartmentId.value) return
+  try {
+    const data = await invoiceStore.getApartmentFees(selectedApartmentId.value)
+    fees.value = data
+  } catch (error) {
+    toast.error('Lỗi khi lấy phí cố định')
+    fees.value = null
+  }
+}
+
+// Lấy danh sách loại phí linh hoạt
+const fetchFlexibleFeeTypes = async () => {
+  try {
+    const data = await feeStore.getFlexibleFee()
+    console.log(data)
+    flexibleFeeTypes.value = data
+  } catch (error) {
+    toast.error('Lỗi khi lấy loại phí linh hoạt')
+  }
+}
+
+// Thêm phí linh hoạt
+const addFlexibleFee = () => {
+  flexibleFees.value.push({
+    fee_type_id: '',
     amount: 0,
-    description: ''
+    description: '',
   })
 }
 
-// Xóa khoản phí
-const removeInvoiceDetail = (index) => {
-  if (invoiceDetailForm.value.length > 1) {
-    invoiceDetailForm.value.splice(index, 1)
-    countTotalAmount()
-  } else {
-    toast.warning('Phải có ít nhất một khoản phí')
-  }
+// Xóa phí linh hoạt
+const removeFlexibleFee = (index) => {
+  flexibleFees.value.splice(index, 1)
 }
 
-// Tính tổng tiền
-const countTotalAmount = () => {
-  invoiceForm.value.total_amount = invoiceDetailForm.value.reduce((total, phi) => {
-    return total + (phi.quantity * phi.price)
-  }, 0)
+const getFixedFees = () => {
+  return (fees.value || []).map(fee => {
+    let fee_type_id = null
+
+    if (fee.type === 'Phí quản lý vận hành') {
+      fee_type_id = 1
+    } else if (fee.type === 'Phí gửi xe') {
+      fee_type_id = 2
+    }
+
+    return {
+      fee_type_id,
+      amount: fee.amount,
+      description: fee.description,
+    }
+  })
 }
 
 // Tạo hóa đơn
-const taoHoaDon = async () => {
-  const submissionData = {
-    ...invoiceForm.value,
-    invoice_detail: invoiceDetailForm.value
-  }
-
+const createInvoice = async () => {
   try {
-    const result = await invoiceStore.createInvoice(submissionData)
-    if (result) {
-      toast.success('Tạo hóa đơn thành công')
-      setEditing(false)
-      errors.value = null
-      reset()
+    const allFees = [
+      // Phí cố định
+      ...getFixedFees(),
+      // Phí linh hoạt
+      ...flexibleFees.value.map(fee => ({
+        fee_type_id: fee.fee_type_id,
+        quantity: fee.quantity,
+        price: fee.price,
+        amount: fee.amount,
+        description: fee.description,
+      })),
+    ]
+
+    const data = {
+      apartment_id: selectedApartmentId.value,
+      building_id: building_id,
+      total_amount: totalFees.value,
+      invoice_date: invoice_date.value,
+      due_date: due_date.value,
+      fees: allFees,
     }
+
+    await invoiceStore.createInvoice(data)
+    toast.success('Tạo hóa đơn thành công')
+    reset()
   } catch (error) {
-    toast.error('Lỗi khi tạo hóa đơn: ' + error.message)
-    errors.value = error.errors;
+    errors.value = error.errors
+    toast.error('Lỗi khi tạo hóa đơn')
   }
 }
 
+// Khởi tạo
 onMounted(() => {
-    setupRouteGuard()
+  fetchApartments()
+  fetchFlexibleFeeTypes()
+  setupRouteGuard()
 })
 </script>
 

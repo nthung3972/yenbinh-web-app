@@ -18,13 +18,13 @@ export const useInvoiceStore = defineStore("invoice", {
     }),
 
     actions: {
-        async fetchtInvoiceList(page = 1, perPage = '', keyword = '', status ='', invoice_date_form ='', invoice_date_to='') {
+        async fetchtInvoiceList(page = 1, perPage = '', keyword = '', status ='', invoice_date_from, invoice_date_to) {
             const dashboardStore = useDashboardStore();
             const building_id = dashboardStore.getSelectedBuildingId;
 
             this.loading = true;
             try {
-                const response = await InvoiceApi.getListInvoice(building_id, page, perPage, keyword, status, invoice_date_form, invoice_date_to);
+                const response = await InvoiceApi.getListInvoice(building_id, page, perPage, keyword, status, invoice_date_from, invoice_date_to);
                 if (response.data) {
                     this.invoiceList = response.data.data.data.data;
 
@@ -76,6 +76,21 @@ export const useInvoiceStore = defineStore("invoice", {
             try {
                 const response = await InvoiceApi.updateInvoice(id,data);
                 if (response.data) {
+                    return response.data
+                }
+            } catch (error) {
+                throw error
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async getApartmentFees(id) {
+            this.loading = true
+            try {
+                const response = await InvoiceApi.getApartmentFees(id);
+                if (response.data) {
+                    console.log(response.data)
                     return response.data
                 }
             } catch (error) {

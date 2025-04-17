@@ -28,37 +28,42 @@
             <Icon name="mdi:home-city" size="20" class="me-2 text-white" />
             Mã Căn Hộ: {{ invoiceStore.invoice.apartment_number }}
           </span>
-          <span class="badge bg-light text-primary">
-            <Icon name="mdi:tag" size="16" class="me-1" />
-            {{ getStatusText(invoiceStore.invoice.status) }}
-          </span>
-          <button @click="downloadInvoice(id)" class="btn btn-success" :disabled="loading" >
+          <button @click="downloadInvoice(id)" class="btn btn-success" :disabled="loading">
             <Icon name="mdi:file-excel" class="me-1" />
             <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span>
-                {{ loading ? "Đang xử lý..." : "Xuất excel" }}
+            {{ loading ? "Đang xử lý..." : "Xuất excel" }}
           </button>
         </div>
 
         <div class="card-body p-4">
           <!-- Thông tin hóa đơn -->
           <div class="row mb-4">
-            <div class="col-md-4">
+            <div class="col-md-3">
               <p class="mb-2">
                 <Icon name="mdi:calendar" size="18" class="me-2 text-muted" />
                 <strong>Ngày Phát Hành:</strong> {{ formatDate(invoiceStore.invoice.invoice_date) }}
               </p>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
               <p class="mb-2">
                 <Icon name="mdi:calendar-check" size="18" class="me-2 text-muted" />
                 <strong>Hạn Thanh Toán:</strong> {{ formatDate(invoiceStore.invoice.due_date) }}
               </p>
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
               <p class="mb-2">
                 <Icon name="mdi:calendar-check" size="18" class="me-2 text-muted" />
                 <strong>Người tạo: </strong> {{ invoiceStore.invoice.updated_by ? invoiceStore.invoice.updated_by :
-                '----' }}
+                  '----' }}
+              </p>
+            </div>
+            <div class="col-md-3">
+              <p class="mb-2">
+                <Icon name="mdi:tag" size="16" class="me-1" />
+                <strong>Trạng thái: </strong>
+                <span :class="['badge', getStatusBadgeClass(invoiceStore.invoice.status)]">
+                  {{ getStatusText(invoiceStore.invoice.status) }}
+                </span>
               </p>
             </div>
           </div>
@@ -89,14 +94,27 @@
                       <Icon name="mdi:cash-multiple" size="16" class="me-2" />
                       Thành Tiền
                     </th>
+                    <th>
+                      <Icon name="mdi:file-document" size="16" class="me-2" />
+                      Ghi chú
+                    </th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr v-for="(detail, index) in invoiceStore.invoice.invoice_details" :key="index">
-                    <td>{{ getServiceName(detail.service_name) }}</td>
-                    <td>{{ detail.quantity }}</td>
-                    <td>{{ formatVND(detail.price) }}</td>
+                    <td>{{ detail.fee_name }}</td>
+                    <td>
+                      <span>
+                        {{ detail.fee_types.is_fixed === 0 ? detail.quantity : 'Phí cố định' }}
+                      </span>
+                    </td>
+                    <td>
+                      <span>
+                        {{ detail.fee_types.is_fixed === 0 ? formatVND(detail.price) : 'Phí cố định' }}
+                      </span>
+                    </td>
                     <td>{{ formatVND(detail.amount) }}</td>
+                    <td>{{ detail.description }}</td>
                   </tr>
                 </tbody>
               </table>
@@ -147,7 +165,25 @@ const route = useRoute()
 const router = useRouter()
 const id = route.params.id
 const authStore = useAuthStore();
-const loading  = ref(false)
+const loading = ref(false)
+
+const getStatusBadgeClass = (status) => {
+  switch (status) {
+    case 0: return 'bg-warning text-dark' // vàng
+    case 1: return 'bg-success'           // xanh
+    case 2: return 'bg-danger'            // đỏ
+    default: return 'bg-secondary'        // xám
+  }
+}
+
+const getStatusText = (status) => {
+  switch (status) {
+    case 0: return 'Chưa thanh toán'
+    case 1: return 'Đã thanh toán'
+    case 2: return 'Đã quá hạn'
+    default: return 'Không xác định'
+  }
+}
 
 const downloadInvoice = async (id) => {
   loading.value = true
@@ -192,26 +228,6 @@ const formatDate = (date) => {
 
 const formatVND = (amount) => {
   return new Intl.NumberFormat("vi-VN", { style: "currency", currency: "VND" }).format(amount);
-}
-
-const getServiceName = (code) => {
-  const services = {
-    DIEN: "Tiền điện",
-    NUOC: "Tiền nước",
-    QUANLY: "Phí quản lý",
-    GUIXE: "Phí gửi xe",
-    PHIKHAC: "Phí khác",
-  };
-  return services[code] || "Không xác định";
-}
-
-const getStatusText = (status) => {
-  const statuses = {
-    "0": "Chưa thanh toán",
-    "1": "Đã thanh toán",
-    "2": "Đã quá hạn",
-  };
-  return statuses[status] || "Không xác định";
 }
 
 const loadInvoice = async () => {
