@@ -34,8 +34,8 @@
 
                             <div class="col-md-6 mb-3">
                                 <label class="form-label">Căn cước công dân</label>
-                                <input v-model="residentForm.id_card_number" class="form-control" @input="onChange()" required
-                                    placeholder="Số căn cước (nếu có)" />
+                                <input v-model="residentForm.id_card_number" class="form-control" @input="onChange()"
+                                    required placeholder="Số căn cước (nếu có)" />
                                 <small v-if="errors?.id_card_number" class="error-message">
                                     {{ errors.id_card_number[0] }}
                                 </small>
@@ -90,13 +90,10 @@
                         </div>
                     </div>
 
-
-
                     <div class="card mt-4">
                         <div class="card-header d-flex justify-content-between align-items-center">
                             Danh Sách Căn Hộ
-                            <button type="button" class="btn btn-success btn-sm" data-bs-toggle="modal"
-                                data-bs-target="#addApartmentModal">
+                            <button type="button" class="btn btn-success btn-sm" @click="openAddModal()">
                                 <Icon name="ic:baseline-add-circle-outline" size="16" class="me-1" /> Thêm Căn Hộ
                             </button>
                         </div>
@@ -124,8 +121,7 @@
                                             (apartment.pivot.role_in_apartment === 1 ? 'Người thuê' : 'Người thân') }}
                                         </td>
                                         <td>
-                                            <button type="button" class="btn btn-danger btn-sm" data-bs-toggle="modal"
-                                                data-bs-target="#deleteApartmentModal"
+                                            <button type="button" class="btn btn-danger btn-sm"
                                                 @click="setSelectedApartment(apartment.apartment_id)">
                                                 Rời căn hộ
                                             </button>
@@ -148,67 +144,11 @@
         </form>
     </div>
 
-    <!-- Modal Thêm Căn Hộ -->
-    <div class="modal fade" id="addApartmentModal" tabindex="-1" ref="addModal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form @submit.prevent="createApartment" novalidate>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Thêm Căn Hộ Mới</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="mb-3">
-                            <label class="form-label">Tên căn hộ</label>
-                            <input v-model="apartmentForm.apartment_number" type="text" class="form-control">
-                            <span v-if="errors?.apartment_number" class="error-message">
-                                {{ errors.apartment_number }}
-                            </span>
-                        </div>
-                        <div class="mb-3">
-                            <label class="form-label">Loại sở hữu</label>
-                            <select v-model="apartmentForm.role_in_apartment" class="form-select"
-                                placeholder="Nhập email" required>
-                                <option :value="0">Chủ hộ</option>
-                                <option :value="1">Người thuê chính</option>
-                                <option :value="2">Người thân</option>
-                            </select>
-                            <span v-if="errors?.role_in_apartment" class="error-message">
-                                {{ errors.role_in_apartment }}
-                            </span>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" @click="safeCloseModal('addApartmentModal')">Hủy</button>
-                        <button type="submit" class="btn btn-primary">Thêm</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+    <ConfirmModal v-model="showDeleteModal" title="Xác nhận xóa căn hộ"
+        :message="`Bạn có chắc chắn muốn xóa căn hộ này không?`" confirmText="Xóa" @confirm="deleteApartment" />
 
-    <!-- Modal Xóa Căn Hộ -->
-    <div class="modal fade" id="deleteApartmentModal" tabindex="-1" ref="deleteModal">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <form @submit.prevent="deleteApartment" novalidate>
-                    <div class="modal-header">
-                        <h5 class="modal-title">Xác Nhận Rời Căn Hộ</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                    </div>
-                    <div class="modal-body">
-                        Bạn có chắc chắn muốn rời căn hộ này không?
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"  @click="safeCloseModal('deleteApartmentModal')">Bỏ qua</button>
-                        <button type="submit" class="btn btn-danger">Rời căn hộ</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
+    <<AddApartmentModal v-model="showAddModal" :errors="formErrors" @submit="createApartment"/>
 
-    <!-- Modal xác nhận chuyển hướng -->
     <ConfirmNavigationModal v-model="showConfirmModal" @confirm="confirmNavigation" @cancel="cancelNavigation" />
 </template>
 
@@ -218,20 +158,24 @@ import { useRouter, useRoute } from 'vue-router';
 import { useResidentStore } from '@/stores/resident';
 import { useToast } from 'vue-toastification';
 import ConfirmNavigationModal from '@/components/modal/UnsavedChangesModal.vue'
+import ConfirmModal from '@/components/modal/ConfirmModal.vue'
+import AddApartmentModal from '@/components/modal/AddResidentToApartmentModal.vue'
 
 definePageMeta({
     middleware: "auth",
     layout: "dashboard"
 })
 
-const useResident = useResidentStore();
+const useResident = useResidentStore()
 const route = useRoute()
 const router = useRouter()
 const resident_id = route.params.id
-const { formatErrors } = useFormErrors()
 const errors = ref({})
 const toast = useToast()
-const isLoading = computed(() => useResident.isLoading);
+const isLoading = computed(() => useResident.isLoading)
+const showDeleteModal = ref(false)
+const showAddModal = ref(false)
+const formErrors = ref({})
 
 const residentForm = ref({
     full_name: '',
@@ -243,11 +187,6 @@ const residentForm = ref({
     created_at: '',
     apartments: []
 });
-
-const apartmentForm = ref({
-    apartment_number: '',
-    role_in_apartment: 0,
-})
 
 const leaveForm = ref({
     resident_id: '',
@@ -282,23 +221,15 @@ const reset = () => {
     setEditing(true)
 }
 
-// Hàm đóng modal an toàn
-const safeCloseModal = (modalId) => {
-  // Đảm bảo blur trước khi đóng
-  if (document.activeElement) document.activeElement.blur();
-  
-  // Sử dụng bootstrap API để đóng modal
-  if (typeof bootstrap !== 'undefined') {
-    const modalElement = document.getElementById(modalId);
-    const modalInstance = bootstrap.Modal.getInstance(modalElement);
-    if (modalInstance) modalInstance.hide();
-  }
-}
-
 const setSelectedApartment = (id) => {
     leaveForm.value.apartment_id = id;
     leaveForm.value.resident_id = parseInt(resident_id)
-};
+    showDeleteModal.value = true
+}
+
+const openAddModal = () => {
+    showAddModal.value = true
+}
 
 const loadResident = async () => {
     await useResident.fetchResident(resident_id);
@@ -323,24 +254,30 @@ const deleteApartment = async () => {
         await useResident.fetchResident(resident_id);
         residentForm.value = { ...useResident.resident };
     } catch (error) {
-        toast.error("Lỗi khi rời căn hộ!");
+        if (error) {
+            toast.error("Lỗi khi rời căn hộ!");
+        }
     }
 }
 
-const createApartment = async () => {
-    const data = { ...apartmentForm.value, resident_id };
+const createApartment = async (formData) => {
+    const data = { ...formData, resident_id }
     try {
-        errors.value = null;
+        errors.value = {}
+        formErrors.value = {}
 
         const result = await useResident.addResidentToApartment(data, resident_id);
         if (result) {
             toast.success("Thêm căn hộ thành công!", { timeout: 3000 });
+            formErrors.value = null
             await useResident.fetchResident(resident_id);
             residentForm.value = { ...useResident.resident };
+            showAddModal.value = false
         }
     } catch (error) {
         if (error && error.errors) {
-            errors.value = formatErrors(error.errors);
+            formErrors.value.apartment_number  = error.errors.apartment_number
+            formErrors.value.role_in_apartment  = error.errors.role_in_apartment
         } else {
             errors.value = {
                 general: error.message || "Đã có lỗi xảy ra khi thêm cư dân"

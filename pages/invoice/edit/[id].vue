@@ -2,15 +2,15 @@
   <div class="container mt-4">
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
-        <h3 class="fw-bold text-primary">
-          <Icon name="mdi:receipt-text" size="24" class="me-2" />
-          Sửa hóa đơn
-        </h3>
-        <button class="btn btn-outline-secondary" @click="goBack()">
-          <Icon name="mdi:arrow-left-circle" size="20" class="me-2" />
-          Quay lại
-        </button>
-      </div>
+      <h3 class="fw-bold text-primary">
+        <Icon name="mdi:receipt-text" size="24" class="me-2" />
+        Sửa hóa đơn
+      </h3>
+      <button class="btn btn-outline-secondary" @click="goBack()">
+        <Icon name="mdi:arrow-left-circle" size="20" class="me-2" />
+        Quay lại
+      </button>
+    </div>
 
     <!-- Card chính -->
     <div v-if="invoice" class="card shadow-sm">
@@ -18,26 +18,38 @@
         <!-- Thông tin hóa đơn -->
         <div class="mb-4">
           <div class="row row-cols-1 row-cols-md-auto g-3 align-items-end">
-            <div class="col-md-3">
+            <div class="col-md-4">
               <label for="apartment" class="form-label fw-bold">Căn hộ</label>
               <input :value="invoice.apartment_number" class="form-control" readonly />
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
               <label class="form-label fw-medium">Ngày ban hành<span class="text-danger">*</span></label>
               <input v-model="invoice_date" type="date" class="form-control shadow-sm" @input="onChange()"
                 :class="{ 'is-invalid': errors?.invoice_date }" />
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
               <label class="form-label fw-medium">Hạn thanh toán<span class="text-danger">*</span></label>
               <input v-model="due_date" type="date" class="form-control shadow-sm" @input="onChange()"
                 :class="{ 'is-invalid': errors?.due_date }" />
             </div>
 
-            <div class="col-md-3">
+            <div class="col-md-4">
               <label class="form-label fw-semibold">Trạng thái</label>
-              <select v-model="status" class="form-select" @change="onChange()">
+              <select v-model="status" class="form-select" @change="onChange(), changeStatus()">
                 <option :value="0">Chưa thanh toán</option>
                 <option :value="1">Đã thanh toán</option>
+              </select>
+            </div>
+
+            <!-- Hiển thị input nếu đã thanh toán -->
+            <div class="col-md-4" v-if="status === 1">
+              <label class="form-label fw-semibold">Hình thức thanh toán</label>
+              <select v-model="paymentMethod" class="form-select">
+                <option disabled value="">-- Chọn hình thức thanh toán --</option>
+                <option value="cash">Tiền mặt</option>
+                <option value="bank_transfer">Chuyển khoản</option>
+                <option value="qr_code">QR Code</option>
+                <option value="other">Khác</option>
               </select>
             </div>
 
@@ -94,7 +106,8 @@
             </div>
             <div class="col-md-2">
               <label :for="'fee-description-' + index" class="form-label">Mô tả</label>
-              <input :id="'fee-description-' + index" v-model="fee.description" type="text" class="form-control" @input="onChange()" />
+              <input :id="'fee-description-' + index" v-model="fee.description" type="text" class="form-control"
+                @input="onChange()" />
             </div>
             <div class="col-md-2">
               <button class="btn btn-outline-danger w-100" @click="removeFlexibleFee(index)">
@@ -136,12 +149,8 @@
     </div>
   </div>
 
-   <!-- Modal xác nhận chuyển hướng -->
-   <ConfirmNavigationModal
-      v-model="showConfirmModal"
-      @confirm="confirmNavigation"
-      @cancel="cancelNavigation"
-    />
+  <!-- Modal xác nhận chuyển hướng -->
+  <ConfirmNavigationModal v-model="showConfirmModal" @confirm="confirmNavigation" @cancel="cancelNavigation" />
 </template>
 
 <script setup>
@@ -170,6 +179,7 @@ const feeStore = useFeeStore()
 const invoice_date = ref(null)
 const due_date = ref(null)
 const status = ref(null)
+const paymentMethod = ref('')
 const errors = ref({})
 const toast = useToast()
 
@@ -189,6 +199,12 @@ const {
 
 const onChange = () => {
   setEditing(true)
+}
+
+const changeStatus = () => {
+  if (status.value !== 1) {
+    paymentMethod.value = ''
+  }
 }
 
 // Tính toán phí
@@ -241,6 +257,7 @@ const fetchInvoiceData = async () => {
     invoice_date.value = data.invoice_date
     due_date.value = data.due_date
     status.value = data.status
+    paymentMethod.value = data.payment_method ?? ''
     // Lấy phí cố định từ invoice_details
     fees.value = data.invoice_details
       .filter(detail => detail.fee_types.is_fixed === 1)
@@ -294,12 +311,18 @@ const removeFlexibleFee = (index) => {
 // Chuẩn bị phí cố định
 const getFixedFees = () => {
   return (fees.value || []).map(fee => {
+
     let fee_type_id = null
+
     if (fee.type === 'Phí quản lý vận hành') {
       fee_type_id = 1
     } else if (fee.type === 'Phí gửi xe') {
       fee_type_id = 2
     }
+    else if (fee.type === 'Thù lao ban quản trị') {
+      fee_type_id = 6
+    }
+
     return {
       fee_type_id,
       amount: fee.amount,
@@ -328,8 +351,11 @@ const updateInvoice = async () => {
       invoice_date: invoice_date.value,
       due_date: due_date.value,
       status: status.value,
+      payment_method : paymentMethod.value,
       fees: allFees
     }
+
+    console.log(data)
 
     await invoiceStore.updateInvoice(route.params.id, data)
     setEditing(false)
