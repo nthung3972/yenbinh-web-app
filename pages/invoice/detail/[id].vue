@@ -38,32 +38,37 @@
         <div class="card-body p-4">
           <!-- Thông tin hóa đơn -->
           <div class="row mb-4">
-            <div class="col-md-3">
+            <div class="col-md-4">
               <p class="mb-2">
                 <Icon name="mdi:calendar" size="18" class="me-2 text-muted" />
                 <strong>Ngày Phát Hành:</strong> {{ formatDate(invoiceStore.invoice.invoice_date) }}
               </p>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
               <p class="mb-2">
                 <Icon name="mdi:calendar-check" size="18" class="me-2 text-muted" />
                 <strong>Hạn Thanh Toán:</strong> {{ formatDate(invoiceStore.invoice.due_date) }}
               </p>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
               <p class="mb-2">
                 <Icon name="mdi:calendar-check" size="18" class="me-2 text-muted" />
                 <strong>Người tạo: </strong> {{ invoiceStore.invoice.updated_by ? invoiceStore.invoice.updated_by :
                   '----' }}
               </p>
             </div>
-            <div class="col-md-3">
+            <div class="col-md-4">
               <p class="mb-2">
                 <Icon name="mdi:tag" size="16" class="me-1" />
                 <strong>Trạng thái: </strong>
                 <span :class="['badge', getStatusBadgeClass(invoiceStore.invoice.status)]">
                   {{ getStatusText(invoiceStore.invoice.status) }}
                 </span>
+              </p>
+            </div>
+            <div class="col-md-4">
+              <p class="mb-2">
+                <strong>Phương thức:</strong> {{ getPaymentText(invoiceStore.invoice.payment_method) }}
               </p>
             </div>
           </div>
@@ -78,23 +83,23 @@
               <table class="table table-borderless table-hover">
                 <thead class="table-light">
                   <tr>
-                    <th>
+                    <th style="width: 20%;">
                       <Icon name="mdi:file-document" size="16" class="me-2" />
                       Loại Phí
                     </th>
-                    <th>
+                    <th style="width: 15%;">
                       <Icon name="mdi:numeric" size="16" class="me-2" />
                       Số Lượng
                     </th>
-                    <th>
+                    <th style="width: 15%;">
                       <Icon name="mdi:currency-usd" size="16" class="me-2" />
                       Đơn Giá
                     </th>
-                    <th>
+                    <th style="width: 15%;">
                       <Icon name="mdi:cash-multiple" size="16" class="me-2" />
                       Thành Tiền
                     </th>
-                    <th>
+                    <th style="width: 45%;">
                       <Icon name="mdi:file-document" size="16" class="me-2" />
                       Ghi chú
                     </th>
@@ -182,6 +187,16 @@ const getStatusText = (status) => {
     case 1: return 'Đã thanh toán'
     case 2: return 'Đã quá hạn'
     default: return 'Không xác định'
+  }
+}
+
+const getPaymentText = (status) => {
+  switch (status) {
+    case 'cash': return 'Tiền mặt'
+    case 'bank_transfer': return 'Chuyển khoản'
+    case 'qr_code': return 'QR Code'
+    case 'other': return 'Phương thức khác'
+    default: return 'Chưa thanh toán'
   }
 }
 

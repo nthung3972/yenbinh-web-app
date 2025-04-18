@@ -7,107 +7,157 @@
     </div>
     <div v-else-if="hasError">{{ hasError }}</div>
     <div v-else>
-        <div class="container">
-            <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                <h4 class="mb-4 d-flex align-items-center">
-                <Icon name="ion:home" size="24" />
-                Thông tin chi tiết căn hộ
-            </h4>
-            <button class="btn btn-outline-secondary" @click="goBack()">
-                <Icon name="mdi:arrow-left-circle" size="20" class="me-2" />
-                Quay lại
-            </button>
-            </div>
-            <div class="card mb-4">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-md-6 mb-3">
-                            <strong>Số căn hộ:</strong> {{ useApartment.apartment.apartment_number }}
+        <div class="container-fluid">
+            <div class="row mb-4">
+                <div class="col-12">
+                    <div class="card shadow">
+                        <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                            <h4 class="fw-bold text-primary">
+                                <Icon name="mdi:receipt-text" size="24" class="me-2" />
+                                Thông tin căn hộ
+                            </h4>
+                            <button class="btn btn-outline-secondary" @click="goBack()">
+                                <Icon name="mdi:arrow-left-circle" size="20" class="me-2" />
+                                Quay lại
+                            </button>
                         </div>
-                        <div class="col-md-6 mb-3">
-                            <strong>Diện tích:</strong> {{ useApartment.apartment.area }} m²
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <strong>Tầng:</strong> {{ useApartment.apartment.floor_number }}
-                        </div>
-                        <div class="col-md-6 mb-3">
-                            <strong>Loại căn hộ:</strong> {{ useApartment.apartment.ownership_type }}
+
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-6 mb-3">
+                                    <strong> Số căn hộ:</strong> {{ useApartment.apartment.apartment_number }}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <strong> Diện tích:</strong> {{ useApartment.apartment.area }} m²
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <strong> Tầng:</strong> {{ useApartment.apartment.floor_number }}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <strong> Loại căn hộ:</strong> {{ useApartment.apartment.ownership_type }}
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Danh sách cư dân -->
-            <div class="card">
-                <div class="card-body">
-                    <h5 class="card-title mb-3">
-                        <Icon name="ic:baseline-people" size="24" /> Danh sách cư dân
-                    </h5>
-                    <div v-if="useApartment.apartment.residents?.length > 0">
-                        <div class="table-responsive">
-                            <table class="table table-bordered table-hover">
-                                <thead class="table-light">
-                                    <tr>
-                                        <th>Họ tên</th>
-                                        <th>CMND/CCCD</th>
-                                        <th>Email</th>
-                                        <th>SĐT</th>
-                                        <th>Vai trò</th>
-                                        <th>Ngày đăng ký</th>
-                                        <th>Trạng thái</th>
-                                        <th>Ngày chuyển đi</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr v-for="resident in useApartment.apartment.residents" :key="resident.id">
-                                        <td>{{ resident.full_name }}</td>
-                                        <td>{{ resident.id_card_number }}</td>
-                                        <td>{{ resident.email }}</td>
-                                        <td>{{ resident.phone_number }}</td>
-                                        <td>
-                                            <span :class="{
-                                                'badge bg-success': resident.pivot.role_in_apartment === 0,
-                                                'badge bg-info': resident.pivot.role_in_apartment === 1,
-                                                'badge bg-warning text-dark': resident.pivot.role_in_apartment === 2
-                                            }">
-                                                {{
-                                                    resident.pivot.role_in_apartment === 0
-                                                        ? 'Chủ căn hộ'
-                                                        : resident.pivot.role_in_apartment === 1
-                                                            ? 'Người thuê'
-                                                            : resident.pivot.role_in_apartment === 2
-                                                                ? 'Người thân'
-                                                                : '----'
+            <!-- Căn hộ sở hữu -->
+            <div class="row">
+                <div class="col-12">
+                    <div class="card shadow">
+                        <div class="card-header bg-white">
+                            <h5 class="mb-0">Danh sách căn hộ sở hữu</h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead class="table-light sticky-top">
+                                        <tr>
+                                            <th>Họ tên</th>
+                                            <th>CMND/CCCD</th>
+                                            <th>Email</th>
+                                            <th>SĐT</th>
+                                            <th>Vai trò</th>
+                                            <th>Ngày đăng ký</th>
+                                            <th>Trạng thái</th>
+                                            <th>Ngày chuyển đi</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr v-for="resident in useApartment.apartment.residents" :key="resident.id">
+                                            <td>{{ resident.full_name }}</td>
+                                            <td>{{ resident.id_card_number }}</td>
+                                            <td>{{ resident.email }}</td>
+                                            <td>{{ resident.phone_number }}</td>
+                                            <td>
+                                                <span :class="{
+                                                    'badge bg-success': resident.pivot.role_in_apartment === 0,
+                                                    'badge bg-info': resident.pivot.role_in_apartment === 1,
+                                                    'badge bg-warning text-dark': resident.pivot.role_in_apartment === 2
+                                                }">
+                                                    {{
+                                                        resident.pivot.role_in_apartment === 0
+                                                            ? 'Chủ căn hộ'
+                                                            : resident.pivot.role_in_apartment === 1
+                                                                ? 'Người thuê'
+                                                                : resident.pivot.role_in_apartment === 2
+                                                                    ? 'Người thân'
+                                                                    : '----'
+                                                    }}
+                                                </span>
+                                            </td>
+                                            <td>{{ formatDate(resident.pivot?.registration_date) }}</td>
+                                            <td>
+                                                <span class="badge" :class="{
+                                                    'bg-success': resident.pivot?.registration_status === '0',
+                                                    'bg-secondary': resident.pivot?.registration_status === '1'
+                                                }">
+                                                    {{
+                                                        resident.pivot?.registration_status === 0
+                                                            ? 'Đang cư trú'
+                                                            : resident.pivot?.registration_status === 1
+                                                                ? 'Đã rời đi'
+                                                                : '———'
+                                                    }}
+                                                </span>
+                                            </td>
+                                            <td>
+                                                {{ resident.pivot.move_out_date ?
+                                                    formatDate(resident.pivot.move_out_date) :
+                                                    '———'
                                                 }}
-                                            </span>
-                                        </td>
-                                        <td>{{ formatDate(resident.pivot?.registration_date) }}</td>
-                                        <td>
-                                            <span class="badge" :class="{
-                                                'bg-success': resident.pivot?.registration_status === '0',
-                                                'bg-secondary': resident.pivot?.registration_status === '1'
-                                            }">
-                                                {{
-                                                    resident.pivot?.registration_status === 0
-                                                        ? 'Đang cư trú'
-                                                        : resident.pivot?.registration_status === 1
-                                                            ? 'Đã rời đi'
-                                                            : '———'
-                                                }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            {{ resident.pivot.move_out_date ? formatDate(resident.pivot.move_out_date) :
-                                                '———'
-                                            }}
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
-                    <div v-else>
-                        <p>Chưa có cư dân nào trong căn hộ này.</p>
+                </div>
+            </div>
+            <!-- Tab navigation cho thông tin khác -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card shadow">
+                        <div class="card-header bg-white p-0">
+                            <ul class="nav nav-tabs" id="residentTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="payments-tab" data-bs-toggle="tab"
+                                        data-bs-target="#payments" type="button" role="tab">
+                                        Lịch sử thanh toán
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="complaints-tab" data-bs-toggle="tab"
+                                        data-bs-target="#complaints" type="button" role="tab">
+                                        Phản ánh & khiếu nại
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="activity-tab" data-bs-toggle="tab"
+                                        data-bs-target="#activity" type="button" role="tab">
+                                        Hoạt động gần đây
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card-body">
+                            <div class="tab-content" id="residentTabContent">
+                                <div class="tab-pane fade show active" id="payments" role="tabpanel">
+                                    <p class="text-muted">Hiển thị lịch sử thanh toán của căn hộ</p>
+                                    <!-- Nội dung lịch sử thanh toán -->
+                                </div>
+                                <div class="tab-pane fade" id="complaints" role="tabpanel">
+                                    <p class="text-muted">Hiển thị phản ánh và khiếu nại của căn hộ</p>
+                                    <!-- Nội dung phản ánh và khiếu nại -->
+                                </div>
+                                <div class="tab-pane fade" id="activity" role="tabpanel">
+                                    <p class="text-muted">Hiển thị hoạt động gần đây của căn hộ</p>
+                                    <!-- Nội dung hoạt động gần đây -->
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

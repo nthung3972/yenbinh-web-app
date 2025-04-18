@@ -6,7 +6,7 @@
         <Icon name="mdi:receipt-text" size="24" class="me-2" />
         Tạo hóa đơn mới
       </h3>
-      <button class="btn btn-outline-secondary" @click="goBack">
+      <button class="btn btn-outline-secondary" @click="goBack()">
         <Icon name="mdi:arrow-left-circle" size="20" class="me-2" />
         Quay lại
       </button>
@@ -51,9 +51,9 @@
           <table class="table table-bordered">
             <thead class="table-light">
               <tr>
-                <th>Loại phí</th>
-                <th>Số tiền (VNĐ)</th>
-                <th>Mô tả</th>
+                <th style="width: 30%;">Loại phí</th>
+                <th style="width: 20%;">Số tiền (VNĐ)</th>
+                <th style="width: 50%;">Mô tả</th>
               </tr>
             </thead>
             <tbody>
@@ -296,6 +296,9 @@ const getFixedFees = () => {
       fee_type_id = 1
     } else if (fee.type === 'Phí gửi xe') {
       fee_type_id = 2
+    }
+    else if (fee.type === 'Thù lao ban quản trị') {
+      fee_type_id = 6
     }
 
     return {

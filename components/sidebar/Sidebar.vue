@@ -8,7 +8,7 @@
         <!-- Dropdown chọn tòa nhà -->
         <div class="sidebar-select">
             <select v-model="selectedBuilding" @change="handleBuildingChange()" class="form-select">
-                <option value="all">——— Tất cả tòa nhà ———</option>
+                <option value="all">—— Tất cả tòa nhà ——</option>
                 <option v-for="building in dashboardStore.getData" :key="building.building_id"
                     :value="building.building_id">
                     {{ building.name }}
