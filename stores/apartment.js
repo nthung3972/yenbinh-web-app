@@ -96,7 +96,6 @@ export const useApartmentStore = defineStore("apartment", {
             this.loading = true
             try {
                 const response = await ApartmentApi.getCodeApartments(id)
-                console.log(response.data.data.data)
                 if (response.data) {
                     return response.data.data.data
                 }

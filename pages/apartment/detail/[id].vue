@@ -47,7 +47,7 @@
                 <div class="col-12">
                     <div class="card shadow">
                         <div class="card-header bg-white">
-                            <h5 class="mb-0">Danh sách căn hộ sở hữu</h5>
+                            <h5 class="mb-0">Danh sách cư dân trong căn hộ</h5>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
@@ -55,21 +55,21 @@
                                     <thead class="table-light sticky-top">
                                         <tr>
                                             <th>Họ tên</th>
-                                            <th>CMND/CCCD</th>
+                                            <!-- <th>CMND/CCCD</th> -->
                                             <th>Email</th>
                                             <th>SĐT</th>
                                             <th>Vai trò</th>
                                             <th>Ngày đăng ký</th>
                                             <th>Trạng thái</th>
-                                            <th>Ngày chuyển đi</th>
+                                            <!-- <th>Ngày chuyển đi</th> -->
                                         </tr>
                                     </thead>
                                     <tbody>
                                         <tr v-for="resident in useApartment.apartment.residents" :key="resident.id">
                                             <td>{{ resident.full_name }}</td>
-                                            <td>{{ resident.id_card_number }}</td>
-                                            <td>{{ resident.email }}</td>
-                                            <td>{{ resident.phone_number }}</td>
+                                            <!-- <td>{{ resident.id_card_number }}</td> -->
+                                            <td>{{ resident.email ?? '———'}}</td>
+                                            <td>{{ resident.phone_number ?? '———'}}</td>
                                             <td>
                                                 <span :class="{
                                                     'badge bg-success': resident.pivot.role_in_apartment === 0,
@@ -102,12 +102,12 @@
                                                     }}
                                                 </span>
                                             </td>
-                                            <td>
+                                            <!-- <td>
                                                 {{ resident.pivot.move_out_date ?
                                                     formatDate(resident.pivot.move_out_date) :
                                                     '———'
                                                 }}
-                                            </td>
+                                            </td> -->
                                         </tr>
                                     </tbody>
                                 </table>

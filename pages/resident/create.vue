@@ -37,16 +37,17 @@
                             <input v-model="residentForm.id_card_number" class="form-control shadow-sm"
                                 :class="{ 'is-invalid': errors?.id_card_number }" @input="onChange()"
                                 placeholder="Nhập số CCCD (nếu có)" />
-                            <div v-if="errors?.id_card_number" class="invalid-feedback">{{ errors.id_card_number }}</div>
+                            <div v-if="errors?.id_card_number" class="invalid-feedback">{{ errors.id_card_number }}
+                            </div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-medium">Ngày sinh <span class="text-danger">*</span></label>
+                            <label class="form-label fw-medium">Ngày sinh </label>
                             <input v-model="residentForm.date_of_birth" type="date" class="form-control shadow-sm"
                                 :class="{ 'is-invalid': errors?.date_of_birth }" @input="onChange()" />
                             <div v-if="errors?.date_of_birth" class="invalid-feedback">{{ errors.date_of_birth }}</div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-medium">Giới tính</label>
+                            <label class="form-label fw-medium">Giới tính<span class="text-danger">*</span></label>
                             <div class="d-flex gap-3">
                                 <div class="form-check">
                                     <input v-model="residentForm.gender" class="form-check-input" type="radio"
@@ -61,14 +62,14 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-medium">Số điện thoại <span class="text-danger">*</span></label>
+                            <label class="form-label fw-medium">Số điện thoại</label>
                             <input v-model="residentForm.phone_number" type="tel" class="form-control shadow-sm"
                                 :class="{ 'is-invalid': errors?.phone_number }" @input="onChange()"
                                 placeholder="Nhập số điện thoại" />
                             <div v-if="errors?.phone_number" class="invalid-feedback">{{ errors.phone_number }}</div>
                         </div>
                         <div class="col-md-6">
-                            <label class="form-label fw-medium">Email <span class="text-danger">*</span></label>
+                            <label class="form-label fw-medium">Email</label>
                             <input v-model="residentForm.email" type="email" class="form-control shadow-sm"
                                 :class="{ 'is-invalid': errors?.email }" @input="onChange()" placeholder="Nhập email" />
                             <div v-if="errors?.email" class="invalid-feedback">{{ errors.email }}</div>
@@ -91,26 +92,41 @@
                         </div>
                         <div class="card-body">
                             <div class="row g-3">
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <label class="form-label fw-medium">Mã căn hộ <span
                                             class="text-danger">*</span></label>
-                                    <input v-model="apartment.apartment_number" type="text"
-                                        class="form-control shadow-sm" @input="onChange()" placeholder="Nhập mã căn hộ"
-                                        :class="{ 'is-invalid': errors?.apartments }" />
-                                    <div v-if="errors?.[`apartments.${index}.apartment_number`]" class="invalid-feedback">
+                                    <select id="apartment" v-model="apartment.apartment_number" class="form-select">
+                                        <option value="" disabled>Chọn một căn hộ</option>
+                                        <option v-for="apartment in apartments" :key="apartment.apartment_id"
+                                            :value="apartment.apartment_number">
+                                            {{ apartment.apartment_number }}
+                                        </option>
+                                    </select>
+                                    <div v-if="errors?.[`apartments.${index}.apartment_number`]"
+                                        class="invalid-feedback">
                                         Lỗi khi nhập mã căn hộ</div>
                                 </div>
-                                <div class="col-md-6">
+                                <div class="col-md-4">
                                     <label class="form-label fw-medium">Vai trò <span
                                             class="text-danger">*</span></label>
-                                    <select v-model="apartment.role_in_apartment" class="form-select shadow-sm" :class="{ 'is-invalid': errors?.apartments }"
-                                        @change="onChange()">
+                                    <select v-model="apartment.role_in_apartment" class="form-select shadow-sm"
+                                        :class="{ 'is-invalid': errors?.apartments }" @change="onChange()">
                                         <option value="">Vai trò trong căn hộ</option>
                                         <option value="0">Chủ hộ</option>
                                         <option value="1">Người thuê chính</option>
                                         <option value="2">Người thân</option>
                                     </select>
-                                    <div v-if="errors?.[`apartments.${index}.role_in_apartment`]" class="invalid-feedback">
+                                    <div v-if="errors?.[`apartments.${index}.role_in_apartment`]"
+                                        class="invalid-feedback">
+                                        Lỗi khi chọn vai trò trong căn hộ</div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label fw-medium">Quan hệ với người sở hữu <span
+                                            class="text-danger">*</span></label>
+                                    <input v-model="apartment.notes" type="text" class="form-control shadow-sm"
+                                        @input="onChange()" placeholder="Ghi rõ mối quan hệ với người sở hữu căn hộ"
+                                        :class="{ 'is-invalid': errors?.notes }" />
+                                    <div v-if="errors?.[`apartments.${index}.notes`]" class="invalid-feedback">
                                         Lỗi khi chọn vai trò trong căn hộ</div>
                                 </div>
                             </div>
@@ -142,6 +158,8 @@
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useResidentStore } from '@/stores/resident'
+import { useApartmentStore } from '@/stores/apartment'
+import { useDashboardStore } from '@/stores/dashboard'
 import { useToast } from 'vue-toastification';
 import { useFormErrors } from '~/composables/useFormErrors'
 import ConfirmNavigationModal from '@/components/modal/UnsavedChangesModal.vue'
@@ -153,10 +171,14 @@ definePageMeta({
 
 const router = useRouter()
 const useResident = useResidentStore()
+const useApartment = useApartmentStore()
+const dashboardStore = useDashboardStore()
 const toast = useToast()
 const { formatErrors } = useFormErrors()
 const errors = ref({})
 const isLoading = ref(false)
+const apartments = ref([])
+const building_id = dashboardStore.getSelectedBuildingId;
 
 const residentForm = ref({
     full_name: '',
@@ -169,7 +191,7 @@ const residentForm = ref({
 })
 
 const defaultApartment = ref([
-    { apartment_number: '', role_in_apartment: '' }
+    { apartment_number: '', role_in_apartment: '', notes: '' }
 ])
 
 // const apartments = ref([defaultApartment()])
@@ -184,7 +206,7 @@ const reset = () => {
     residentForm.value.email = ''
 
     defaultApartment.value = [
-        { apartment_number: '', role_in_apartment: '' }
+        { apartment_number: '', role_in_apartment: '', notes: '' }
     ]
 
     setEditing(false)
@@ -224,13 +246,23 @@ const removeResident = (index) => {
     defaultApartment.value.splice(index, 1)
 }
 
+// Lấy danh sách căn hộ
+const fetchApartments = async () => {
+    try {
+        const data = await useApartment.getCodeApartments(building_id)
+        apartments.value = data
+    } catch (error) {
+        toast.error('Lỗi khi lấy danh sách căn hộ')
+    }
+}
+
 // Gửi dữ liệu lên API
 const handleSubmit = async () => {
     const submissionData = {
         ...residentForm.value,
         apartments: defaultApartment.value
     }
-
+    console.log(submissionData)
     isLoading.value = true
     try {
         const result = await useResident.createResident(submissionData);
@@ -254,6 +286,7 @@ const handleSubmit = async () => {
 }
 
 onMounted(() => {
+    fetchApartments()
     setupRouteGuard()
 })
 </script>

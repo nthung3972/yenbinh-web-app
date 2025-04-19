@@ -42,7 +42,7 @@
                   <label class="form-label fw-medium">Biển số xe <span class="text-danger">*</span></label>
                   <input v-model="vehicle.license_plate" type="text" class="form-control shadow-sm"
                     :class="{ 'is-invalid': errors?.[`${index}.license_plate`] }" placeholder="Nhập biển số xe"
-                    @input="onChange()" required />
+                    @input="onChange()" />
                   <div v-if="errors?.[`${index}.license_plate`]" class="invalid-feedback">
                     {{ errors[`${index}.license_plate`][0] }}
                   </div>
@@ -290,7 +290,7 @@ const removeVehicle = (index) => {
 
 const reset = () => {
   vehicles.value = [
-    { license_plate: '', vehicle_type: '', parking_slot: '', amapartment_numberount: '', status: 0, created_at: '' }
+    { license_plate: '', vehicle_type: '', parking_slot: '', amapartment_numberount: '', status: 0, created_at: '', vehicle_company: '', vehicle_model: '', vehicle_color: '', building_id: building_id,  }
   ]
   setEditing(false)
 }

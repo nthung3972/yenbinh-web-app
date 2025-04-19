@@ -1,5 +1,11 @@
 <template>
-  <div class="container mt-4">
+  <div v-if="isLoading" class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Đang tải dữ liệu...</span>
+      </div>
+      <p class="text-muted mt-2">Đang tải dữ liệu...</p>
+    </div>
+  <div v-else class="container mt-4">
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h3 class="fw-bold text-primary">
@@ -17,11 +23,12 @@
       <div class="card-body">
         <!-- Form chọn căn hộ -->
         <h5 class="fw-bold mb-3">Căn hộ</h5>
+        <div v-if="hasError" class="alert alert-danger text-center">{{ hasError }}</div>
         <div class="mb-4">
           <div class="row row-cols-1 row-cols-md-auto g-3 align-items-end">
             <div class="col-md-6">
               <label for="apartment" class="form-label fw-bold">Chọn căn hộ<span class="text-danger">*</span></label>
-              <select id="apartment" v-model="selectedApartmentId" class="form-select" @change="fetchApartmentFees">
+              <select id="apartment" v-model="selectedApartmentId" class="form-select" :class="{ 'is-invalid': hasError }" @change="fetchApartmentFees">
                 <option value="" disabled>Chọn một căn hộ</option>
                 <option v-for="apartment in apartments" :key="apartment.apartment_id" :value="apartment.apartment_id">
                   {{ apartment.apartment_number }}
@@ -173,6 +180,8 @@ const router = useRouter()
 const building_id = dashboardStore.getSelectedBuildingId;
 const toast = useToast()
 const errors = ref({})
+const isLoading = computed(() => invoiceStore.isLoading);
+const hasError = computed(() => invoiceStore.hasError);
 
 const goBack = () => {
   router.back()
