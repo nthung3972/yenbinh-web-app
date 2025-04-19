@@ -28,7 +28,6 @@ export const useVehicleStore = defineStore("vehicle", {
                 const response = await VehicleApi.getListVehicle(building_id, page, perPage, keyword, vehicle_type, status);
                 if (response.data && response.data.data) {
                     this.vehicleList = response.data?.data?.data?.data
-                    console.log(this.vehicleList)
                     this.pagination = {
                         current_page: response.data.data.data.current_page,
                         per_page: response.data.data.data.per_page,
@@ -63,7 +62,6 @@ export const useVehicleStore = defineStore("vehicle", {
             this.loading = true;
             try {
                 const response = await VehicleApi.edit(id);
-                console.log(response)
                 if(response.data) {
                     this.vehicle = response.data.data.data
                 }
@@ -78,7 +76,6 @@ export const useVehicleStore = defineStore("vehicle", {
             this.loading = true;
             try {
                 const response = await VehicleApi.update(data, id);
-                console.log('response', response);
                 if(response.data.data) {
                     return response.data.data
                 }

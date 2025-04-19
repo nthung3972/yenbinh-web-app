@@ -49,7 +49,7 @@
                         <div class="row g-3 mt-2">
                             <div class="col-md-6">
                                 <div class="form-label-group input-with-unit">
-                                    <input v-model="apartment.area" type="number" min="1" step="0.1" @input="onChange()"
+                                    <input v-model="apartment.area" type="number" min="1" step="0.01" @input="onChange()"
                                         class="form-control" id="areaInput" placeholder=" ">
                                     <span class="input-unit">m²</span>
                                     <label for="areaInput">Diện tích<span class="required-mark">*</span></label>

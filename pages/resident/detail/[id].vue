@@ -53,14 +53,14 @@
                                                 <span class="info-icon"><Icon name="mdi:card-account-details-outline" size="18" /></span>
                                                 <div>
                                                     <p class="info-label">CMND/CCCD</p>
-                                                    <p class="info-value">{{ useResident.resident.id_card_number }}</p>
+                                                    <p class="info-value">{{ useResident.resident.id_card_number ?? '---' }}</p>
                                                 </div>
                                             </div>
                                             <div class="info-item">
                                                 <span class="info-icon"><Icon name="mdi:cake-variant" size="18" /></span>
                                                 <div>
                                                     <p class="info-label">Ngày sinh</p>
-                                                    <p class="info-value">{{ formatDate(useResident.resident.date_of_birth) }}</p>
+                                                    <p class="info-value">{{ formatDate(useResident.resident.date_of_birth) ?? '---' }}</p>
                                                 </div>
                                             </div>
                                             <div class="info-item">
@@ -89,14 +89,14 @@
                                                 <span class="info-icon"><Icon name="mdi:phone-outline" size="18" /></span>
                                                 <div>
                                                     <p class="info-label">Điện thoại</p>
-                                                    <p class="info-value">{{ useResident.resident.phone_number }}</p>
+                                                    <p class="info-value">{{ useResident.resident.phone_number ?? '---' }}</p>
                                                 </div>
                                             </div>
                                             <div class="info-item">
                                                 <span class="info-icon"><Icon name="mdi:email-outline" size="18" /></span>
                                                 <div>
                                                     <p class="info-label">Email</p>
-                                                    <p class="info-value">{{ useResident.resident.email }}</p>
+                                                    <p class="info-value">{{ useResident.resident.email ?? '---'}}</p>
                                                 </div>
                                             </div>
                                         </div>
