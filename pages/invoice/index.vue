@@ -92,12 +92,14 @@
                             <span :class="[
                                 'badge',
                                 invoice.status === 0 ? 'bg-warning'
-                                    : invoice.status === 1 ? 'bg-success'
-                                        : 'bg-danger'
+                                : invoice.status === 1 ? 'bg-success'
+                                : invoice.status === 22 ? 'bg-danger'
+                                        : 'bg-primary'
                             ]">
                                 {{ invoice.status === 0 ? 'Chưa thanh toán'
                                     : invoice.status === 1 ? 'Đã thanh toán'
-                                        : 'Quá hạn' }}
+                                    : invoice.status === 2 ? 'Đã quá hạn'
+                                        : 'Thanh toán một phần' }}
                             </span>
                         </td>
                         <td>{{ invoice.updated_by?.name ?? '----' }}</td>
@@ -135,13 +137,17 @@
         </div>
     </div>
 
-    <InvoicePaymentModal />
+     <!-- Modal -->
+     <InvoicePaymentModal
+      v-model="showModal"
+      :invoice="selectedInvoice"
+      @submitted="handlePaymentSubmitted"
+    />
 </template>
 
 <script setup>
 import { onMounted } from 'vue'
 import { useInvoiceStore } from '@/stores/invoice'
-import { usePaymentStore } from '@/stores/payments'
 import Pagination from '@/components/pagination/Pagination.vue'
 import InvoicePaymentModal from '@/components/modal/InvoicePaymentModal.vue'
 
@@ -151,14 +157,18 @@ definePageMeta({
 })
 
 const useInvoice = useInvoiceStore()
-const paymentStore = usePaymentStore()
 const { formatVND } = useCurrencyFormat()
+const showModal = ref(false)
+const selectedInvoice = ref(null)
 
-
-const openPaymentModal = (invoice) => {
-  paymentStore.setSelectedInvoice(invoice)
+function openPaymentModal(invoice) {
+  selectedInvoice.value = invoice
+  showModal.value = true
 }
 
+function handlePaymentSubmitted() {
+  loadInvoices()
+}
 
 const filters = ref({
     invoice_date_from: '',

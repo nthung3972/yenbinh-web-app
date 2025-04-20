@@ -1,96 +1,209 @@
 <template>
-    <div v-if="paymentStore.selectedInvoice"
-        class="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
-        <div class="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-            <h3 class="text-lg font-medium text-gray-900 mb-4">
-                Thêm thanh toán cho hóa đơn #{{ paymentStore.selectedInvoice.invoice_id }}
-            </h3>
-
-            <form @submit.prevent="handleSubmit" class="space-y-6">
-                <!-- Amount -->
-                <div>
-                    <label for="amount" class="block text-sm font-medium text-gray-700">Số tiền</label>
-                    <input id="amount" v-model.number="form.amount" type="number" min="0.01" step="0.01"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                        required />
+    <Teleport to="body">
+        <div v-if="modelValue && invoice" class="modal-overlay">
+            <div v-if="isLoading" class="text-center">
+                <div class="spinner-border spinner-border-sm me-2" role="status">
+                    <span class="visually-hidden">Đang tải dữ liệu...</span>
                 </div>
+                <p>Đang tải dữ liệu...</p>
+            </div>
+            <div v-else class="modal-container">
+                <form @submit.prevent="handleSubmit" novalidate>
+                    <div class="modal-header">
+                        <h3 class="modal-title">Thêm Thanh Toán</h3>
+                        <button class="close-btn" type="button" @click="close">×</button>
+                    </div>
 
-                <!-- Payment Date -->
-                <div>
-                    <label for="payment_date" class="block text-sm font-medium text-gray-700">Ngày thanh toán</label>
-                    <input id="payment_date" v-model="form.payment_date" type="datetime-local"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                        required />
-                </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label>Số tiền thanh toán</label>
+                            <input v-model.number="form.amount" type="number" min="0" />
+                            <span v-if="error?.amount" class="error-message">{{ error.amount }}</span>
+                        </div>
 
-                <!-- Payment Method -->
-                <div>
-                    <label for="payment_method" class="block text-sm font-medium text-gray-700">Phương thức thanh
-                        toán</label>
-                    <select id="payment_method" v-model="form.payment_method"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                        <option value="">Chọn phương thức</option>
-                        <option value="bank_transfer">Chuyển khoản</option>
-                        <option value="cash">Tiền mặt</option>
-                        <option value="qr_code">QR code</option>
-                        <option value="other">Phương thức khác</option>
-                    </select>
-                </div>
+                        <div class="form-group">
+                            <label>Ngày thanh toán</label>
+                            <input v-model="form.payment_date" type="date" />
+                            <span v-if="error?.payment_date" class="error-message">{{ error.payment_date }}</span>
+                        </div>
 
-                <!-- Note -->
-                <div>
-                    <label for="note" class="block text-sm font-medium text-gray-700">Ghi chú</label>
-                    <textarea id="note" v-model="form.note" rows="4"
-                        class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"></textarea>
-                </div>
+                        <div class="form-group">
+                            <label>Phương thức thanh toán</label>
+                            <select id="payment_method" v-model="form.payment_method"
+                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                                <option value="">Chọn phương thức</option>
+                                <option value="bank_transfer">Chuyển khoản</option>
+                                <option value="cash">Tiền mặt</option>
+                                <option value="qr_code">QR code</option>
+                                <option value="other">Phương thức khác</option>
+                            </select>
+                            <span v-if="error?.payment_method" class="error-message">{{ error.payment_method }}</span>
+                        </div>
 
-                <!-- Error Message -->
-                <div v-if="paymentStore.error" class="text-red-600 text-sm">{{ paymentStore.error }}</div>
+                        <div class="form-group">
+                            <label>Ghi chú</label>
+                            <input v-model="form.note" type="text" />
+                            <span v-if="error?.note" class="error-message">{{ error.note }}</span>
+                        </div>
+                    </div>
 
-                <!-- Buttons -->
-                <div class="flex justify-end space-x-3">
-                    <button type="button" @click="paymentStore.clearSelectedInvoice"
-                        class="py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 focus:outline-none">
-                        Hủy
-                    </button>
-                    <button type="submit" :disabled="paymentStore.loading"
-                        class="py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none disabled:bg-indigo-400">
-                        {{ paymentStore.loading ? 'Đang xử lý...' : 'Tạo thanh toán' }}
-                    </button>
-                </div>
-            </form>
+                    <div class="modal-footer">
+                        <button type="button" class="cancel-btn" @click="close">Hủy</button>
+                        <button type="submit" class="confirm-btn">Thêm</button>
+                    </div>
+                </form>
+            </div>
         </div>
-    </div>
+    </Teleport>
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { reactive, watch, ref } from 'vue'
 import { usePaymentStore } from '@/stores/payments'
+import { useToast } from 'vue-toastification'
 
-const paymentStore = usePaymentStore();
+const props = defineProps({
+    modelValue: Boolean,
+    invoice: Object
+})
 
-// Form data
-const form = ref({
-    amount: null,
-    payment_date: new Date().toISOString().slice(0, 16),
+const emit = defineEmits(['update:modelValue', 'submitted'])
+const paymentStore = usePaymentStore()
+const toast = useToast()
+const isLoading = ref(false)
+
+const form = reactive({
+    amount: '',
+    payment_date: '',
     payment_method: '',
-    note: '',
-});
+    note: ''
+})
 
-// Xử lý submit form
-const handleSubmit = async () => {
-    try {
-        const paymentData = {
-            invoice_id: paymentStore.selectedInvoice.invoice_id,
-            ...form.value,
-        };
-        await paymentStore.createPayment(paymentData);
-        paymentStore.clearSelectedInvoice()
-        alert('Thanh toán đã được tạo thành công!');
-        paymentStore.clearSelectedInvoice();
-        loadInvoices()
-    } catch (err) {
-        console.error(err);
+const error = ref(null)
+
+function resetForm() {
+    form.amount = ''
+    form.payment_date = ''
+    form.payment_method = ''
+    form.note = ''
+    error.value = null
+}
+
+function close() {
+    emit('update:modelValue', false)
+    resetForm()
+}
+
+watch(() => props.modelValue, (val) => {
+    if (val) resetForm()
+})
+
+async function handleSubmit() {
+    if (!props.invoice) return
+
+    const data = {
+        invoice_id: props.invoice.invoice_id,
+        amount: form.amount,
+        payment_date: form.payment_date,
+        payment_method: form.payment_method,
+        note: form.note
     }
-};
+
+    isLoading.value = true
+    error.value = {}
+
+    try {
+        const result = await paymentStore.createPayment(data)
+        emit('submitted', result)
+        toast.success('Thêm thanh toán thành công!')
+        close()
+    } catch (err) {
+        console.log(err)
+        if (err.data && err.data.errors) {
+            error.value = err.data.errors
+        } else {
+            console.error(err)
+        }
+        toast.error('Đã xảy ra lỗi khi thêm thanh toán!')
+    } finally {
+        isLoading.value = false
+    }
+}
 </script>
+
+<style scoped>
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-container {
+    background: white;
+    border-radius: 8px;
+    width: 90%;
+    max-width: 500px;
+    overflow: hidden;
+}
+
+.modal-header,
+.modal-footer {
+    padding: 16px;
+    border-bottom: 1px solid #e2e8f0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-body {
+    padding: 16px;
+}
+
+.modal-title {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.close-btn {
+    background: none;
+    font-size: 24px;
+    border: none;
+    cursor: pointer;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+input,
+select {
+    width: 100%;
+    padding: 8px;
+    border-radius: 4px;
+    border: 1px solid #cbd5e0;
+}
+
+.error-message {
+    color: #e53e3e;
+    font-size: 13px;
+}
+
+.cancel-btn {
+    background: #e2e8f0;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+}
+
+.confirm-btn {
+    background: #3b82f6;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    cursor: pointer;
+}
+</style>
