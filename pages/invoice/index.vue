@@ -107,6 +107,15 @@
                                     class="btn btn-sm btn-outline-success d-flex align-items-center px-3 py-2">
                                     <Icon name="bxs:detail" size="16" class="me-1" /> Xem
                                 </NuxtLink>
+
+                                <button class="btn btn-sm btn-outline-primary d-flex align-items-center px-3 py-2"
+                                    :disabled="invoice.status === 1"
+                                    :title="invoice.status === 1 ? 'Hóa đơn đã thanh toán, không thể thêm' : 'Thêm thanh toán'"
+                                    @click="openPaymentModal(invoice)">
+                                    <Icon name="bxs:wallet" size="16" class="me-1" />
+                                    Thanh toán
+                                </button>
+
                                 <NuxtLink :to="invoice.status !== 1 ? `/invoice/edit/${invoice.invoice_id}` : '#'"
                                     :class="[
                                         'btn', 'btn-sm', 'btn-outline-warning',
@@ -125,12 +134,16 @@
             <Pagination :pagination="useInvoice.pagination" @page-change="handlePageChange" />
         </div>
     </div>
+
+    <InvoicePaymentModal />
 </template>
 
 <script setup>
 import { onMounted } from 'vue'
 import { useInvoiceStore } from '@/stores/invoice'
+import { usePaymentStore } from '@/stores/payments'
 import Pagination from '@/components/pagination/Pagination.vue'
+import InvoicePaymentModal from '@/components/modal/InvoicePaymentModal.vue'
 
 definePageMeta({
     middleware: "auth",
@@ -138,7 +151,14 @@ definePageMeta({
 })
 
 const useInvoice = useInvoiceStore()
+const paymentStore = usePaymentStore()
 const { formatVND } = useCurrencyFormat()
+
+
+const openPaymentModal = (invoice) => {
+  paymentStore.setSelectedInvoice(invoice)
+}
+
 
 const filters = ref({
     invoice_date_from: '',
