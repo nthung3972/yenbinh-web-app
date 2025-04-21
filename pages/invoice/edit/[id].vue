@@ -1,5 +1,13 @@
 <template>
-  <div class="container mt-4">
+  <div v-if="isLoading" class="text-center">
+    <div class="spinner-border spinner-border-sm me-2" role="status">
+      <span class="visually-hidden">Đang tải dữ liệu...</span>
+    </div>
+    <p>Đang tải dữ liệu...</p>
+  </div>
+
+  <div v-else-if="hasError">{{ hasError }}</div>
+  <div v-else class="container">
     <!-- Header -->
     <div class="d-flex justify-content-between align-items-center mb-4">
       <h3 class="fw-bold text-primary">
@@ -33,16 +41,16 @@
                 :class="{ 'is-invalid': errors?.due_date }" />
             </div>
 
-            <div class="col-md-4">
+            <!-- <div class="col-md-4">
               <label class="form-label fw-semibold">Trạng thái</label>
               <select v-model="status" class="form-select" @change="onChange(), changeStatus()">
                 <option :value="0">Chưa thanh toán</option>
                 <option :value="1">Đã thanh toán</option>
               </select>
-            </div>
+            </div> -->
 
             <!-- Hiển thị input nếu đã thanh toán -->
-            <div class="col-md-4" v-if="status === 1">
+            <!-- <div class="col-md-4" v-if="status === 1">
               <label class="form-label fw-semibold">Hình thức thanh toán</label>
               <select v-model="paymentMethod" class="form-select">
                 <option disabled value="">-- Chọn hình thức thanh toán --</option>
@@ -51,7 +59,7 @@
                 <option value="qr_code">QR Code</option>
                 <option value="other">Khác</option>
               </select>
-            </div>
+            </div> -->
 
           </div>
         </div>
@@ -144,9 +152,6 @@
         </div>
       </div>
     </div>
-    <div v-else class="alert alert-warning">
-      Hóa đơn không tồn tại hoặc đang tải...
-    </div>
   </div>
 
   <!-- Modal xác nhận chuyển hướng -->
@@ -167,6 +172,8 @@ definePageMeta({
 })
 
 // State
+const isLoading = computed(() => invoiceStore.isLoading);
+const hasError = computed(() => invoiceStore.hasError);
 const route = useRoute()
 const router = useRouter()
 const invoice = ref(null)
@@ -178,8 +185,6 @@ const invoiceStore = useInvoiceStore()
 const feeStore = useFeeStore()
 const invoice_date = ref(null)
 const due_date = ref(null)
-const status = ref(null)
-const paymentMethod = ref('')
 const errors = ref({})
 const toast = useToast()
 
@@ -199,12 +204,6 @@ const {
 
 const onChange = () => {
   setEditing(true)
-}
-
-const changeStatus = () => {
-  if (status.value !== 1) {
-    paymentMethod.value = ''
-  }
 }
 
 // Tính toán phí
@@ -256,8 +255,6 @@ const fetchInvoiceData = async () => {
     selectedApartmentId.value = data.apartment_id
     invoice_date.value = data.invoice_date
     due_date.value = data.due_date
-    status.value = data.status
-    paymentMethod.value = data.payment_method ?? ''
     // Lấy phí cố định từ invoice_details
     fees.value = data.invoice_details
       .filter(detail => detail.fee_types.is_fixed === 1)
@@ -350,12 +347,8 @@ const updateInvoice = async () => {
       total_amount: totalFees.value,
       invoice_date: invoice_date.value,
       due_date: due_date.value,
-      status: status.value,
-      payment_method : paymentMethod.value,
       fees: allFees
     }
-
-    console.log(data)
 
     await invoiceStore.updateInvoice(route.params.id, data)
     setEditing(false)

@@ -49,6 +49,7 @@
                                 <option value="">Tất cả</option>
                                 <option :value="0">Chưa thanh toán</option>
                                 <option :value="1">Đã thanh toán</option>
+                                <option :value="3">Chưa thanh toán hết</option>
                                 <option :value="2">Đã quá hạn</option>
                             </select>
                         </div>
@@ -74,20 +75,20 @@
                 <thead class="table-light sticky-top" style="z-index: 1;">
                     <tr>
                         <th style="width: 10%;">Mã căn hộ</th>
-                        <th style="width: 10%;">Thành tiền</th>
+                        <th style="width: 10%;">Tổng tiền (VNĐ)</th>
                         <th style="width: 14%;">Ngày ban hành</th>
-                        <th style="width: 14%;">Ngày quá hạn</th>
+                        <th style="width: 14%;">Đã thanh toán (VNĐ)</th>
                         <th style="width: 13%;">Trạng thái</th>
-                        <th style="width: 13%;">Cập nhật bởi</th>
+                        <th style="width: 13%;">Người tạo</th>
                         <th style="width: 21%; text-align: center;">Hành động</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="(invoice, index) in useInvoice.invoiceList" :key="index">
                         <td>{{ invoice.apartment.apartment_number }}</td>
-                        <td>{{ formatVND(invoice.total_amount) }}đ</td>
+                        <td>{{ formatVND(invoice.total_amount) }}</td>
                         <td>{{ invoice.invoice_date }}</td>
-                        <td>{{ invoice.due_date }}</td>
+                        <td>{{ formatVND(invoice.total_paid) }}</td>
                         <td>
                             <span :class="[
                                 'badge',
@@ -212,6 +213,8 @@ const loadInvoices = () => {
         params.invoice_date_from,
         params.invoice_date_to
     )
+
+    console.log(useInvoice.invoiceList)
 }
 
 onMounted(loadInvoices)
