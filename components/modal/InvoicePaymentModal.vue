@@ -42,8 +42,8 @@
 
                         <div class="form-group">
                             <label>Ghi chú</label>
-                            <input v-model="form.note" type="text" />
-                            <span v-if="error?.note" class="error-message">{{ error.note }}</span>
+                            <input v-model="form.notes" type="text" />
+                            <span v-if="error?.notes" class="error-message">{{ error.note }}</span>
                         </div>
                     </div>
 
@@ -76,7 +76,7 @@ const form = reactive({
     amount: '',
     payment_date: '',
     payment_method: '',
-    note: ''
+    notes: ''
 })
 
 const error = ref(null)
@@ -85,7 +85,7 @@ function resetForm() {
     form.amount = ''
     form.payment_date = ''
     form.payment_method = ''
-    form.note = ''
+    form.notes = ''
     error.value = null
 }
 
@@ -106,7 +106,7 @@ async function handleSubmit() {
         amount: form.amount,
         payment_date: form.payment_date,
         payment_method: form.payment_method,
-        note: form.note
+        notes: form.notes
     }
 
     isLoading.value = true

@@ -40,35 +40,36 @@
           <div class="row mb-4">
             <div class="col-md-4">
               <p class="mb-2">
-                <Icon name="mdi:calendar" size="18" class="me-2 text-muted" />
                 <strong>Ngày Phát Hành:</strong> {{ formatDate(invoiceStore.invoice.invoice_date) }}
               </p>
             </div>
             <div class="col-md-4">
               <p class="mb-2">
-                <Icon name="mdi:calendar-check" size="18" class="me-2 text-muted" />
                 <strong>Hạn Thanh Toán:</strong> {{ formatDate(invoiceStore.invoice.due_date) }}
               </p>
             </div>
             <div class="col-md-4">
               <p class="mb-2">
-                <Icon name="mdi:calendar-check" size="18" class="me-2 text-muted" />
                 <strong>Người tạo: </strong> {{ invoiceStore.invoice.updated_by ? invoiceStore.invoice.updated_by :
                   '----' }}
               </p>
             </div>
             <div class="col-md-4">
               <p class="mb-2">
-                <Icon name="mdi:tag" size="16" class="me-1" />
-                <strong>Trạng thái: </strong>
-                <span :class="['badge', getStatusBadgeClass(invoiceStore.invoice.status)]">
-                  {{ getStatusText(invoiceStore.invoice.status) }}
-                </span>
+                <strong>Đã thanh toán:</strong> {{ formatVND(invoiceStore.invoice.total_paid) }}
               </p>
             </div>
             <div class="col-md-4">
               <p class="mb-2">
-                <strong>Phương thức:</strong> {{ getPaymentText(invoiceStore.invoice.payment_method) }}
+                <strong>Còn lại:</strong> {{ formatVND(invoiceStore.invoice.remaining_balance) }}
+              </p>
+            </div>
+            <div class="col-md-4">
+              <p class="mb-2">
+                <strong>Trạng thái: </strong>
+                <span :class="['badge', getStatusBadgeClass(invoiceStore.invoice.status)]">
+                  {{ getStatusText(invoiceStore.invoice.status) }}
+                </span>
               </p>
             </div>
           </div>
@@ -129,8 +130,37 @@
             <div class="text-end mt-4">
               <h4 class="fw-bold text-success">
                 <Icon name="mdi:cash-register" size="20" class="me-2" />
-                Tổng Tiền: {{ formatVND(invoiceStore.invoice.total_amount) }} VNĐ
+                Tổng Tiền: {{ formatVND(invoiceStore.invoice.total_amount) }}
               </h4>
+            </div>
+
+            <!-- Lịch sử thanh toán -->
+            <div class="mt-5">
+              <h5 class="fw-semibold text-dark mb-3">
+                <Icon name="mdi:history" size="20" class="me-2" />
+                Lịch Sử Thanh Toán
+              </h5>
+              <table class="table table-bordered">
+                <thead class="table-light">
+                  <tr>
+                    <th>Ngày Thanh Toán</th>
+                    <th>Số Tiền</th>
+                    <th>Phương Thức</th>
+                    <th>Ghi chú</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr v-for="(payment, index) in invoiceStore.invoice.payments" :key="index">
+                    <td>{{ formatDate(payment.payment_date) }}</td>
+                    <td>{{ formatVND(payment.amount) }}</td>
+                    <td>{{ getPaymentMethodText(payment.payment_method) }}</td>
+                    <td>{{ payment.notes || '---' }}</td>
+                  </tr>
+                  <tr v-if="!invoiceStore.invoice.payments?.length">
+                    <td colspan="4" class="text-center">Chưa có thanh toán nào</td>
+                  </tr>
+                </tbody>
+              </table>
             </div>
           </div>
         </div>
@@ -176,7 +206,8 @@ const getStatusBadgeClass = (status) => {
   switch (status) {
     case 0: return 'bg-warning text-dark' // vàng
     case 1: return 'bg-success'           // xanh
-    case 2: return 'bg-danger'            // đỏ
+    case 2: return 'bg-danger'
+    case 3: return 'bg-primary'           // đỏ
     default: return 'bg-secondary'        // xám
   }
 }
@@ -186,17 +217,18 @@ const getStatusText = (status) => {
     case 0: return 'Chưa thanh toán'
     case 1: return 'Đã thanh toán'
     case 2: return 'Đã quá hạn'
+    case 3: return 'Thanh toán một phần'
     default: return 'Không xác định'
   }
 }
 
-const getPaymentText = (status) => {
-  switch (status) {
+const getPaymentMethodText = (payment_method) => {
+  switch (payment_method) {
     case 'cash': return 'Tiền mặt'
     case 'bank_transfer': return 'Chuyển khoản'
-    case 'qr_code': return 'QR Code'
+    case 'qr_code': return 'QR code'
     case 'other': return 'Phương thức khác'
-    default: return 'Chưa thanh toán'
+    default: return 'Không xác định'
   }
 }
 
@@ -247,6 +279,7 @@ const formatVND = (amount) => {
 
 const loadInvoice = async () => {
   await invoiceStore.fetchInvoice(id)
+  console.log(invoiceStore.invoice)
 }
 
 onMounted(loadInvoice)
