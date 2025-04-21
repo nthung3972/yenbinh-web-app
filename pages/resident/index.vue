@@ -12,7 +12,7 @@
             <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
                 <!-- <h5 class="fw-bold text-primary mb-0">Danh Sách Căn Hộ</h5> -->
                 <h5 class="fw-bold text-primary mb-0">
-                    👤 Danh sách cư dân
+                    <Icon name="ic:baseline-people" size="24" /> Danh sách cư dân
                 </h5>
 
                 <div class="d-flex align-items-center gap-3">

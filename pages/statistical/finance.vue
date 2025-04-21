@@ -1,7 +1,10 @@
 <template>
-  <div class="container py-5">
+  <div class="container">
     <!-- Tiêu đề -->
-    <h1 class="mb-4 text-center">Thống kê công nợ</h1>
+    <h4 class="mb-4 text-center text-primary">
+      <Icon name="material-symbols:overview" size="22" />
+      Thống kê tài chính
+    </h4>
 
     <!-- Bộ lọc -->
     <div class="mb-4">
@@ -20,7 +23,7 @@
         <!-- Lọc kiểu thời gian -->
         <div class="col-md-3">
           <label for="period_type" class="form-label">Kiểu thời gian</label>
-          <select id="period_type" v-model="filters.period_type" class="form-select" @change="filters.period_value = ''; loadDebts()">
+          <select id="period_type" v-model="filters.period_type" class="form-select" @change="filters.period_value = ''">
             <option value="">Tất cả</option>
             <option value="month">Tháng</option>
             <option value="quarter">Quý</option>
@@ -68,6 +71,22 @@
       <div class="col-md-6">
         <div class="card">
           <div class="card-body">
+            <h5 class="card-title">Tổng giá trị phát hành</h5>
+            <p class="card-text fs-4">{{ formatCurrency(debtStore.debts?.total_issued_amount) }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-body">
+            <h5 class="card-title">Tổng giá trị đã thu</h5>
+            <p class="card-text fs-4">{{ formatCurrency(debtStore.debts?.total_paid_amount) }}</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-md-6">
+        <div class="card">
+          <div class="card-body">
             <h5 class="card-title">Tổng công nợ</h5>
             <p class="card-text fs-4">{{ formatCurrency(debtStore.debts?.total_debt) }}</p>
           </div>
@@ -78,26 +97,6 @@
           <div class="card-body">
             <h5 class="card-title">Công nợ quá hạn</h5>
             <p class="card-text fs-4">{{ formatCurrency(debtStore.debts?.overdue_debt) }}</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Biểu đồ -->
-    <div v-if="!debtStore.loading && !debtStore.error" class="row mb-4">
-      <!-- Biểu đồ cột: Công nợ theo tòa nhà -->
-      <div class="col-md-6">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">Công nợ theo tòa nhà</h5>
-          </div>
-        </div>
-      </div>
-      <!-- Biểu đồ đường: Xu hướng công nợ -->
-      <div class="col-md-6">
-        <div class="card">
-          <div class="card-body">
-            <h5 class="card-title">Xu hướng công nợ qua các tháng</h5>
           </div>
         </div>
       </div>
@@ -162,6 +161,7 @@ const filters = ref({
 // Load dữ liệu
 const loadDebts = async () => {
   const params = { ...filters.value };
+  console.log(params)
   await debtStore.fetchDebts(
     params.page,
     params.per_page,
@@ -182,14 +182,14 @@ const handlePageChange = (page) => {
     loadDebts();
 };
 
-const fetchDebtHistory = async () => {
-  const params = { ...filters.value };
-  await debtStore.fetchDebtHistory(
-    params.period_type,
-    params.period_value,
-    params.status
-  );
-}
+// const fetchDebtHistory = async () => {
+//   const params = { ...filters.value };
+//   await debtStore.fetchDebtHistory(
+//     params.period_type,
+//     params.period_value,
+//     params.status
+//   );
+// }
 
 // Format tiền tệ
 const formatCurrency = (amount) => {
@@ -221,9 +221,9 @@ const periodOptions = computed(() => {
 });
 
 onMounted(async () => {
-  await debtStore.fetchPeriods();
-  fetchDebtHistory();
-  loadDebts();
+  await debtStore.fetchPeriods()
+  // await fetchDebtHistory();
+  await loadDebts()
 });
 </script>
 

@@ -25,7 +25,7 @@ export const useDebtStore = defineStore("debt", {
             this.loading = true;
             try {
                 const response = await DebtApi.fetchDebts(page, perPage, building_id, period_type, period_value, status);
-                // console.log('dataaaaa:', response.data.data.pagination)
+                console.log('dataaaaa:', response.data)
                 if (response.data) {
                     this.debts = response.data.data;
                     this.pagination = {

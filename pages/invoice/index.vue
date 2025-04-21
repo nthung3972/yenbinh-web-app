@@ -12,7 +12,7 @@
             <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
                 <!-- <h5 class="fw-bold text-primary mb-0">Danh Sách Căn Hộ</h5> -->
                 <h5 class="fw-bold text-primary mb-0">
-                    🧾 Danh sách hóa đơn
+                    <Icon name="fa6-solid:file-invoice-dollar" size="24" /> Danh sách hóa đơn
                 </h5>
 
                 <div class="d-flex align-items-center gap-3">
@@ -94,7 +94,7 @@
                                 'badge',
                                 invoice.status === 0 ? 'bg-warning'
                                 : invoice.status === 1 ? 'bg-success'
-                                : invoice.status === 22 ? 'bg-danger'
+                                : invoice.status === 2 ? 'bg-danger'
                                         : 'bg-primary'
                             ]">
                                 {{ invoice.status === 0 ? 'Chưa thanh toán'
