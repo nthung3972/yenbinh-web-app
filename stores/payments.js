@@ -14,7 +14,6 @@ export const usePaymentStore = defineStore("payment", {
             this.loading = true
             try {
                 const response = await PaymentApi.create(data);
-                console.log(response)
                 if (response.data) {
                     return response.data
                 }
