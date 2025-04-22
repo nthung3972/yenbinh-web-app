@@ -62,7 +62,7 @@ export const useDebtStore = defineStore("debt", {
             this.loading = true;
             try {
                 const response = await DebtApi.fetchPeriods();
-                console.log(response)
+                // console.log(response)
                 if (response.data) {
                     this.periods = response.data.data;
                 }
