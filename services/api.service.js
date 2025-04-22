@@ -65,6 +65,7 @@ class ApiService {
 
   // Xử lý lỗi API
   handleError(error) {
+    console.error("API Error:", error.response?.status, error.response?.data)
     if (!error.response) {
       console.error("Network Error:", error);
       return Promise.reject(error);
