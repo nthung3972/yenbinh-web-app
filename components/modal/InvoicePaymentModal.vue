@@ -1,5 +1,5 @@
 <template>
-    <Teleport to="body">
+    <!-- <Teleport to="body"> -->
         <div v-if="modelValue && invoice" class="modal-overlay">
             <div v-if="isLoading" class="text-center">
                 <div class="spinner-border spinner-border-sm me-2" role="status">
@@ -17,19 +17,19 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <label>Số tiền thanh toán</label>
-                            <input v-model.number="form.amount" type="number" min="0" />
-                            <span v-if="error?.amount" class="error-message">{{ error.amount }}</span>
+                            <input v-model.number="form.amount" type="number" min="0" required/>
+                            <span v-if="error?.amount" class="error-message">{{ error.amount[0] }}</span>
                         </div>
 
                         <div class="form-group">
                             <label>Ngày thanh toán</label>
-                            <input v-model="form.payment_date" type="date" />
-                            <span v-if="error?.payment_date" class="error-message">{{ error.payment_date }}</span>
+                            <input v-model="form.payment_date" type="date" required/>
+                            <span v-if="error?.payment_date" class="error-message">{{ error.payment_date[0] }}</span>
                         </div>
 
                         <div class="form-group">
                             <label>Phương thức thanh toán</label>
-                            <select id="payment_method" v-model="form.payment_method"
+                            <select id="payment_method" v-model="form.payment_method" required
                                 class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                                 <option value="">Chọn phương thức</option>
                                 <option value="bank_transfer">Chuyển khoản</option>
@@ -37,12 +37,12 @@
                                 <option value="qr_code">QR code</option>
                                 <option value="other">Phương thức khác</option>
                             </select>
-                            <span v-if="error?.payment_method" class="error-message">{{ error.payment_method }}</span>
+                            <span v-if="error?.payment_method" class="error-message">{{ error.payment_method[0] }}</span>
                         </div>
 
                         <div class="form-group">
                             <label>Ghi chú</label>
-                            <input v-model="form.notes" type="text" />
+                            <input v-model="form.notes" type="text" required/>
                             <span v-if="error?.notes" class="error-message">{{ error.note }}</span>
                         </div>
                     </div>
@@ -54,7 +54,7 @@
                 </form>
             </div>
         </div>
-    </Teleport>
+    <!-- </Teleport> -->
 </template>
 
 <script setup>
@@ -118,12 +118,8 @@ async function handleSubmit() {
         toast.success('Thêm thanh toán thành công!')
         close()
     } catch (err) {
-        console.log(err)
-        if (err.data && err.data.errors) {
-            error.value = err.data.errors
-        } else {
-            console.error(err)
-        }
+        error.value = err.errors
+        console.log('Lỗi:', error.value)
         toast.error('Đã xảy ra lỗi khi thêm thanh toán!')
     } finally {
         isLoading.value = false
