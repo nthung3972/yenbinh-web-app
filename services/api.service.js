@@ -17,7 +17,7 @@ class ApiService {
     // Tạo instance Axios
     this.$http = axios.create({
       baseURL,
-      timeout: 15000,
+      timeout: 30000,
       headers: {
         // Accept: "application/json",
       },
@@ -65,7 +65,7 @@ class ApiService {
 
   // Xử lý lỗi API
   handleError(error) {
-    console.error("API Error:", error.response?.status, error.response?.data)
+    // console.error("API Error:", error.response?.status, error.response?.data)
     if (!error.response) {
       console.error("Network Error:", error);
       return Promise.reject(error);
