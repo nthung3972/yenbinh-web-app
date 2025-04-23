@@ -9,7 +9,7 @@
                   </div>
                   <div class="ms-3">
                       <h5 class="fw-bold mb-0">{{ processedData.length }}</h5>
-                      <p class="text-muted mb-0">{{ processedData.length > 1 ? 'Tòa nhà' : processedData[0].name }}
+                      <p class="text-muted mb-0">{{ processedData.length > 1 ? 'Tòa nhà' : processedData[0]?.name }}
                       </p>
                   </div>
               </div>

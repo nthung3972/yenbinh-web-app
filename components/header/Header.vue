@@ -5,7 +5,7 @@
             <p>Quyền truy cập: {{ role === 'admin' ? 'Quản lý' : 'Nhân viên'}}</p>
         </div>
 
-        <UserAvatarDropdown :avatar="userStore.avatar" :username="name" :email="email"
+        <UserAvatarDropdown :avatar="avatar" :username="name" :email="email"
                 @menu-item-click="handleMenuAction" />
     </nav>
 </template>
@@ -20,6 +20,7 @@ const userStore = useUserStore();
 const name = ref('')
 const email = ref('')
 const role = ref('')
+const avatar = ref('')
 
 const handleMenuAction = (action) => {
   switch (action) {
@@ -53,6 +54,7 @@ const loadUserInfo = async () => {
             name.value = result.user.name
             email.value = result.user.email
             role.value = result.user.role
+            avatar.value = result.user.avatar
         }
     }catch (error) {
         console.error('Lỗi tải sữ liệu:', error);

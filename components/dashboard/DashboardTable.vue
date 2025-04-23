@@ -1,6 +1,6 @@
 <template>
     <div class="card shadow-sm p-3 mt-20">
-        <h5 class="fw-bold">{{ processedData.length > 1 ? 'Tổng quan các tòa nhà' : processedData[0].name }}</h5>
+        <h5 class="fw-bold">{{ processedData.length > 1 ? 'Tổng quan các tòa nhà' : processedData[0]?.name }}</h5>
         <table class="table mt-3">
             <thead class="table-light">
                 <tr>
