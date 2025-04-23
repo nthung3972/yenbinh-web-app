@@ -1,7 +1,9 @@
 import apiService from './api.service';
 import { useAuthStore } from '~/stores/auth';
+import { useLoadingStore } from '~/stores/loading';
 
 class AuthService {
+
   async login(credentials) {
     try {
       const response = await apiService.post('/auth/login', credentials);
@@ -20,7 +22,9 @@ class AuthService {
   }
 
   async logout() {
+    const loadingStore = useLoadingStore();
     try {
+      loadingStore.showLoading();
       const authStore = useAuthStore()
       const token = authStore.token;
 
@@ -34,6 +38,8 @@ class AuthService {
     } catch (error) {
       console.error('Logout error');
       useAuthStore().clearAuth();
+    } finally {
+      loadingStore.hideLoading(); // Ẩn loading
     }
   }
 

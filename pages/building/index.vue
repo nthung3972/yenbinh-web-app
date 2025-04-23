@@ -125,8 +125,8 @@ const onSearch = () => {
   fectBuildingList();
 };
 
-const fectBuildingList = () => {
-  buildingStore.fetchBuildingList(currentPage.value, '', searchKeyword.value)
+const fectBuildingList = async () => {
+  await buildingStore.fetchBuildingList(currentPage.value, '', searchKeyword.value)
 }
 
 onMounted(fectBuildingList)
