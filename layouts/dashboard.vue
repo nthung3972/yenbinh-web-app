@@ -1,14 +1,12 @@
 <template>
   <GlobalLoading />
   <div class="d-flex bg-light">
-    <!-- <Sidebar :buildings="buildings" :selected-building-id="selectedBuildingId" @building-change="handleBuildingChange" -->
-      <Sidebar :buildings="buildings" :selected-building-id="selectedBuildingId" @building-change="handleBuildingChange"
+      <Sidebar :buildings="buildings" :selected-building-id="String(selectedBuildingId)" @building-change="handleBuildingChange"
       @check-building-and-navigate="checkBuildingAndNavigate" />
-    @check-building-and-navigate="checkBuildingAndNavigate" />
     <div class="content flex-grow-1">
-      <Header :user-info="userInfo" />
+      <Header :user-info="userInfo.user" />
       <main>
-        <slot :stats-data="selectedStatsData" />
+        <slot />
       </main>
     </div>
   </div>
@@ -31,7 +29,25 @@ const {
   checkBuildingAndNavigate,
 } = useInitialData();
 
-onMounted(() => {
-  fetchInitialData();
+await useAsyncData('initial-data', () => {
+  return fetchInitialData()
 });
 </script>
+
+<style>
+main {
+    margin: 20px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    height: calc(100% - 135px);
+}
+.content {
+    width: calc(100% - 250px);
+    max-height: 100vh;
+    overflow-y: hidden;
+}
+
+slot {
+    width: calc(100% - 250px);
+}
+</style>

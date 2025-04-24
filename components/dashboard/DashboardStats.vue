@@ -118,8 +118,6 @@ const props = defineProps({
   }
 })
 
-
-
 // Tạo computed property để xử lý dữ liệu Proxy
 const processedData = computed(() => {
   if (Array.isArray(props.data)) {

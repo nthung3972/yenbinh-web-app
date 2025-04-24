@@ -11,36 +11,30 @@ export const useDashboardStore = defineStore("dashboard", {
 
     actions: {
         async fetchStatsBuildings() {
-            this.loading = true;
             try {
                 const response = await DashboardApi.getStatsBuildings();
-                if (response.data && response.data.data) {
-                    this.apiData = response.data?.data?.data
+                if (response.data) {
                     this.error = null;
+                    return response.data?.data?.data
                 }
             } catch (error) {
-                console.error("Lỗi khi lấy danh sách overview:", error);
-                this.error = "Đã xảy ra lỗi khi tải dữ liệu";
-            } finally {
-                this.loading = false;
+                console.error("Lỗi khi lấy dữ liệu dashboard:", error);
+                this.error = error;
             }
         },
 
         async fetchStatsBuilding(id) {
             if (!id) return;
-            this.loading = true;
             this.selectedBuildingId = id;
             try {
                 const response = await DashboardApi.getStatsBuilding(id);
-                if (response.data && response.data.data) {
-                    this.statsBuilding = response.data?.data?.data
+                if (response.data) {
                     this.error = null;
+                    return response.data?.data?.data
                 }
             } catch (error) {
-                console.error("Lỗi khi lấy danh sách overview:", error);
-                this.error = "Đã xảy ra lỗi khi tải dữ liệu";
-            } finally {
-                this.loading = false;
+                console.error("Lỗi khi lấy dashboard từng tòa nhà:", error);
+                this.error = error;
             }
         },
 
