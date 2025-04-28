@@ -5,147 +5,182 @@
         </div>
         <p>Đang tải dữ liệu...</p>
     </div>
-    <div v-else-if="hasError">{{ hasError }}</div>
 
     <div v-else class="container form-container">
         <div class="card">
-            <div class="card-header d-flex align-items-center">
-                <i class="fas fa-building header-icon fs-4 text-white"></i>
-                <h4 class="mb-0 text-white">Sửa thông tin tòa nhà</h4>
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h4 class="fw-bold text-primary">
+                    <Icon name="mdi:office-building" size="24" class="me-2" />
+                    Sửa thông tin tòa nhà
+                </h4>
+                <button class="btn btn-outline-secondary" @click="back()">
+                    <Icon name="mdi:arrow-left-circle" size="20" class="me-2" />
+                    Quay lại
+                </button>
             </div>
             <div class="card-body">
                 <form @submit.prevent="updateBuilding">
-                    <div class="form-section">
-                        <h5 class="section-title"><i class="fas fa-info-circle me-2"></i>Thông tin cơ bản</h5>
-                        <div class="row g-3">
-                            <div class="col-md-12">
-                                <div class="form-label-group">
-                                    <input v-model="buildingForm.name" type="text" class="form-control"
-                                        id="buildingName" placeholder=" ">
-                                    <label for="buildingName">Tên tòa nhà<span class="required-mark">*</span></label>
-                                    <small v-if="errors?.['name']" class="text-danger">
-                                        {{ errors?.['name'][0] }}
-                                    </small>
-                                </div>
-                            </div>
-                        </div>
+                    <div class="form-section row">
+                        <div class="col-md-4 d-flex flex-column border-end">
+                            <div class="form-section">
+                                <h5 class="section-title"><i class="fas fa-image me-2"></i>Hình ảnh tòa nhà</h5>
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="image-upload-container" id="imageUploadContainer">
+                                            <input type="file" @change="handleFileChange" accept="image/*" />
 
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="form-label-group">
-                                    <input v-model="buildingForm.floors" type="number" min="1" class="form-control"
-                                        id="floorsInput" placeholder=" ">
-                                    <label for="floorsInput">Số tầng<span class="required-mark">*</span></label>
-                                    <small v-if="errors?.['floors']" class="text-danger">
-                                        {{ errors?.['floors'][0] }}
-                                    </small>
-                                </div>
-                            </div>
-                            <div class="col-md-6">
-                                <div class="form-label-group">
-                                    <input v-model="buildingForm.total_area" type="number" min="1" class="form-control"
-                                        id="floorsInput" placeholder=" ">
-                                    <label for="floorsInput">Diện tích<span class="required-mark">*</span></label>
-                                    <small v-if="errors?.['total_area']" class="text-danger">
-                                        {{ errors?.['total_area'][0] }}
-                                    </small>
-                                </div>
-                            </div>
-                        </div>
+                                            <!-- Hiển thị khi có ảnh preview mới -->
+                                            <div v-if="buildingForm.imagePreview" class="current-image-container">
+                                                <img :src="buildingForm.imagePreview" alt="Xem trước ảnh"
+                                                    class="image-preview" />
+                                            </div>
 
-                        <div class="row g-3 mt-2">
-                            <div class="col-12">
-                                <div class="form-label-group">
-                                    <textarea v-model="buildingForm.address" class="form-control" id="addressInput"
-                                        rows="3" placeholder=" "></textarea>
-                                    <label for="addressInput">Địa chỉ tòa nhà<span
-                                            class="required-mark">*</span></label>
-                                    <small v-if="errors?.['address']" class="text-danger">
-                                        {{ errors?.['address'][0] }}
-                                    </small>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
+                                            <!-- Hiển thị khi có ảnh cũ và không có ảnh preview -->
+                                            <div v-else-if="buildingForm.image" class="current-image-container">
+                                                <img :src="buildingForm.image" alt="Ảnh hiện tại"
+                                                    class="current-image" />
+                                            </div>
 
-                    <div class="form-section">
-                        <h5 class="section-title"><i class="fas fa-image me-2"></i>Hình ảnh tòa nhà</h5>
-                        <div class="row">
-                            <div class="col-12">
-                                <div class="image-upload-container" id="imageUploadContainer">
-                                    <input type="file" @change="handleFileChange" accept="image/*" />
-
-                                    <!-- Hiển thị khi có ảnh preview mới -->
-                                    <div v-if="buildingForm.imagePreview" class="current-image-container">
-                                        <img :src="buildingForm.imagePreview" alt="Xem trước ảnh"
-                                            class="image-preview" />
-                                    </div>
-
-                                    <!-- Hiển thị khi có ảnh cũ và không có ảnh preview -->
-                                    <div v-else-if="buildingForm.image" class="current-image-container">
-                                        <img :src="buildingForm.image" alt="Ảnh hiện tại" class="current-image" />
-                                    </div>
-
-                                    <!-- Hiển thị khi không có cả ảnh cũ và ảnh preview -->
-                                    <div v-else class="upload-placeholder">
-                                        <i class="fas fa-cloud-upload-alt"></i>
-                                        <h5>Tải lên hình ảnh tòa nhà</h5>
-                                        <p class="text-muted">Kéo thả hoặc nhấp vào đây để tải lên</p>
-                                        <p class="text-muted small">Hỗ trợ JPG, PNG, tối đa 5MB</p>
+                                            <!-- Hiển thị khi không có cả ảnh cũ và ảnh preview -->
+                                            <div v-else class="upload-placeholder">
+                                                <i class="fas fa-cloud-upload-alt"></i>
+                                                <h5>Tải lên hình ảnh tòa nhà</h5>
+                                                <p class="text-muted">Kéo thả hoặc nhấp vào đây để tải lên</p>
+                                                <p class="text-muted small">Hỗ trợ JPG, PNG, tối đa 5MB</p>
+                                            </div>
+                                        </div>
+                                        <small v-if="errors?.['image']" class="text-danger">
+                                            {{ errors?.['image'][0] }}
+                                        </small>
                                     </div>
                                 </div>
-                                <small v-if="errors?.['image']" class="text-danger">
-                                    {{ errors?.['image'][0] }}
-                                </small>
                             </div>
                         </div>
-                    </div>
 
-                    <div class="form-section">
-                        <h5 class="section-title"><i class="fas fa-sliders me-2"></i>Trạng thái & Cài đặt</h5>
-                        <div class="row g-3">
-                            <div class="col-md-6">
-                                <div class="form-label-group">
-                                    <select v-model="buildingForm.status" class="form-select" id="statusSelect">
-                                        <option value="" disabled selected>Chọn trạng thái</option>
-                                        <option value="0">Đang hoạt động</option>
-                                        <option value="1">Không hoạt động</option>
-                                    </select>
-                                    <label for="statusSelect">Trạng thái<span class="required-mark">*</span></label>
-                                    <small v-if="errors?.['status']" class="text-danger">
-                                        {{ errors?.['status'][0] }}
-                                    </small>
+                        <div class="col-md-8">
+                            <h5 class="section-title"><i class="fas fa-info-circle me-2"></i>Thông tin cơ bản</h5>
+                            <div class="row g-3">
+                                <div class="col-md-12">
+                                    <div class="form-label-group">
+                                        <input v-model="buildingForm.name" type="text" class="form-control" @input="onChange()"
+                                            id="buildingName" placeholder=" ">
+                                        <label for="buildingName">Tên tòa nhà<span
+                                                class="required-mark">*</span></label>
+                                        <small v-if="errors?.['name']" class="text-danger">
+                                            {{ errors?.['name'][0] }}
+                                        </small>
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-label-group">
-                                    <select v-model="buildingForm.building_type" class="form-select" id="typeSelect">
-                                        <option value="" disabled selected>Chọn loại tòa nhà</option>
-                                        <option value="residential">Chung cư</option>
-                                        <option value="commercial">Văn phòng</option>
-                                        <option value="mixed">Hỗn hợp</option>
-                                    </select>
-                                    <label for="typeSelect">Loại tòa nhà</label>
-                                    <small v-if="errors?.['building_type']" class="text-danger">
-                                        {{ errors?.['building_type'][0] }}
-                                    </small>
+
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-label-group">
+                                        <input v-model="buildingForm.floors" type="number" min="1" class="form-control" @input="onChange()"
+                                            id="floorsInput" placeholder=" ">
+                                        <label for="floorsInput">Số tầng<span class="required-mark">*</span></label>
+                                        <small v-if="errors?.['floors']" class="text-danger">
+                                            {{ errors?.['floors'][0] }}
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-label-group">
+                                        <input v-model="buildingForm.total_area" type="number" min="1" @input="onChange()"
+                                            class="form-control" id="floorsInput" placeholder=" ">
+                                        <label for="floorsInput">Diện tích<span class="required-mark">*</span></label>
+                                        <small v-if="errors?.['total_area']" class="text-danger">
+                                            {{ errors?.['total_area'][0] }}
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-label-group">
+                                        <input v-model="buildingForm.management_fee_per_m2" type="number" min="1" @input="onChange()"
+                                            class="form-control" id="floorsInput" placeholder=" ">
+                                        <label for="floorsInput">Giá dịch vụ<span class="required-mark">*</span></label>
+                                        <small v-if="errors?.['management_fee_per_m2']" class="text-danger">
+                                            {{ errors?.['management_fee_per_m2'][0] }}
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-label-group">
+                                        <input v-model="buildingForm.management_board_fee_per_m2" type="number" min="1" @input="onChange()"
+                                            class="form-control" id="floorsInput" placeholder=" ">
+                                        <label for="floorsInput">Thù lao Ban quản trị<span
+                                                class="required-mark">*</span></label>
+                                        <small v-if="errors?.['management_board_fee_per_m2']" class="text-danger">
+                                            {{ errors?.['management_board_fee_per_m2'][0] }}
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row g-3 mt-2">
+                                <div class="col-12">
+                                    <div class="form-label-group">
+                                        <textarea v-model="buildingForm.address" class="form-control" id="addressInput" @input="onChange()"
+                                            rows="3" placeholder=" "></textarea>
+                                        <label for="addressInput">Địa chỉ tòa nhà<span
+                                                class="required-mark">*</span></label>
+                                        <small v-if="errors?.['address']" class="text-danger">
+                                            {{ errors?.['address'][0] }}
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <h5 class="section-title"><i class="fas fa-sliders me-2"></i>Trạng thái & Cài đặt</h5>
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <div class="form-label-group">
+                                        <select v-model="buildingForm.status" class="form-select" id="statusSelect" @change="onChange()">
+                                            <option value="" disabled selected>Chọn trạng thái</option>
+                                            <option value="0">Đang hoạt động</option>
+                                            <option value="1">Không hoạt động</option>
+                                        </select>
+                                        <label for="statusSelect">Trạng thái<span class="required-mark">*</span></label>
+                                        <small v-if="errors?.['status']" class="text-danger">
+                                            {{ errors?.['status'][0] }}
+                                        </small>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-label-group">
+                                        <select v-model="buildingForm.building_type" class="form-select" @change="onChange()"
+                                            id="typeSelect">
+                                            <option value="" disabled selected>Chọn loại tòa nhà</option>
+                                            <option value="residential">Chung cư</option>
+                                            <option value="commercial">Văn phòng</option>
+                                            <option value="mixed">Hỗn hợp</option>
+                                        </select>
+                                        <label for="typeSelect">Loại tòa nhà</label>
+                                        <small v-if="errors?.['building_type']" class="text-danger">
+                                            {{ errors?.['building_type'][0] }}
+                                        </small>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
 
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                        <button type="button" class="btn btn-secondary px-4 me-2" @click="back()">
-                            <i class="fas fa-times me-1"></i> Hủy
+                        <button type="button" class="btn btn-secondary" @click="reset()">
+                            <Icon name="system-uicons:reset" size="20" class="me-2" />
+                            Làm mới
                         </button>
-                        <button type="submit" class="btn btn-primary px-4">
-                            <i class="fas fa-save me-1"></i> Lưu thay đổi
+                        <button type="submit" class="btn btn-primary">
+                            <Icon name="mingcute:save-line" size="20" class="me-2" />
+                            Lưu thay đổi
                         </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
+
+    <ConfirmNavigationModal v-model="showConfirmModal" @confirm="confirmNavigation" @cancel="cancelNavigation" />
 </template>
 
 <script setup>
@@ -154,6 +189,7 @@ import { useBuildingStore } from '@/stores/building'
 import { useUploadStore } from '@/stores/upload'
 import { useToast } from 'vue-toastification'
 import { ref, onMounted } from 'vue'
+import ConfirmNavigationModal from '@/components/modal/UnsavedChangesModal.vue'
 
 definePageMeta({
     middleware: "auth",
@@ -168,8 +204,7 @@ const errors = ref('')
 const route = useRoute()
 const buildingId = route.params.id
 
-const isLoading = computed(() => buildingStore.isLoading);
-const hasError = computed(() => buildingStore.hasError);
+const isLoading = computed(() => buildingStore.isLoading)
 
 const buildingForm = ref({
     name: '',
@@ -177,10 +212,38 @@ const buildingForm = ref({
     image: null,
     floors: '',
     total_area: '',
+    management_fee_per_m2: '',
+    management_board_fee_per_m2: '',
     status: '',
     building_type: '',
     imagePreview: null
 })
+
+const {
+    hasUnsavedChanges,
+    showConfirmModal,
+    setupRouteGuard,
+    setEditing,
+    confirmNavigation,
+    cancelNavigation,
+    navigateSafely
+} = useUnsavedChangesGuard()
+
+const onChange = () => {
+    setEditing(true)
+}
+
+const reset = () => {
+    buildingForm.value.name = ''
+    buildingForm.value.address = ''
+    buildingForm.value.floors = ''
+    buildingForm.value.total_area = ''
+    buildingForm.value.management_fee_per_m2 = ''
+    buildingForm.value.management_board_fee_per_m2 = ''
+    buildingForm.value.status = ''
+    buildingForm.value.building_type = ''
+    setEditing(true)
+}
 
 const back = () => {
     router.back()
@@ -223,11 +286,12 @@ const handleFileChange = async (event) => {
 }
 
 const updateBuilding = async () => {
-    console.log(buildingForm.value)
     try {
         await buildingStore.updateBuilding(buildingId, buildingForm.value)
         toast.success('Sửa thông tin thành công!')
+        setEditing(true)
         errors.value = null
+        router.push('/building')
     } catch (error) {
         errors.value = error.errors
         toast.error('Đã xảy ra lỗi khi sửa thông tin tòa nhà!')
@@ -236,12 +300,13 @@ const updateBuilding = async () => {
 
 onMounted(() => {
     getBuilding()
+    setupRouteGuard()
 })
 </script>
 
 <style scoped>
 .form-container {
-    max-width: 800px;
+    max-width: 1200px;
     margin: 0 auto;
 }
 
@@ -253,9 +318,9 @@ onMounted(() => {
 }
 
 .card-header {
-    background: linear-gradient(45deg, #4e73df, #224abe);
+    /* background: linear-gradient(45deg, #4e73df, #224abe); */
+    border-bottom: 2px solid #eaecf4;
     padding: 12px 24px;
-    border-bottom: none;
 }
 
 .card-body {

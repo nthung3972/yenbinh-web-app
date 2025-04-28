@@ -73,6 +73,7 @@
                         <tr>
                             <th style="width: 10%;">Mã căn hộ</th>
                             <th style="width: 15%;">Loại căn hộ</th>
+                            <th style="width: 15%;">Diện tích(m²)</th>
                             <th style="width: 20%;">Chủ sở hữu</th>
                             <th style="width: 20%;">Tình trạng</th>
                             <th style="width: 15%;">Cập nhật bởi</th>
@@ -83,6 +84,7 @@
                         <tr v-for="(apartment, index) in apartmentStore.apartmentsWithStatus" :key="index">
                             <td>{{ apartment.apartment_number }}</td>
                             <td>{{ getApartmentTypeLabel(apartment.ownership_type) }}</td>
+                            <td>{{ apartment.area }}</td>
                             <td>{{ apartment.residents[0]?.full_name ?? '---' }}</td>
                             <td>
                                 <span :class="[
@@ -95,13 +97,19 @@
                             <td>{{ apartment.updated_by?.name ?? '---' }}</td>
                             <td class="text-center">
                                 <div class="btn-group gap-2">
-                                    <NuxtLink :to="`/apartment/detail/${apartment.apartment_id}`" class="btn btn-sm btn-outline-success d-flex align-items-center">
+                                    <NuxtLink :to="`/apartment/detail/${apartment.apartment_id}`"
+                                        class="btn btn-sm btn-outline-success d-flex align-items-center">
                                         <Icon name="bxs:detail" size="16" class="me-1" /> Xem
                                     </NuxtLink>
                                     <NuxtLink :to="`/apartment/${apartment.apartment_id}/edit`"
                                         class="btn btn-sm btn-outline-warning d-flex align-items-center">
                                         <Icon name="basil:edit-solid" size="16" class="me-1" /> Sửa
                                     </NuxtLink>
+                                    <!-- <NuxtLink v-if="authStore.isAdmin"
+                                        :to="`/apartment/detail/${apartment.apartment_id}`"
+                                        class="btn btn-sm btn-outline-danger d-flex align-items-center">
+                                        <Icon name="material-symbols:delete-outline" size="16" class="me-1" /> Xóa
+                                    </NuxtLink> -->
                                 </div>
                             </td>
                         </tr>
@@ -118,6 +126,7 @@
 <script setup>
 import { onMounted } from 'vue';
 import { useApartmentStore } from '@/stores/apartment'
+import { useAuthStore } from '@/stores/auth'
 import Pagination from '@/components/pagination/Pagination.vue'
 
 definePageMeta({
@@ -125,7 +134,8 @@ definePageMeta({
     layout: "dashboard"
 })
 
-const apartmentStore = useApartmentStore();
+const apartmentStore = useApartmentStore()
+const authStore = useAuthStore()
 
 const filters = ref({
     apartment_type: '',
@@ -136,17 +146,17 @@ const filters = ref({
 })
 
 const getApartmentTypeLabel = (type) => {
-  const labels = {
-    'studio': 'Phòng thu',
-    '1bedroom': '1 Phòng ngủ',
-    '2bedroom': '2 Phòng ngủ',
-    '3bedroom': '3 Phòng ngủ',
-    '4bedroom': '4 Phòng ngủ',
-    'penthouse': 'Penthouse',
-    'duplex': 'Duplex'
-  }
+    const labels = {
+        'studio': 'Phòng thu',
+        '1bedroom': '1 Phòng ngủ',
+        '2bedroom': '2 Phòng ngủ',
+        '3bedroom': '3 Phòng ngủ',
+        '4bedroom': '4 Phòng ngủ',
+        'penthouse': 'Penthouse',
+        'duplex': 'Duplex'
+    }
 
-  return labels[type] || 'Không xác định'
+    return labels[type] || 'Không xác định'
 }
 
 const isLoading = computed(() => apartmentStore.isLoading)

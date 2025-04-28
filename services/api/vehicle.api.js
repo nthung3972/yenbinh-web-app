@@ -16,4 +16,8 @@ export const VehicleApi = {
     update(data, $vehicle_id) {
         return apiService.post(`/vehicle/update/${$vehicle_id}`, data);
     },
+
+    delete($vehicle_id) {
+        return apiService.delete(`/vehicle/delete/${$vehicle_id}`);
+    },
 };

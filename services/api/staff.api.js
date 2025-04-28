@@ -9,6 +9,10 @@ export const StaffApi = {
         return apiService.post('/staff/create-staff', data);
     },
 
+    detail($id) {
+        return apiService.get(`/staff/staff-detail/${$id}`);
+    },
+
     delete($id) {
         return apiService.delete(`/staff/delete-staff/${$id}`);
     },

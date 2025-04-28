@@ -42,7 +42,7 @@ const logout = async () => {
         loadingStore.showLoading();
         await AuthService.logout();
         resetAllStores();
-        await router.push('/login');
+        await router.push('/auth/login');
     } catch (error) {
         console.error('Logout error:', error);
     } finally {

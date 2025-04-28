@@ -102,6 +102,20 @@ export const useInvoiceStore = defineStore("invoice", {
             } finally {
                 this.loading = false;
             }
+        },
+
+        async deleteInvoice(id) {   
+            this.loading = true
+            try {
+                const response = await InvoiceApi.deleteInvoice(id);
+                if (response.data.data) {
+                    return response.data.data
+                }
+            } catch (error) {
+                throw error
+            } finally {
+                this.loading = false;
+            }
         }
     },
 

@@ -38,19 +38,21 @@
                         <tr v-for="(staff, index) in staffStore.staffList" :key="index">
                             <td>{{ staff.name }}</td>
                             <td>{{ staff.email }}</td>
-                            <td>{{ staff.role }}</td>
+                            <td>
+                                <span>
+                                    {{ staff.role === 'admin' ? 'Quản lý' : 'Nhân viên' }}
+                                </span>
+                            </td>
                             <td>{{ staff.building_name ?? '----' }}</td>
-                            <td>{{ staff.building_role ?? '----' }}</td>
+                            <td>
+                                <span>{{ staff.building_role === 'manager' ? 'Trưởng QBL' : 'Giám sát' }}</span>
+                            </td>
                             <td class="text-center">
                                 <div class="btn-group gap-2">
-                                    <NuxtLink to="/"
+                                    <NuxtLink :to="`/staff/detail/${staff.id}`"
                                         class="btn btn-sm btn-outline-success d-flex align-items-center px-3 py-2">
                                         <Icon name="bxs:detail" size="16" class="me-1" /> Xem
                                     </NuxtLink>
-                                    <!-- <NuxtLink :to="`/staff/edit/${staff.id}`"
-                                        class="btn btn-sm btn-outline-warning d-flex align-items-center px-3 py-2">
-                                        <Icon name="bxs:edit-alt" size="16" class="me-1" /> Sửa
-                                    </NuxtLink> -->
                                     <button type="button"
                                         class="btn btn-sm btn-outline-danger d-flex align-items-center px-3 py-2"
                                         data-bs-toggle="modal" data-bs-target="#deleteApartmentModal"

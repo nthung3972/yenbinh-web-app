@@ -58,7 +58,6 @@ export const useBuildingStore = defineStore("building", {
             this.loading = true
             try {
                 const response = await BuildingApi.edit(id)
-                console.log('response', response.data.data.data);
                 if(response.data) {
                     this.building = response.data.data.data
                 }

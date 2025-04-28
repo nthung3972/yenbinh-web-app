@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import Id from "~/pages/admin-report/daily-report/[id].vue";
 import { StaffApi } from "~/services/api/staff.api";
 
 export const useStaffStore = defineStore("staff", {
@@ -43,6 +44,23 @@ export const useStaffStore = defineStore("staff", {
                 const response = await StaffApi.create(data)
                 if(response.data) {
                     return response.data
+                }
+                this.error = null
+            } catch (error) {
+                this.error = "Đã xảy ra lỗi khi thêm nhân viên!";
+                throw error;
+            } finally {
+                this.loading = false
+            }
+        },
+
+        
+        async detailStaff(id) {
+            this.loading = true
+            try {
+                const response = await StaffApi.detail(id)
+                if(response.data) {
+                    return response.data.data.data
                 }
                 this.error = null
             } catch (error) {

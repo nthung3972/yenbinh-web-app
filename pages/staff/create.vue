@@ -1,9 +1,15 @@
 <template>
   <div class="container form-container">
     <div class="card">
-      <div class="card-header d-flex align-items-center">
-        <i class="fas fa-user-plus header-icon fs-4 text-white"></i>
-        <h4 class="mb-0 text-white">Thêm nhân viên mới</h4>
+      <div class="card-header bg-white d-flex justify-content-between align-items-center">
+        <h4 class="fw-bold text-primary">
+          <Icon name="guidance:care-staff-area" size="24" />
+          Thêm nhân viên mới
+        </h4>
+        <button class="btn btn-outline-secondary" @click="goBack()">
+          <Icon name="mdi:arrow-left-circle" size="20" class="me-2" />
+          Quay lại
+        </button>
       </div>
       <div class="card-body">
         <form @submit.prevent="createStaff">
@@ -12,7 +18,7 @@
             <div class="row g-3">
               <div class="col-md-6">
                 <div class="form-floating mb-3">
-                  <input v-model="staffForm.name" type="text" class="form-control" id="nameInput"
+                  <input v-model="staffForm.name" type="text" class="form-control" id="nameInput" @input="onChange()"
                     placeholder="Nhập tên nhân viên">
                   <label for="nameInput">Tên nhân viên<span class="required-mark">*</span></label>
                   <small v-if="errors['name']" class="text-danger">
@@ -22,7 +28,7 @@
               </div>
               <div class="col-md-6">
                 <div class="form-floating mb-3">
-                  <input v-model="staffForm.email" type="email" class="form-control" id="emailInput"
+                  <input v-model="staffForm.email" type="email" class="form-control" id="emailInput" @input="onChange()"
                     placeholder="Nhập email">
                   <label for="emailInput">Email<span class="required-mark">*</span></label>
                   <small v-if="errors['email']" class="text-danger">
@@ -34,7 +40,29 @@
             <div class="row g-3">
               <div class="col-md-6">
                 <div class="form-floating mb-3">
-                  <input v-model="staffForm.password" type="password" class="form-control" id="passwordInput"
+                  <input v-model="staffForm.address" type="text" class="form-control" id="nameInput" @input="onChange()"
+                    placeholder="Nhập địa chỉ">
+                  <label for="nameInput">Địa chỉ<span class="required-mark">*</span></label>
+                  <small v-if="errors['address']" class="text-danger">
+                    {{ errors['address'][0] }}
+                  </small>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="form-floating mb-3">
+                  <input v-model="staffForm.phone_number" type="text" class="form-control" id="emailInput" @input="onChange()"
+                    placeholder="Nhập số điện thoại">
+                  <label for="emailInput">Số điện thoại<span class="required-mark">*</span></label>
+                  <small v-if="errors['phone_number']" class="text-danger">
+                    {{ errors['phone_number'][0] }}
+                  </small>
+                </div>
+              </div>
+            </div>
+            <div class="row g-3">
+              <div class="col-md-6">
+                <div class="form-floating mb-3">
+                  <input v-model="staffForm.password" type="password" class="form-control" id="passwordInput" @input="onChange()"
                     placeholder="Nhập mật khẩu">
                   <label for="passwordInput">Mật khẩu<span class="required-mark">*</span></label>
                   <div class="help-text">Mật khẩu phải có ít nhất 8 ký tự</div>
@@ -45,7 +73,7 @@
               </div>
               <div class="col-md-6">
                 <div class="form-floating mb-3">
-                  <input v-model="staffForm.password_confirmation" type="password" class="form-control"
+                  <input v-model="staffForm.password_confirmation" type="password" class="form-control" @input="onChange()"
                     id="confirmPassword" placeholder="Nhập lại mật khẩu">
                   <label for="confirmPassword">Xác nhận mật khẩu<span class="required-mark">*</span></label>
                   <small v-if="errors['password_confirmation']" class="text-danger">
@@ -63,9 +91,9 @@
                 <div class="col-md-6">
                   <label for="buildingSelect">Chọn tòa nhà<span class="required-mark">*</span></label>
                   <div class="form-floating mb-3">
-                    <select v-model="detail.building_id" class="form-select" id="buildingSelect">
+                    <select v-model="detail.building_id" class="form-select" id="buildingSelect" @change="onChange()"> 
                       <option value="" disabled selected>Chọn tòa nhà</option>
-                      <option v-for="building in dashboardStore.getData" :key="building.building_id"
+                      <option v-for="building in selectedStatsData" :key="building.building_id"
                         :value="building.building_id">{{
                           building.name }}</option>
                     </select>
@@ -77,7 +105,7 @@
                 <div class="col-md-6">
                   <label for="roleSelect">Vai trò</label>
                   <div class="form-floating mb-3">
-                    <select v-model="detail.role" class="form-select" id="roleSelect">
+                    <select v-model="detail.role" class="form-select" id="roleSelect" @change="onChange()">
                       <option value="" disabled selected>Chọn vai trò</option>
                       <option value="manager">Quản lý</option>
                       <option value="monitor">Giám sát</option>
@@ -88,8 +116,8 @@
                   </div>
                 </div>
                 <div class="col-12">
-                  <div class="form-floating mb-3">
-                    <textarea v-model="detail.assigned_tasks" class="form-control" placeholder="Nhập nhiệm vụ"
+                  <div class="form-floating">
+                    <textarea v-model="detail.assigned_tasks" class="form-control" placeholder="Nhập nhiệm vụ" @input="onChange()"
                       id="tasksInput" style="height: 100px"></textarea>
                     <label for="tasksInput">Nhiệm vụ được giao</label>
                     <div class="help-text">Nhập từng nhiệm vụ, cách nhau bằng dấu phẩy</div>
@@ -99,41 +127,50 @@
             </div>
           </div>
 
-          <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-            <button type="button" class="btn btn-secondary px-4 me-2"  @click="goBack()">
-              <i class="fas fa-times me-1"></i> Hủy
+          <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+            <button type="button" class="btn btn-secondary" @click="reset()">
+              <Icon name="system-uicons:reset" size="20" class="me-2" />
+              Làm mới
             </button>
-            <button type="submit" class="btn btn-primary px-4">
-              <i class="fas fa-save me-1"></i>Thêm nhân viên
+            <button type="submit" class="btn btn-primary">
+              <Icon name="mingcute:save-line" size="20" class="me-2" />
+              Lưu thay đổi
             </button>
           </div>
         </form>
       </div>
     </div>
   </div>
+  <ConfirmNavigationModal v-model="showConfirmModal" @confirm="confirmNavigation" @cancel="cancelNavigation" />
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useDashboardStore } from '@/stores/dashboard'
 import { useStaffStore } from '@/stores/staff'
 import { useToast } from 'vue-toastification'
 import { useRouter } from 'vue-router'
+import { useInitialData } from '@/composables/useInitialData'
+import ConfirmNavigationModal from '@/components/modal/UnsavedChangesModal.vue'
 
 definePageMeta({
   middleware: "auth",
   layout: "dashboard"
 })
 
-const dashboardStore = useDashboardStore()
 const staffStore = useStaffStore()
 const errors = ref({})
 const toast = useToast()
 const router = useRouter()
 
+const {
+  selectedStatsData,
+} = useInitialData();
+
 const staffForm = ref({
   name: '',
   email: '',
+  address: '',
+  phone_number: '',
   password: '',
   password_confirmation: '',
   role: 'staff',
@@ -144,19 +181,36 @@ const buildingsForm = ref([
   { building_id: '', role: '', assigned_tasks: '' }
 ])
 
+const {
+    hasUnsavedChanges,
+    showConfirmModal,
+    setupRouteGuard,
+    setEditing,
+    confirmNavigation,
+    cancelNavigation,
+    navigateSafely
+} = useUnsavedChangesGuard()
+
+const onChange = () => {
+    setEditing(true)
+}
+
 const reset = () => {
   staffForm.value.name = '',
   staffForm.value.email = '',
+  staffForm.value.address = '',
+  staffForm.value.phone_number = '',
   staffForm.value.password = '',
   staffForm.value.password_confirmation = '',
   buildingsForm.value.building_id = '',
   buildingsForm.value.role = '',
   buildingsForm.value.assigned_tasks = ''
   errors.value = ''
+  setEditing(false)
 }
 
 const goBack = () => {
-    router.back();
+  router.back();
 }
 
 const createStaff = async () => {
@@ -167,53 +221,17 @@ const createStaff = async () => {
   try {
     await staffStore.createStaff(createData)
     toast.success('Thêm nhân viên thành công!')
+    setEditing(false)
     reset()
   } catch (error) {
-    console.log(error.errors);
     errors.value = error.errors
     toast.error('Đã xảy ra lỗi khi thêm nhân viên!')
   }
 }
 
 onMounted(() => {
-  dashboardStore.fetchStatsBuildings()
-});
-
-
-
-// Gửi dữ liệu lên API
-const addStaff = async () => {
-  //   isSubmitting.value = true;
-  //   message.value = null;
-
-  //   try {
-  //     const { data, error } = await useFetch('/api/staff/create', {
-  //       method: 'POST',
-  //       body: {
-  //         name: name.value,
-  //         email: email.value,
-  //         password: password.value,
-  //         password_confirmation: passwordConfirm.value,
-  //         assignments: assignments.value,
-  //       },
-  //     });
-
-  //     if (error.value) {
-  //       message.value = { type: 'error', text: error.value.data.message || 'Lỗi không xác định' };
-  //     } else {
-  //       message.value = { type: 'success', text: 'Thêm staff thành công!' };
-  //       name.value = '';
-  //       email.value = '';
-  //       password.value = '';
-  //       passwordConfirm.value = '';
-  //       assignments.value = [];
-  //     }
-  //   } catch (e) {
-  //     message.value = { type: 'error', text: 'Có lỗi xảy ra, vui lòng thử lại' };
-  //   } finally {
-  //     isSubmitting.value = false;
-  //   }
-};
+    setupRouteGuard()
+})
 </script>
 
 <style scoped>
@@ -230,9 +248,8 @@ const addStaff = async () => {
 }
 
 .card-header {
-  background: linear-gradient(45deg, #4e73df, #224abe);
   padding: 1.5rem;
-  border-bottom: none;
+  border-bottom: 2px solid #eaecf4;
 }
 
 .card-body {

@@ -78,9 +78,9 @@
                         <th style="width: 10%;">Tổng tiền (VNĐ)</th>
                         <th style="width: 14%;">Ngày ban hành</th>
                         <th style="width: 14%;">Đã thanh toán (VNĐ)</th>
-                        <th style="width: 13%;">Trạng thái</th>
-                        <th style="width: 13%;">Người tạo</th>
-                        <th style="width: 21%; text-align: center;">Hành động</th>
+                        <th style="width: 10%;">Trạng thái</th>
+                        <th style="width: 10%;">Người tạo</th>
+                        <th style="width: 27%; text-align: center;">Hành động</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -129,6 +129,11 @@
                                     @click.prevent="invoice.status === 1 ? null : undefined">
                                     <Icon name="bxs:edit-alt" size="16" class="me-1" /> Sửa
                                 </NuxtLink>
+
+                                <button v-if="authStore.isAdmin" type="button" class="btn btn-sm btn-outline-danger d-flex align-items-center px-3 py-2"
+                                    @click="setSelectedInvoice(invoice.invoice_id)">
+                                    <Icon name="material-symbols:delete-outline" size="16" class="me-1" /> Xóa
+                                </button>
                             </div>
                         </td>
                     </tr>
@@ -144,13 +149,19 @@
       :invoice="selectedInvoice"
       @submitted="handlePaymentSubmitted"
     />
+
+    <ConfirmModal v-model="showDeleteModal" title="Xác nhận xóa hóa đơn"
+        :message="`Bạn có chắc chắn muốn xóa hóa đơn này không?`" confirmText="Xóa" @confirm="deleteInvoice" />
 </template>
 
 <script setup>
 import { onMounted } from 'vue'
 import { useInvoiceStore } from '@/stores/invoice'
+import { useAuthStore } from '@/stores/auth'
 import Pagination from '@/components/pagination/Pagination.vue'
 import InvoicePaymentModal from '@/components/modal/InvoicePaymentModal.vue'
+import ConfirmModal from '@/components/modal/ConfirmModal.vue'
+import { useToast } from 'vue-toastification'
 
 definePageMeta({
     middleware: "auth",
@@ -158,9 +169,13 @@ definePageMeta({
 })
 
 const useInvoice = useInvoiceStore()
+const authStore = useAuthStore()
 const { formatVND } = useCurrencyFormat()
 const showModal = ref(false)
 const selectedInvoice = ref(null)
+const showDeleteModal = ref(false)
+const invoice_id = ref(null)
+const toast = useToast()
 
 function openPaymentModal(invoice) {
   selectedInvoice.value = invoice
@@ -169,6 +184,11 @@ function openPaymentModal(invoice) {
 
 function handlePaymentSubmitted() {
   loadInvoices()
+}
+
+const setSelectedInvoice = (id) => {
+    invoice_id.value = id;
+    showDeleteModal.value = true
 }
 
 const filters = ref({
@@ -213,8 +233,18 @@ const loadInvoices = () => {
         params.invoice_date_from,
         params.invoice_date_to
     )
+}
 
-    console.log(useInvoice.invoiceList)
+const deleteInvoice = async () => {
+    try {
+        const result = await useInvoice.deleteInvoice(invoice_id.value)
+        if (result) {
+            toast.success("Xóa hóa đơn thành công!")
+            loadInvoices
+        }
+    } catch (error) {
+        toast.error(error.message || "Lỗi khi xóa hóa đơn!");
+    }
 }
 
 onMounted(loadInvoices)
