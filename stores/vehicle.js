@@ -84,6 +84,20 @@ export const useVehicleStore = defineStore("vehicle", {
             } finally {
                 this.loading = false;
             }
+        },
+
+        async deleteVehicle(id) {
+            this.loading = true;
+            try {
+                const response = await VehicleApi.delete(id);
+                if(response.data) {
+                    return response.data
+                }
+            } catch (error) {
+                throw error;
+            } finally {
+                this.loading = false;
+            }
         }
     },
 

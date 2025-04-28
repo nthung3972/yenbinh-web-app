@@ -14,8 +14,7 @@ export const useAuthStore = defineStore('auth', {
 
     },
     userProfile: (state) => state.user,
-    userRoles: (state) => state.user?.roles || [],
-    userPermissions: (state) => state.user?.permissions || [],
+    userRoles: (state) => state.user?.role || {},
     isAdmin: (state) => state.user?.role === 'admin',
     isStaff: (state) => state.user?.role === 'staff',
     isEmailVerified: (state) => !!state.user?.email_verified_at,
@@ -76,8 +75,8 @@ export const useAuthStore = defineStore('auth', {
     
     // Kiểm tra vai trò
     hasRole(role) {
-      if (!this.user || !this.user.roles) return false;
-      return this.user.roles.includes(role);
+      if (!this.user || !this.user.role) return false;
+      return this.user.role.includes(role);
     }
   }
 });

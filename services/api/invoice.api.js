@@ -19,5 +19,9 @@ export const InvoiceApi = {
 
     getApartmentFees($id) {
         return apiService.get(`/invoice/apartment-fees/${$id}`);
-    }
+    },
+
+    deleteInvoice($id) {
+        return apiService.delete(`/invoice/delete/${$id}`);
+    },
 };

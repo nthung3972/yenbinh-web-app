@@ -95,10 +95,16 @@
                                     class="btn btn-sm btn-outline-success d-flex align-items-center px-3 py-2">
                                     <Icon name="bxs:detail" size="16" class="me-1" /> Xem
                                 </NuxtLink>
+                                
                                 <NuxtLink :to="`/vehicle/edit/${vehicle.vehicle_id}`"
                                     class="btn btn-sm btn-outline-warning d-flex align-items-center px-3 py-2">
                                     <Icon name="basil:edit-solid" size="16" class="me-1" /> Sửa
                                 </NuxtLink>
+
+                                <button v-if="authStore.isAdmin" type="button" class="btn btn-sm btn-outline-danger d-flex align-items-center px-3 py-2"
+                                    @click="setSelectedVehicle(vehicle.vehicle_id)">
+                                    <Icon name="material-symbols:delete-outline" size="16" class="me-1" /> Xóa
+                                </button>
                             </div>
                         </td>
                     </tr>
@@ -107,12 +113,18 @@
             <Pagination :pagination="vehicleStore.pagination" @page-change="handlePageChange" />
         </div>
     </div>
+
+    <ConfirmModal v-model="showDeleteModal" title="Xác nhận xóa phương tiện"
+        :message="`Bạn có chắc chắn muốn xóa phương tiện này không?`" confirmText="Xóa" @confirm="deleteVehicle" />
 </template>
 
 <script setup>
 import { onMounted } from 'vue';
 import { useVehicleStore } from '@/stores/vehicle'
+import { useAuthStore } from '@/stores/auth'
 import Pagination from '@/components/pagination/Pagination.vue'
+import ConfirmModal from '@/components/modal/ConfirmModal.vue'
+import { useToast } from 'vue-toastification'
 
 definePageMeta({
     middleware: "auth",
@@ -120,6 +132,10 @@ definePageMeta({
 })
 
 const vehicleStore = useVehicleStore()
+const authStore = useAuthStore()
+const showDeleteModal = ref(false)
+const vehicle_id = ref(null)
+const toast = useToast()
 
 const filters = ref({
     status: '',
@@ -131,6 +147,11 @@ const filters = ref({
 
 const isLoading = computed(() => vehicleStore.isLoading);
 const hasError = computed(() => vehicleStore.hasError);
+
+const setSelectedVehicle = (id) => {
+    vehicle_id.value = id;
+    showDeleteModal.value = true
+}
 
 const handlePageChange = (page) => {
     filters.value.page = page;
@@ -156,6 +177,18 @@ const fectVehicleList = () => {
         params.vehicle_type,
         params.status,
     )
+}
+
+const deleteVehicle = async () => {
+    try {
+        await vehicleStore.deleteVehicle(vehicle_id.value)
+        toast.success("Xóa phương tiện thành công!")
+        fectVehicleList()
+    } catch (error) {
+        if (error) {
+            toast.error("Lỗi khi rời căn hộ!");
+        }
+    }
 }
 
 onMounted(fectVehicleList)

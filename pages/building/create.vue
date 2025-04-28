@@ -1,17 +1,22 @@
 <template>
     <div v-if="isLoading" class="text-center">
-      <div class="spinner-border spinner-border-sm me-2" role="status">
-        <span class="visually-hidden">Đang tải dữ liệu...</span>
-      </div>
-      <p>Đang tải dữ liệu...</p>
+        <div class="spinner-border spinner-border-sm me-2" role="status">
+            <span class="visually-hidden">Đang tải dữ liệu...</span>
+        </div>
+        <p>Đang tải dữ liệu...</p>
     </div>
-    <div v-else-if="hasError">{{ hasError }}</div>
 
     <div class="container form-container">
         <div class="card">
-            <div class="card-header d-flex align-items-center">
-                <i class="fas fa-building header-icon fs-4 text-white"></i>
-                <h4 class="mb-0 text-white">Thêm tòa nhà mới</h4>
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h4 class="fw-bold text-primary">
+                    <Icon name="mdi:office-building" size="24" class="me-2" />
+                    Thêm tòa nhà mới
+                </h4>
+                <button class="btn btn-outline-secondary" @click="back()">
+                    <Icon name="mdi:arrow-left-circle" size="20" class="me-2" />
+                    Quay lại
+                </button>
             </div>
             <div class="card-body">
                 <form @submit.prevent="createBuilding">
@@ -20,8 +25,8 @@
                         <div class="row g-3">
                             <div class="col-md-12">
                                 <div class="form-label-group">
-                                    <input v-model="buildingForm.name" type="text" class="form-control" id="buildingName"
-                                        placeholder=" ">
+                                    <input v-model="buildingForm.name" type="text" class="form-control" @input="onChange()"
+                                        id="buildingName" placeholder=" ">
                                     <label for="buildingName">Tên tòa nhà<span class="required-mark">*</span></label>
                                     <small v-if="errors?.['name']" class="text-danger">
                                         {{ errors?.['name'][0] }}
@@ -33,8 +38,8 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <div class="form-label-group">
-                                    <input v-model="buildingForm.floors" type="number" min="1" class="form-control" id="floorsInput"
-                                        placeholder=" ">
+                                    <input v-model="buildingForm.floors" type="number" min="1" class="form-control" @input="onChange()"
+                                        id="floorsInput" placeholder=" ">
                                     <label for="floorsInput">Số tầng<span class="required-mark">*</span></label>
                                     <small v-if="errors?.['floors']" class="text-danger">
                                         {{ errors?.['floors'][0] }}
@@ -43,11 +48,32 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-label-group">
-                                    <input v-model="buildingForm.total_area" type="number" min="1" class="form-control" id="floorsInput"
-                                        placeholder=" ">
+                                    <input v-model="buildingForm.total_area" type="number" min="1" class="form-control" @input="onChange()"
+                                        id="floorsInput" placeholder=" ">
                                     <label for="floorsInput">Diện tích<span class="required-mark">*</span></label>
                                     <small v-if="errors?.['total_area']" class="text-danger">
                                         {{ errors?.['total_area'][0] }}
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-label-group">
+                                    <input v-model="buildingForm.management_fee_per_m2" type="number" min="1" @input="onChange()"
+                                        class="form-control" id="floorsInput" placeholder=" ">
+                                    <label for="floorsInput">Giá dịch vụ<span class="required-mark">*</span></label>
+                                    <small v-if="errors?.['management_fee_per_m2']" class="text-danger">
+                                        {{ errors?.['management_fee_per_m2'][0] }}
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-label-group">
+                                    <input v-model="buildingForm.management_board_fee_per_m2" type="number" min="1" @input="onChange()"
+                                        class="form-control" id="floorsInput" placeholder=" ">
+                                    <label for="floorsInput">Thù lao ban quản trị<span
+                                            class="required-mark"></span></label>
+                                    <small v-if="errors?.['management_board_fee_per_m2']" class="text-danger">
+                                        {{ errors?.['management_board_fee_per_m2'][0] }}
                                     </small>
                                 </div>
                             </div>
@@ -56,8 +82,8 @@
                         <div class="row g-3 mt-2">
                             <div class="col-12">
                                 <div class="form-label-group">
-                                    <textarea v-model="buildingForm.address" class="form-control" id="addressInput" rows="3"
-                                        placeholder=" "></textarea>
+                                    <textarea v-model="buildingForm.address" class="form-control" id="addressInput" @input="onChange()"
+                                        rows="3" placeholder=" "></textarea>
                                     <label for="addressInput">Địa chỉ tòa nhà<span
                                             class="required-mark">*</span></label>
                                     <small v-if="errors?.['address']" class="text-danger">
@@ -73,13 +99,13 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="image-upload-container" id="imageUploadContainer">
-                                    <!-- <input type="file" class="file-input" id="buildingImage" accept="image/*"> -->
                                     <input type="file" @change="handleFileChange" accept="image/*" />
                                     <i class="fas fa-cloud-upload-alt"></i>
                                     <h5>Tải lên hình ảnh tòa nhà</h5>
                                     <p class="text-muted">Kéo thả hoặc nhấp vào đây để tải lên</p>
                                     <p class="text-muted small">Hỗ trợ JPG, PNG, tối đa 5MB</p>
-                                    <img v-if="buildingForm.imagePreview" :src="buildingForm.imagePreview" alt="Xem trước ảnh" style="max-width: 200px; margin-top: 10px;"/>
+                                    <img v-if="buildingForm.imagePreview" :src="buildingForm.imagePreview"
+                                        alt="Xem trước ảnh" style="max-width: 200px; margin-top: 10px;" />
                                 </div>
                                 <small v-if="errors?.['image']" class="text-danger">
                                     {{ errors?.['image'][0] }}
@@ -93,7 +119,7 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <div class="form-label-group">
-                                    <select v-model="buildingForm.status" class="form-select" id="statusSelect">
+                                    <select v-model="buildingForm.status" class="form-select" @change="onChange()" id="statusSelect">
                                         <option value="" disabled selected>Chọn trạng thái</option>
                                         <option value="0">Đang hoạt động</option>
                                         <option value="1">Không hoạt động</option>
@@ -106,7 +132,7 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-label-group">
-                                    <select v-model="buildingForm.building_type" class="form-select" id="typeSelect">
+                                    <select v-model="buildingForm.building_type" class="form-select" @change="onChange()" id="typeSelect">
                                         <option value="" disabled selected>Chọn loại tòa nhà</option>
                                         <option value="residential">Chung cư</option>
                                         <option value="commercial">Văn phòng</option>
@@ -121,18 +147,22 @@
                         </div>
                     </div>
 
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                        <button type="button" class="btn btn-secondary px-4 me-2" @click="back()">
-                            <i class="fas fa-times me-1"></i> Hủy
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <button type="button" class="btn btn-secondary" @click="reset()">
+                            <Icon name="system-uicons:reset" size="20" class="me-2" />
+                            Làm mới
                         </button>
-                        <button type="submit" class="btn btn-primary px-4">
-                            <i class="fas fa-save me-1"></i> Thêm tòa nhà
+                        <button type="submit" class="btn btn-primary">
+                            <Icon name="mingcute:save-line" size="20" class="me-2" />
+                            Lưu thay đổi
                         </button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
+
+    <ConfirmNavigationModal v-model="showConfirmModal" @confirm="confirmNavigation" @cancel="cancelNavigation" />
 </template>
 
 <script setup>
@@ -140,32 +170,47 @@ import { useRouter } from 'vue-router'
 import { useBuildingStore } from '@/stores/building'
 import { useUploadStore } from '@/stores/upload'
 import { useToast } from 'vue-toastification'
+import ConfirmNavigationModal from '@/components/modal/UnsavedChangesModal.vue'
 
 definePageMeta({
-  middleware: "auth",
-  layout: "dashboard"
+    middleware: "auth",
+    layout: "dashboard"
 })
 
 const router = useRouter()
 const buildingStore = useBuildingStore()
 const uploadStore = useUploadStore()
 const toast = useToast()
-const errors = ref('')
+const errors = ref({})
 
-
-const isLoading = computed(() => buildingStore.isLoading);
-const hasError = computed(() => buildingStore.hasError);
+const isLoading = computed(() => buildingStore.isLoading)
 
 const buildingForm = ref({
-  name: '',
-  address: '',
-  image: null,
-  floors: '',
-  total_area: '',
-  status: '',
-  building_type: '',
-  imagePreview: null
+    name: '',
+    address: '',
+    image: null,
+    floors: '',
+    total_area: '',
+    management_fee_per_m2: '',
+    management_board_fee_per_m2: '',
+    status: '',
+    building_type: '',
+    imagePreview: null
 })
+
+const {
+    hasUnsavedChanges,
+    showConfirmModal,
+    setupRouteGuard,
+    setEditing,
+    confirmNavigation,
+    cancelNavigation,
+    navigateSafely
+} = useUnsavedChangesGuard()
+
+const onChange = () => {
+    setEditing(true)
+}
 
 const reset = () => {
     buildingForm.value.name = '',
@@ -174,8 +219,11 @@ const reset = () => {
     buildingForm.value.floors = '',
     buildingForm.value.total_area = '',
     buildingForm.value.status = '',
+    buildingForm.value.management_fee_per_m2 = '',
+    buildingForm.value.management_board_fee_per_m2 = '',
     buildingForm.value.building_type = '',
-    errors.value = ''
+    errors.value = {}
+    setEditing(false)
 }
 
 const back = () => {
@@ -183,38 +231,42 @@ const back = () => {
 }
 
 const handleFileChange = async (event) => {
-  const file = event.target.files[0]
+    const file = event.target.files[0]
 
-  if (!file) return
+    if (!file) return
 
-  buildingForm.value.imagePreview = URL.createObjectURL(file)
+    buildingForm.value.imagePreview = URL.createObjectURL(file)
 
-  console.log(buildingForm.value.imagePreview)
+    console.log(buildingForm.value.imagePreview)
 
-  const formData = new FormData()
-  formData.append('image', file)
+    const formData = new FormData()
+    formData.append('image', file)
 
-  try {
-    const result = await uploadStore.uploadImage(formData)
-    buildingForm.value.imagePreview = result.path
-    buildingForm.value.image = result.path
-  } catch (error) {
-    console.error('Lỗi upload ảnh:', error)
-  }
+    try {
+        const result = await uploadStore.uploadImage(formData)
+        buildingForm.value.imagePreview = result.path
+        buildingForm.value.image = result.path
+    } catch (error) {
+        console.error('Lỗi upload ảnh:', error)
+    }
 }
 
 const createBuilding = async () => {
-    console.log(buildingForm.value);
-  try {
-    await buildingStore.createBuilding(buildingForm.value)
-    toast.success('Thêm tòa nhà thành công!')
-    reset()
-  } catch (error) {
-    console.log(error.errors);
-    errors.value = error.errors
-    toast.error('Đã xảy ra lỗi khi thêm tòa nhà!')
-  }
+    errors.value = {}
+    try {
+        await buildingStore.createBuilding(buildingForm.value)
+        toast.success('Thêm tòa nhà thành công!')
+        reset()
+    } catch (error) {
+        console.log(error.errors);
+        errors.value = error.errors
+        toast.error('Đã xảy ra lỗi khi thêm tòa nhà!')
+    }
 }
+
+onMounted(() => {
+    setupRouteGuard()
+})
 </script>
 
 <style scoped>
@@ -231,9 +283,8 @@ const createBuilding = async () => {
 }
 
 .card-header {
-    background: linear-gradient(45deg, #4e73df, #224abe);
     padding: 12px 24px;
-    border-bottom: none;
+    border-bottom: 2px solid #eaecf4;
 }
 
 .card-body {

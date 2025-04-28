@@ -27,11 +27,12 @@
         <table class="table table-hover align-middle" style="table-layout: fixed; width: 100%;">
           <thead class="table-light sticky-top" style="z-index: 1;">
             <tr>
-              <th style="width: 20%;">Tòa nhà</th>
+              <th style="width: 20%;">Tên tòa nhà</th>
               <th style="width: 15%;">Hình ảnh</th>
               <th style="width: 10%;">Số tầng</th>
               <th style="width: 10%;">Diện tích</th>
-              <th style="width: 15%;">Người quản lý</th>
+              <th style="width: 10%;">Phí dịch vụ</th>
+              <th style="width: 10%;">Loại tòa nhà</th>
               <th style="width: 15%;">Trạng thái</th>
               <th style="width: 20%; text-align: center;">Hành động</th>
             </tr>
@@ -46,7 +47,8 @@
               </td>
               <td>{{ building.floors }}</td>
               <td>{{ building.total_area }} (m²)</td>
-              <td>{{ building.staff_names? building.staff_names: '----'}}</td>
+              <td>{{ formatVND(building.management_fee_per_m2) }}đ</td>
+              <td>{{ getBuildingType(building.building_type) }}</td>
               <td>
                 <span :class="[
                   'badge',
@@ -57,7 +59,7 @@
               </td>
               <td class="text-center">
                 <div class="btn-group gap-2">
-                  <NuxtLink to="/" class="btn btn-sm btn-outline-success d-flex align-items-center px-3 py-2">
+                  <NuxtLink :to="`/building/detail/${building.building_id}`" class="btn btn-sm btn-outline-success d-flex align-items-center px-3 py-2">
                     <Icon name="bxs:detail" size="16" class="me-1" /> Xem
                   </NuxtLink>
                   <NuxtLink :to="`/building/edit/${building.building_id}`"
@@ -73,35 +75,12 @@
       <Pagination :pagination="buildingStore.pagination" @page-change="handlePageChange" />
     </div>
   </div>
-
-
-  <!-- Modal Xóa Căn Hộ -->
-  <div class="modal fade" id="deleteBuildingModal" tabindex="-1">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <form @submit.prevent="deleteBuilding" novalidate>
-          <div class="modal-header">
-            <h5 class="modal-title">Xác Nhận Xóa Tòa Nhà</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-          </div>
-          <div class="modal-body">
-            Bạn có chắc chắn muốn xóa tòa nhà này không?
-          </div>
-          <div class="modal-footer">
-            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
-            <button type="submit" class="btn btn-danger">Xóa</button>
-          </div>
-        </form>
-      </div>
-    </div>
-  </div>
 </template>
 
 <script setup>
 import { onMounted } from 'vue'
 import { useBuildingStore } from '@/stores/building'
 import Pagination from '@/components/pagination/Pagination.vue'
-import { useToast } from 'vue-toastification'
 
 definePageMeta({
   middleware: "auth",
@@ -111,6 +90,13 @@ definePageMeta({
 const buildingStore = useBuildingStore()
 const currentPage = ref(1)
 const searchKeyword = ref('')
+const { formatVND } = useCurrencyFormat()
+
+const getBuildingType = (type) => {
+    if (type === 'residential') return 'Chung cư'
+    if (type === 'commercial') return 'Văn phòng'
+    if (type === 'mixed') return ''
+}
 
 const isLoading = computed(() => buildingStore.isLoading);
 const hasError = computed(() => buildingStore.hasError);

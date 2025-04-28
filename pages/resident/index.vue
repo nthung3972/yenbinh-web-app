@@ -50,8 +50,8 @@
                     <tr v-for="(resident, index) in useResident.residentList" :key="index">
                         <td>{{ resident.full_name }}</td>
                         <td>{{ resident.id_card_number ?? '---' }}</td>
-                        <td>{{ resident.phone_number ?? '---'}}</td>
-                        <td>{{ resident.email ?? '---'}}</td>
+                        <td>{{ resident.phone_number ?? '---' }}</td>
+                        <td>{{ resident.email ?? '---' }}</td>
                         <td>{{ resident.updated_by?.name ?? '---' }}</td>
                         <td class="text-center">
                             <div class="btn-group gap-2">
