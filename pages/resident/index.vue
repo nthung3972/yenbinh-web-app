@@ -68,7 +68,7 @@
                     </tr>
                 </tbody>
             </table>
-            <Pagination :pagination="useResident.pagination" @page-change="handlePageChange" />
+            <Pagination :pagination="useResident.pagination" @page-change="handlePageChange" @rows-per-page-change="rowsPerPageChange"/>
         </div>
     </div>
 </template>
@@ -85,21 +85,25 @@ definePageMeta({
 
 const useResident = useResidentStore();
 const currentPage = ref(1);
+const perPage = ref(10);
 const searchKeyword = ref('');
 
 const isLoading = computed(() => useResident.isLoading);
 const hasError = computed(() => useResident.hasError);
 
 const loadResidents = () => {
-    useResident.fetchResidentList(currentPage.value, '', searchKeyword.value)
+    useResident.fetchResidentList(currentPage.value, perPage.value, searchKeyword.value)
 }
-
 
 const handlePageChange = (page) => {
     currentPage.value = page;
     loadResidents();
 };
 
+const rowsPerPageChange = (per_page) => {
+    perPage.value = per_page
+    loadResidents();
+};
 
 const onSearch = () => {
     currentPage.value = 1;

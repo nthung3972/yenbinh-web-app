@@ -1,5 +1,5 @@
 <template>
-    <div class="card shadow-lg p-4 m-4 border-0">
+    <div class="card shadow-lg p-4 border-0">
         <div v-if="isLoading" class="text-center py-5">
             <div class="spinner-border text-primary" role="status">
                 <span class="visually-hidden">Đang tải dữ liệu...</span>
@@ -118,7 +118,7 @@
             </div>
 
             <!-- Pagination -->
-            <Pagination :pagination="apartmentStore.pagination" @page-change="handlePageChange" />
+            <Pagination :pagination="apartmentStore.pagination" @page-change="handlePageChange" @rows-per-page-change="rowsPerPageChange" />
         </div>
     </div>
 </template>
@@ -164,6 +164,11 @@ const hasError = computed(() => apartmentStore.hasError)
 
 const handlePageChange = (page) => {
     filters.value.page = page
+    loadApartments();
+};
+
+const rowsPerPageChange = (per_page) => {
+    filters.value.per_page = per_page
     loadApartments();
 };
 

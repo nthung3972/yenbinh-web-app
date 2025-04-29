@@ -19,7 +19,7 @@ export const useVehicleStore = defineStore("vehicle", {
     }),
 
     actions: {
-        async fetchVehicleList(page = 1, perPage = '', keyword = '', vehicle_type= '', status) {
+        async fetchVehicleList(page, perPage, keyword, vehicle_type, status) {
             const dashboardStore = useDashboardStore();
             const building_id = dashboardStore.getSelectedBuildingId;
 
