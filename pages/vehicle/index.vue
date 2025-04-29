@@ -110,7 +110,7 @@
                     </tr>
                 </tbody>
             </table>
-            <Pagination :pagination="vehicleStore.pagination" @page-change="handlePageChange" />
+            <Pagination :pagination="vehicleStore.pagination" @page-change="handlePageChange" @rows-per-page-change="rowsPerPageChange"/>
         </div>
     </div>
 
@@ -155,6 +155,11 @@ const setSelectedVehicle = (id) => {
 
 const handlePageChange = (page) => {
     filters.value.page = page;
+    fectVehicleList();
+};
+
+const rowsPerPageChange = (per_page) => {
+    filters.value.per_page = per_page
     fectVehicleList();
 };
 

@@ -139,7 +139,7 @@
                     </tr>
                 </tbody>
             </table>
-            <Pagination :pagination="useInvoice.pagination" @page-change="handlePageChange" />
+            <Pagination :pagination="useInvoice.pagination" @page-change="handlePageChange" @rows-per-page-change="rowsPerPageChange"/>
         </div>
     </div>
 
@@ -205,6 +205,11 @@ const hasError = computed(() => useInvoice.hasError);
 
 const handlePageChange = (page) => {
     filters.value.page = page
+    loadInvoices();
+};
+
+const rowsPerPageChange = (per_page) => {
+    filters.value.per_page = per_page
     loadInvoices();
 };
 

@@ -1,7 +1,7 @@
 import apiService from "@/services/api.service";
 
 export const ResidentApi = {
-    getListResident(building_id, page = 1, per_page = 5, keyword = '') {
+    getListResident(building_id, page, per_page, keyword) {
         return apiService.get(`/resident/resident-list/${building_id}?page=${page}&per_page=${per_page}&keyword=${encodeURIComponent(keyword)}`);
     },
 

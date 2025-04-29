@@ -18,7 +18,7 @@ export const useResidentStore = defineStore("resident", {
     }),
 
     actions: {
-        async fetchResidentList(page = 1, perPage = '', keyword = '') {
+        async fetchResidentList(page, perPage, keyword) {
             const dashboardStore = useDashboardStore();
             const building_id = dashboardStore.getSelectedBuildingId;
 
