@@ -15,7 +15,7 @@ export default defineNuxtConfig({
   runtimeConfig: {
     public: {
       // apiUrl: process.env.NUXT_PUBLIC_API_URL || "localhost:8000/api/admin",
-      apiUrl: process.env.NUXT_PUBLIC_API_URL || "https://yenbinhmanagement.vn/api/admin",
+      apiUrl: process.env.NUXT_PUBLIC_API_URL || "https://api.yenbinhmanagement.vn/api/admin",
     }
   },
   plugins: [
