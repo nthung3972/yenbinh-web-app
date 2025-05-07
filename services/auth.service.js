@@ -7,6 +7,7 @@ class AuthService {
   async login(credentials) {
     try {
       const response = await apiService.post('/auth/login', credentials);
+      console.log('Login response:', response.data);
       const { token, user } = response.data.data;
 
       const authStore = useAuthStore();
