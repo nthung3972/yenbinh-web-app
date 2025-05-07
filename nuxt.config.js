@@ -1,5 +1,5 @@
 export default defineNuxtConfig({
-  ssr: true,
+  ssr: false,
   css: [
     '~/assets/css/style.css',
     'bootstrap/dist/css/bootstrap.min.css'
