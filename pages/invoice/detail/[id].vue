@@ -236,7 +236,7 @@ const downloadInvoice = async (id) => {
   loading.value = true
   try {
     const response = await axios.get(
-      `http://localhost:8000/api/admin/export/invoices/${id}`, // Thay bằng đúng URL của bạn
+      `https://api.yenbinhmanagement.vn/api/admin/export/invoices/${id}`, // Thay bằng đúng URL của bạn
       {
         responseType: 'blob',
         headers: {
