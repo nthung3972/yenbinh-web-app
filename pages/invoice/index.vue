@@ -74,6 +74,7 @@
             <table class="table table-hover align-middle" style="table-layout: fixed; width: 100%;">
                 <thead class="table-light sticky-top" style="z-index: 1;">
                     <tr>
+                        <th style="width: 5%;">#</th>
                         <th style="width: 10%;">Mã căn hộ</th>
                         <th style="width: 10%;">Tổng tiền (VNĐ)</th>
                         <th style="width: 14%;">Ngày ban hành</th>
@@ -85,6 +86,7 @@
                 </thead>
                 <tbody>
                     <tr v-for="(invoice, index) in useInvoice.invoiceList" :key="index">
+                        <td>{{ index + 1 }}</td>
                         <td>{{ invoice.apartment.apartment_number }}</td>
                         <td>{{ formatVND(invoice.total_amount) }}</td>
                         <td>{{ invoice.invoice_date }}</td>
@@ -93,62 +95,58 @@
                             <span :class="[
                                 'badge',
                                 invoice.status === 0 ? 'bg-warning'
-                                : invoice.status === 1 ? 'bg-success'
-                                : invoice.status === 2 ? 'bg-danger'
-                                        : 'bg-primary'
+                                    : invoice.status === 1 ? 'bg-success'
+                                        : invoice.status === 2 ? 'bg-danger'
+                                            : 'bg-primary'
                             ]">
                                 {{ invoice.status === 0 ? 'Chưa thanh toán'
                                     : invoice.status === 1 ? 'Đã thanh toán'
-                                    : invoice.status === 2 ? 'Đã quá hạn'
-                                        : 'Thanh toán một phần' }}
+                                        : invoice.status === 2 ? 'Đã quá hạn'
+                                            : 'Thanh toán một phần' }}
                             </span>
                         </td>
                         <td>{{ invoice.updated_by?.name ?? '----' }}</td>
                         <td class="text-center">
-                            <div class="btn-group gap-2">
-                                <NuxtLink :to="`/invoice/detail/${invoice.invoice_id}`"
-                                    class="btn btn-sm btn-outline-success d-flex align-items-center px-3 py-2">
-                                    <Icon name="bxs:detail" size="16" class="me-1" /> Xem
-                                </NuxtLink>
+                            <ActionDropdown buttonText="Thao tác" iconName="bx:chevron-down">
+                                <template #default="{ closeDropdown }">
+                                    <DropdownItem tag="NuxtLink" :to="`/invoice/detail/${invoice.invoice_id}`"
+                                        iconName="bxs:detail">
+                                        Xem
+                                    </DropdownItem>
 
-                                <button class="btn btn-sm btn-outline-primary d-flex align-items-center px-3 py-2"
-                                    :disabled="invoice.status === 1"
-                                    :title="invoice.status === 1 ? 'Hóa đơn đã thanh toán, không thể thêm' : 'Thêm thanh toán'"
-                                    @click="openPaymentModal(invoice)">
-                                    <Icon name="bxs:wallet" size="16" class="me-1" />
-                                    Thanh toán
-                                </button>
+                                    <DropdownItem :disabled="invoice.status === 1"
+                                        :title="invoice.status === 1 ? 'Hóa đơn đã thanh toán, không thể thêm' : 'Thêm thanh toán'"
+                                        iconName="bxs:wallet" :onClick="() => openPaymentModal(invoice)"
+                                        :onClose="closeDropdown">
+                                        Thanh toán
+                                    </DropdownItem>
 
-                                <NuxtLink :to="invoice.status !== 1 ? `/invoice/edit/${invoice.invoice_id}` : '#'"
-                                    :class="[
-                                        'btn', 'btn-sm', 'btn-outline-warning',
-                                        'd-flex', 'align-items-center',
-                                        { 'disabled opacity-50': invoice.status === 1 }
-                                    ]"
-                                    :title="invoice.status === 1 ? 'Báo cáo không thể chỉnh sửa vì trạng thái không phải draft' : 'Chỉnh sửa báo cáo'"
-                                    @click.prevent="invoice.status === 1 ? null : undefined">
-                                    <Icon name="bxs:edit-alt" size="16" class="me-1" /> Sửa
-                                </NuxtLink>
+                                    <DropdownItem tag="NuxtLink"
+                                        :to="invoice.status !== 1 ? `/invoice/edit/${invoice.invoice_id}` : '#'"
+                                        :disabled="invoice.status === 1"
+                                        :title="invoice.status === 1 ? 'Báo cáo không thể chỉnh sửa vì trạng thái không phải draft' : 'Chỉnh sửa báo cáo'"
+                                        iconName="bxs:edit-alt">
+                                        Sửa
+                                    </DropdownItem>
 
-                                <button v-if="authStore.isAdmin" type="button" class="btn btn-sm btn-outline-danger d-flex align-items-center px-3 py-2"
-                                    @click="setSelectedInvoice(invoice.invoice_id)">
-                                    <Icon name="material-symbols:delete-outline" size="16" class="me-1" /> Xóa
-                                </button>
-                            </div>
+                                    <DropdownItem v-if="authStore.isAdmin" iconName="material-symbols:delete-outline"
+                                        :onClick="() => setSelectedInvoice(invoice.invoice_id)"
+                                        :onClose="closeDropdown">
+                                        Xóa
+                                    </DropdownItem>
+                                </template>
+                            </ActionDropdown>
                         </td>
                     </tr>
                 </tbody>
             </table>
-            <Pagination :pagination="useInvoice.pagination" @page-change="handlePageChange" @rows-per-page-change="rowsPerPageChange"/>
+            <Pagination :pagination="useInvoice.pagination" @page-change="handlePageChange"
+                @rows-per-page-change="rowsPerPageChange" />
         </div>
     </div>
 
-     <!-- Modal -->
-     <InvoicePaymentModal
-      v-model="showModal"
-      :invoice="selectedInvoice"
-      @submitted="handlePaymentSubmitted"
-    />
+    <!-- Modal -->
+    <InvoicePaymentModal v-model="showModal" :invoice="selectedInvoice" @submitted="handlePaymentSubmitted" />
 
     <ConfirmModal v-model="showDeleteModal" title="Xác nhận xóa hóa đơn"
         :message="`Bạn có chắc chắn muốn xóa hóa đơn này không?`" confirmText="Xóa" @confirm="deleteInvoice" />
@@ -159,6 +157,8 @@ import { onMounted } from 'vue'
 import { useInvoiceStore } from '@/stores/invoice'
 import { useAuthStore } from '@/stores/auth'
 import Pagination from '@/components/pagination/Pagination.vue'
+import ActionDropdown from '@/components/dropdown/actionDropdown.vue'
+import DropdownItem from '@/components/dropdown/dropdownItem.vue'
 import InvoicePaymentModal from '@/components/modal/InvoicePaymentModal.vue'
 import ConfirmModal from '@/components/modal/ConfirmModal.vue'
 import { useToast } from 'vue-toastification'
@@ -170,23 +170,24 @@ definePageMeta({
 
 const useInvoice = useInvoiceStore()
 const authStore = useAuthStore()
-const { formatVND } = useCurrencyFormat()
 const showModal = ref(false)
 const selectedInvoice = ref(null)
 const showDeleteModal = ref(false)
 const invoice_id = ref(null)
 const toast = useToast()
 
+const { formatVND } = useCurrencyFormat()
+
 function openPaymentModal(invoice) {
-  selectedInvoice.value = invoice
-  showModal.value = true
+    selectedInvoice.value = invoice
+    showModal.value = true
 }
 
 function handlePaymentSubmitted() {
-  loadInvoices()
+    loadInvoices()
 }
 
-const setSelectedInvoice = (id) => {
+const setSelectedInvoice = async (id) => {
     invoice_id.value = id;
     showDeleteModal.value = true
 }
@@ -261,5 +262,101 @@ onMounted(loadInvoices)
     align-items: center;
     justify-content: center;
     gap: 5px;
+}
+
+/* CSS cho dropdown menu thao tác */
+.action-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.action-dropdown .dropdown-menu {
+    min-width: 160px;
+    position: absolute;
+    right: 0;
+    left: auto;
+    z-index: 1000;
+    display: none;
+    float: left;
+    padding: 0.5rem 0;
+    margin: 0.125rem 0 0;
+    font-size: 0.875rem;
+    color: #212529;
+    text-align: left;
+    list-style: none;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 0.25rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
+}
+
+.action-dropdown .dropdown-menu.show {
+    display: block;
+}
+
+.action-dropdown .dropdown-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 0.5rem 1.5rem;
+    clear: both;
+    font-weight: 400;
+    color: #212529;
+    text-align: inherit;
+    white-space: nowrap;
+    background-color: transparent;
+    border: 0;
+    text-decoration: none;
+}
+
+.action-dropdown .dropdown-item:hover,
+.action-dropdown .dropdown-item:focus {
+    color: #16181b;
+    text-decoration: none;
+    background-color: #f8f9fa;
+}
+
+.action-dropdown .dropdown-item.disabled {
+    color: #6c757d;
+    pointer-events: none;
+    background-color: transparent;
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+.action-dropdown .dropdown-item:active {
+    color: #fff;
+    text-decoration: none;
+    background-color: #0d6efd;
+}
+
+/* Nút toggle dropdown */
+.action-btn {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    color: #495057;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 120px;
+}
+
+.action-btn:hover {
+    background-color: #e9ecef;
+}
+
+/* Style cho icons trong dropdown */
+.dropdown-item i,
+.dropdown-item svg {
+    margin-right: 0.5rem;
+}
+
+/* Separator giữa các items (nếu cần) */
+.dropdown-divider {
+    height: 0;
+    margin: 0.5rem 0;
+    overflow: hidden;
+    border-top: 1px solid #e9ecef;
 }
 </style>

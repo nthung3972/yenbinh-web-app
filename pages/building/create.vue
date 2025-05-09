@@ -25,8 +25,8 @@
                         <div class="row g-3">
                             <div class="col-md-12">
                                 <div class="form-label-group">
-                                    <input v-model="buildingForm.name" type="text" class="form-control" @input="onChange()"
-                                        id="buildingName" placeholder=" ">
+                                    <input v-model="buildingForm.name" type="text" class="form-control"
+                                        @input="onChange()" id="buildingName" placeholder=" ">
                                     <label for="buildingName">Tên tòa nhà<span class="required-mark">*</span></label>
                                     <small v-if="errors?.['name']" class="text-danger">
                                         {{ errors?.['name'][0] }}
@@ -38,8 +38,8 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <div class="form-label-group">
-                                    <input v-model="buildingForm.floors" type="number" min="1" class="form-control" @input="onChange()"
-                                        id="floorsInput" placeholder=" ">
+                                    <input v-model="buildingForm.floors" type="number" min="1" class="form-control"
+                                        @input="onChange()" id="floorsInput" placeholder=" ">
                                     <label for="floorsInput">Số tầng<span class="required-mark">*</span></label>
                                     <small v-if="errors?.['floors']" class="text-danger">
                                         {{ errors?.['floors'][0] }}
@@ -48,8 +48,8 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-label-group">
-                                    <input v-model="buildingForm.total_area" type="number" min="1" class="form-control" @input="onChange()"
-                                        id="floorsInput" placeholder=" ">
+                                    <input v-model="buildingForm.total_area" type="number" min="1" class="form-control"
+                                        @input="onChange()" id="floorsInput" placeholder=" ">
                                     <label for="floorsInput">Diện tích<span class="required-mark">*</span></label>
                                     <small v-if="errors?.['total_area']" class="text-danger">
                                         {{ errors?.['total_area'][0] }}
@@ -58,8 +58,8 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-label-group">
-                                    <input v-model="buildingForm.management_fee_per_m2" type="number" min="1" @input="onChange()"
-                                        class="form-control" id="floorsInput" placeholder=" ">
+                                    <input v-model="buildingForm.management_fee_per_m2" type="number" min="1"
+                                        @input="onChange()" class="form-control" id="floorsInput" placeholder=" ">
                                     <label for="floorsInput">Giá dịch vụ<span class="required-mark">*</span></label>
                                     <small v-if="errors?.['management_fee_per_m2']" class="text-danger">
                                         {{ errors?.['management_fee_per_m2'][0] }}
@@ -68,8 +68,8 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-label-group">
-                                    <input v-model="buildingForm.management_board_fee_per_m2" type="number" min="1" @input="onChange()"
-                                        class="form-control" id="floorsInput" placeholder=" ">
+                                    <input v-model="buildingForm.management_board_fee_per_m2" type="number" min="1"
+                                        @input="onChange()" class="form-control" id="floorsInput" placeholder=" ">
                                     <label for="floorsInput">Thù lao ban quản trị<span
                                             class="required-mark"></span></label>
                                     <small v-if="errors?.['management_board_fee_per_m2']" class="text-danger">
@@ -82,8 +82,8 @@
                         <div class="row g-3 mt-2">
                             <div class="col-12">
                                 <div class="form-label-group">
-                                    <textarea v-model="buildingForm.address" class="form-control" id="addressInput" @input="onChange()"
-                                        rows="3" placeholder=" "></textarea>
+                                    <textarea v-model="buildingForm.address" class="form-control" id="addressInput"
+                                        @input="onChange()" rows="3" placeholder=" "></textarea>
                                     <label for="addressInput">Địa chỉ tòa nhà<span
                                             class="required-mark">*</span></label>
                                     <small v-if="errors?.['address']" class="text-danger">
@@ -99,13 +99,26 @@
                         <div class="row">
                             <div class="col-12">
                                 <div class="image-upload-container" id="imageUploadContainer">
-                                    <input type="file" @change="handleFileChange" accept="image/*" />
-                                    <i class="fas fa-cloud-upload-alt"></i>
-                                    <h5>Tải lên hình ảnh tòa nhà</h5>
-                                    <p class="text-muted">Kéo thả hoặc nhấp vào đây để tải lên</p>
-                                    <p class="text-muted small">Hỗ trợ JPG, PNG, tối đa 5MB</p>
-                                    <img v-if="buildingForm.imagePreview" :src="buildingForm.imagePreview"
-                                        alt="Xem trước ảnh" style="max-width: 200px; margin-top: 10px;" />
+                                    <input type="file" @change="handleFileChange" accept="image/*" @input="onChange()"/>
+
+                                    <!-- Hiển thị khi có ảnh preview mới -->
+                                    <div v-if="buildingForm.imagePreview" class="current-image-container">
+                                        <img :src="buildingForm.imagePreview" alt="Xem trước ảnh"
+                                            class="image-preview" />
+                                    </div>
+
+                                    <!-- Hiển thị khi có ảnh cũ và không có ảnh preview -->
+                                    <div v-else-if="buildingForm.image" class="current-image-container">
+                                        <img :src="buildingForm.image" alt="Ảnh hiện tại" class="current-image" />
+                                    </div>
+
+                                    <!-- Hiển thị khi không có cả ảnh cũ và ảnh preview -->
+                                    <div v-else class="upload-placeholder">
+                                        <i class="fas fa-cloud-upload-alt"></i>
+                                        <h5>Tải lên hình ảnh tòa nhà</h5>
+                                        <p class="text-muted">Kéo thả hoặc nhấp vào đây để tải lên</p>
+                                        <p class="text-muted small">Hỗ trợ JPG, PNG, tối đa 5MB</p>
+                                    </div>
                                 </div>
                                 <small v-if="errors?.['image']" class="text-danger">
                                     {{ errors?.['image'][0] }}
@@ -119,7 +132,8 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <div class="form-label-group">
-                                    <select v-model="buildingForm.status" class="form-select" @change="onChange()" id="statusSelect">
+                                    <select v-model="buildingForm.status" class="form-select" @change="onChange()"
+                                        id="statusSelect">
                                         <option value="" disabled selected>Chọn trạng thái</option>
                                         <option value="0">Đang hoạt động</option>
                                         <option value="1">Không hoạt động</option>
@@ -132,7 +146,8 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-label-group">
-                                    <select v-model="buildingForm.building_type" class="form-select" @change="onChange()" id="typeSelect">
+                                    <select v-model="buildingForm.building_type" class="form-select"
+                                        @change="onChange()" id="typeSelect">
                                         <option value="" disabled selected>Chọn loại tòa nhà</option>
                                         <option value="residential">Chung cư</option>
                                         <option value="commercial">Văn phòng</option>
@@ -237,10 +252,13 @@ const handleFileChange = async (event) => {
 
     buildingForm.value.imagePreview = URL.createObjectURL(file)
 
-    console.log(buildingForm.value.imagePreview)
 
     const formData = new FormData()
     formData.append('image', file)
+    formData.append('folder', 'buildings')
+    if (buildingForm.value.image) {
+        formData.append('old_path', buildingForm.value.image)
+    };
 
     try {
         const result = await uploadStore.uploadImage(formData)

@@ -320,6 +320,7 @@ const getFixedFees = () => {
 
 // Tạo hóa đơn
 const createInvoice = async () => {
+  errors.value = {}
   try {
     const allFees = [
       // Phí cố định
@@ -345,7 +346,6 @@ const createInvoice = async () => {
 
     await invoiceStore.createInvoice(data)
     toast.success('Tạo hóa đơn thành công')
-    errors.value = null
     reset()
   } catch (error) {
     errors.value = error.errors
