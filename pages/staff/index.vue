@@ -1,5 +1,5 @@
 <template>
-    <div class="card shadow-sm p-4 m-4">
+    <div class="card shadow-lg p-4 border-0">
         <div v-if="isLoading" class="text-center">
             <div class="spinner-border spinner-border-sm me-2" role="status">
                 <span class="visually-hidden">Đang tải dữ liệu...</span>
@@ -9,7 +9,7 @@
         <div v-else-if="hasError">{{ hasError }}</div>
         <div v-else>
             <div class="d-flex justify-content-between align-items-center mb-3 p-bottom">
-                <h5 class="fw-bold">Danh sách nhân viên</h5>
+                <h5 class="fw-bold text-primary mb-0"><Icon name="ic:baseline-people" size="24" />Danh sách nhân viên</h5>
                 <div class="input-group w-50">
                     <span class="input-group-text">
                         <Icon name="material-symbols:search" />
@@ -37,7 +37,7 @@
                     </thead>
                     <tbody>
                         <tr v-for="(staff, index) in staffStore.staffList" :key="index">
-                            <td>{{ index +1 }}</td>
+                            <td>{{ index + 1 }}</td>
                             <td>{{ staff.name }}</td>
                             <td>{{ staff.email }}</td>
                             <td>
@@ -71,8 +71,7 @@
         </div>
     </div>
 
-
-    <!-- Modal Xóa Căn Hộ -->
+    <!-- Modal Xóa Nhân viên -->
     <div class="modal fade" id="deleteApartmentModal" tabindex="-1">
         <div class="modal-dialog">
             <div class="modal-content">

@@ -1,53 +1,56 @@
 <template>
-    <div class="card shadow-sm p-4 m-4">
-        <!-- Loading / Error -->
-        <div v-if="isLoading" class="text-center py-5">
-            <div class="spinner-border text-primary mb-3" role="status"></div>
-            <p class="text-muted">Đang tải dữ liệu...</p>
+    <div class="card shadow-lg p-4 border-0">
+        <div v-if="isLoading" class="text-center">
+            <div class="spinner-border spinner-border-sm me-2" role="status">
+                <span class="visually-hidden">Đang tải dữ liệu...</span>
+            </div>
+            <p>Đang tải dữ liệu...</p>
         </div>
-        <div v-else-if="hasError" class="alert alert-danger text-center">
-            {{ hasError }}
-        </div>
-
-        <!-- Nội dung chính -->
+        <div v-else-if="hasError">{{ hasError }}</div>
         <div v-else>
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5 class="fw-bold mb-0">📋 Danh sách báo cáo nhân sự ngày</h5>
+                <h5 class="fw-bold text-primary mb-0">
+                    <Icon name="material-symbols:report" size="24" />Danh sách báo cáo nhân sự ngày
+                </h5>
             </div>
 
             <!-- Bộ lọc -->
-            <div class="row g-3 align-items-end mb-4">
-                <div class="col-md-3">
-                    <label class="form-label fw-bold">Tòa nhà</label>
-                    <select v-model="filters.building_id" @change="onFilter" class="form-select">
-                        <option value="" selected>Chọn tòa nhà</option>
-                        <option v-for="building in dashboardStore.getData" :key="building.building_id"
-                            :value="building.building_id">
-                            {{ building.name }}
-                        </option>
-                    </select>
-                </div>
+            <div class="card mb-4 border shadow-sm">
+                <div class="card-body">
+                    <div class="row row-cols-1 row-cols-md-auto g-3 align-items-end">
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">Tòa nhà</label>
+                            <select v-model="filters.building_id" @change="onFilter" class="form-select">
+                                <option value="" selected>Chọn tòa nhà</option>
+                                <option v-for="building in dashboardStore.getData" :key="building.building_id"
+                                    :value="building.building_id">
+                                    {{ building.name }}
+                                </option>
+                            </select>
+                        </div>
 
-                <div class="col-md-3">
-                    <label class="form-label fw-bold">Trạng thái</label>
-                    <select v-model="filters.status" @change="onFilter" class="form-select">
-                        <option value="" selected>Chọn trạng thái</option>
-                        <option value="draft">Kế hoạch</option>
-                        <option value="submitted">Đã cập nhật</option>
-                        <option value="cancelled">Đã hủy</option>
-                    </select>
-                </div>
+                        <div class="col-md-3">
+                            <label class="form-label fw-bold">Trạng thái</label>
+                            <select v-model="filters.status" @change="onFilter" class="form-select">
+                                <option value="" selected>Chọn trạng thái</option>
+                                <option value="draft">Kế hoạch</option>
+                                <option value="submitted">Đã cập nhật</option>
+                                <option value="cancelled">Đã hủy</option>
+                            </select>
+                        </div>
 
-                <div class="col-md-2">
-                    <label class="form-label fw-bold">Từ ngày</label>
-                    <input type="date" v-model="filters.report_date_from" @change="handleDateChange"
-                        class="form-control" />
-                </div>
+                        <div class="col-md-2">
+                            <label class="form-label fw-bold">Từ ngày</label>
+                            <input type="date" v-model="filters.report_date_from" @change="handleDateChange"
+                                class="form-control" />
+                        </div>
 
-                <div class="col-md-2">
-                    <label class="form-label fw-bold">Đến ngày</label>
-                    <input type="date" v-model="filters.report_date_to" @change="handleDateChange"
-                        class="form-control" />
+                        <div class="col-md-2">
+                            <label class="form-label fw-bold">Đến ngày</label>
+                            <input type="date" v-model="filters.report_date_to" @change="handleDateChange"
+                                class="form-control" />
+                        </div>
+                    </div>
                 </div>
             </div>
 

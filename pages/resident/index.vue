@@ -1,6 +1,5 @@
 <template>
-    <div class="card shadow-sm p-4 m-4">
-
+    <div class="card shadow-lg p-4 border-0">
         <div v-if="isLoading" class="text-center">
             <div class="spinner-border spinner-border-sm me-2" role="status">
                 <span class="visually-hidden">Đang tải dữ liệu...</span>

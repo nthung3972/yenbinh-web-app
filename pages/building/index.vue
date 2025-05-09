@@ -1,6 +1,5 @@
 <template>
-  <div class="card shadow-sm p-4 m-4">
-
+  <div class="card shadow-lg p-4 border-0">
     <div v-if="isLoading" class="text-center">
       <div class="spinner-border spinner-border-sm me-2" role="status">
         <span class="visually-hidden">Đang tải dữ liệu...</span>
@@ -10,7 +9,8 @@
     <div v-else-if="hasError">{{ hasError }}</div>
     <div v-else>
       <div class="d-flex justify-content-between align-items-center mb-3 p-bottom">
-        <h5 class="fw-bold">Danh sách tòa nhà</h5>
+  
+        <h5 class="fw-bold text-primary mb-0"><Icon name="mdi:building" size="24" />Danh sách tòa nhà</h5>
         <div class="input-group w-50">
           <span class="input-group-text">
             <Icon name="material-symbols:search" />
@@ -40,11 +40,11 @@
           </thead>
           <tbody>
             <tr v-for="(building, index) in buildingStore.buildingList" :key="index">
-              <td>{{ index +1 }}</td>
+              <td>{{ index + 1 }}</td>
               <td>{{ building.name }}</td>
               <td style="height: 70px;">
-                <img v-if="building.image" :src="building.image" class="building-image rounded"
-                  alt="Hình ảnh tòa nhà" loading="lazy" />
+                <img v-if="building.image" :src="building.image" class="building-image rounded" alt="Hình ảnh tòa nhà"
+                  loading="lazy" />
                 <img v-else src="" alt="">
               </td>
               <td>{{ building.floors }}</td>
@@ -61,7 +61,8 @@
               </td>
               <td class="text-center">
                 <div class="btn-group gap-2">
-                  <NuxtLink :to="`/building/detail/${building.building_id}`" class="btn btn-sm btn-outline-success d-flex align-items-center px-3 py-2">
+                  <NuxtLink :to="`/building/detail/${building.building_id}`"
+                    class="btn btn-sm btn-outline-success d-flex align-items-center px-3 py-2">
                     <Icon name="bxs:detail" size="16" class="me-1" /> Xem
                   </NuxtLink>
                   <NuxtLink :to="`/building/edit/${building.building_id}`"
@@ -95,9 +96,9 @@ const searchKeyword = ref('')
 const { formatVND } = useCurrencyFormat()
 
 const getBuildingType = (type) => {
-    if (type === 'residential') return 'Chung cư'
-    if (type === 'commercial') return 'Văn phòng'
-    if (type === 'mixed') return ''
+  if (type === 'residential') return 'Chung cư'
+  if (type === 'commercial') return 'Văn phòng'
+  if (type === 'mixed') return ''
 }
 
 const isLoading = computed(() => buildingStore.isLoading);
