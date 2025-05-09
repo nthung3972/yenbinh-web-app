@@ -15,8 +15,7 @@ export default defineNuxtConfig({
   modules: ['@pinia/nuxt', '@nuxt/icon'], 
   runtimeConfig: {
     public: {
-      apiUrl: process.env.NUXT_PUBLIC_API_URL || "http://localhost:8000/api/admin",
-      // apiUrl: process.env.NUXT_PUBLIC_API_URL || "https://api.yenbinhmanagement.vn/api/admin",
+      apiUrl: process.env.NUXT_PUBLIC_API_URL || "https://api.yenbinhmanagement.vn/api/admin",
     }
   },
   plugins: [
