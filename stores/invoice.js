@@ -48,9 +48,11 @@ export const useInvoiceStore = defineStore("invoice", {
             this.loading = true;
             try {
                 const response = await InvoiceApi.createInvoice(data);
-                return response.data
+                if (response.data) {
+                    this.error = null
+                    return response.data
+                }
             } catch (error) {
-                console.log(error)
                 if (error.data) {
                     this.error = error.data.general[0]
                 }

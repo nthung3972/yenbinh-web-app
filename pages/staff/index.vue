@@ -26,6 +26,7 @@
                 <table class="table table-hover align-middle" style="table-layout: fixed; width: 100%;">
                     <thead class="table-light sticky-top" style="z-index: 1;">
                         <tr>
+                            <th style="width: 5%;">#</th>
                             <th style="width: 20%;">Tên nhân viên</th>
                             <th style="width: 25%;">Email</th>
                             <th style="width: 10%;">Vai trò</th>
@@ -36,6 +37,7 @@
                     </thead>
                     <tbody>
                         <tr v-for="(staff, index) in staffStore.staffList" :key="index">
+                            <td>{{ index +1 }}</td>
                             <td>{{ staff.name }}</td>
                             <td>{{ staff.email }}</td>
                             <td>

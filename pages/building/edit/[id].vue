@@ -27,7 +27,7 @@
                                 <div class="row">
                                     <div class="col-12">
                                         <div class="image-upload-container" id="imageUploadContainer">
-                                            <input type="file" @change="handleFileChange" accept="image/*" />
+                                            <input type="file" @change="handleFileChange" accept="image/*" @input="onChange()"/>
 
                                             <!-- Hiển thị khi có ảnh preview mới -->
                                             <div v-if="buildingForm.imagePreview" class="current-image-container">
@@ -106,7 +106,7 @@
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-label-group">
-                                        <input v-model="buildingForm.management_board_fee_per_m2" type="number" min="1" @input="onChange()"
+                                        <input v-model="buildingForm.management_board_fee_per_m2" type="number" @input="onChange()"
                                             class="form-control" id="floorsInput" placeholder=" ">
                                         <label for="floorsInput">Thù lao Ban quản trị<span
                                                 class="required-mark">*</span></label>
@@ -272,6 +272,10 @@ const handleFileChange = async (event) => {
 
     const formData = new FormData()
     formData.append('image', file)
+    formData.append('folder', 'buildings')
+    if (buildingForm.value.image) {
+        formData.append('old_path', buildingForm.value.image)
+    }; 
 
     try {
         isLoading.value = true
@@ -289,7 +293,7 @@ const updateBuilding = async () => {
     try {
         await buildingStore.updateBuilding(buildingId, buildingForm.value)
         toast.success('Sửa thông tin thành công!')
-        setEditing(true)
+        setEditing(false)
         errors.value = null
         router.push('/building')
     } catch (error) {

@@ -65,6 +65,7 @@
             <table class="table table-hover align-middle" style="table-layout: fixed; width: 100%;">
                 <thead class="table-light sticky-top" style="z-index: 1;">
                     <tr>
+                        <th style="width: 5%;">#</th>
                         <th style="width: 15%;">Biển số xe</th>
                         <th style="width: 13%;">Loại xe</th>
                         <th style="width: 10%;">Vị trí đỗ</th>
@@ -76,6 +77,7 @@
                 </thead>
                 <tbody>
                     <tr v-for="(vehicle, index) in vehicleStore.vehicleList" :key="index">
+                        <td>{{ index + 1 }}</td>
                         <td>{{ vehicle.license_plate }}</td>
                         <td>{{ vehicle.vehicle_type?.vehicle_type_name }}</td>
                         <td>{{ vehicle.parking_slot ?? '----' }}</td>
@@ -89,28 +91,33 @@
                             </span>
                         </td>
                         <td>{{ vehicle.updated_by?.name ?? '----' }}</td>
-                        <td class="text-center">
-                            <div class="btn-group gap-2">
-                                <NuxtLink :to="`/vehicle/detail/${vehicle.vehicle_id}`"
-                                    class="btn btn-sm btn-outline-success d-flex align-items-center px-3 py-2">
-                                    <Icon name="bxs:detail" size="16" class="me-1" /> Xem
-                                </NuxtLink>
-                                
-                                <NuxtLink :to="`/vehicle/edit/${vehicle.vehicle_id}`"
-                                    class="btn btn-sm btn-outline-warning d-flex align-items-center px-3 py-2">
-                                    <Icon name="basil:edit-solid" size="16" class="me-1" /> Sửa
-                                </NuxtLink>
 
-                                <button v-if="authStore.isAdmin" type="button" class="btn btn-sm btn-outline-danger d-flex align-items-center px-3 py-2"
-                                    @click="setSelectedVehicle(vehicle.vehicle_id)">
-                                    <Icon name="material-symbols:delete-outline" size="16" class="me-1" /> Xóa
-                                </button>
-                            </div>
+                        <td class="text-center">
+                            <ActionDropdown buttonText="Thao tác" iconName="bx:chevron-down">
+                                <template #default="{ closeDropdown }">
+                                    <DropdownItem tag="NuxtLink" :to="`/vehicle/detail/${vehicle.vehicle_id}`"
+                                        iconName="bxs:detail">
+                                        Xem
+                                    </DropdownItem>
+
+                                    <DropdownItem tag="NuxtLink" :to="`/vehicle/edit/${vehicle.vehicle_id}`"
+                                        iconName="bxs:edit-alt">
+                                        Sửa
+                                    </DropdownItem>
+
+                                    <DropdownItem v-if="authStore.isAdmin" iconName="material-symbols:delete-outline"
+                                        :onClick="() => setSelectedVehicle(vehicle.vehicle_id)"
+                                        :onClose="closeDropdown">
+                                        Xóa
+                                    </DropdownItem>
+                                </template>
+                            </ActionDropdown>
                         </td>
                     </tr>
                 </tbody>
             </table>
-            <Pagination :pagination="vehicleStore.pagination" @page-change="handlePageChange" @rows-per-page-change="rowsPerPageChange"/>
+            <Pagination :pagination="vehicleStore.pagination" @page-change="handlePageChange"
+                @rows-per-page-change="rowsPerPageChange" />
         </div>
     </div>
 
@@ -125,6 +132,8 @@ import { useAuthStore } from '@/stores/auth'
 import Pagination from '@/components/pagination/Pagination.vue'
 import ConfirmModal from '@/components/modal/ConfirmModal.vue'
 import { useToast } from 'vue-toastification'
+import ActionDropdown from '@/components/dropdown/actionDropdown.vue'
+import DropdownItem from '@/components/dropdown/dropdownItem.vue'
 
 definePageMeta({
     middleware: "auth",
