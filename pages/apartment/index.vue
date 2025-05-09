@@ -71,6 +71,7 @@
                 <table class="table table-hover align-middle" style="table-layout: fixed; width: 100%;">
                     <thead class="table-light sticky-top" style="z-index: 1;">
                         <tr>
+                            <th style="width: 5%;">#</th>
                             <th style="width: 10%;">Mã căn hộ</th>
                             <th style="width: 15%;">Loại căn hộ</th>
                             <th style="width: 15%;">Diện tích(m²)</th>
@@ -82,6 +83,7 @@
                     </thead>
                     <tbody>
                         <tr v-for="(apartment, index) in apartmentStore.apartmentsWithStatus" :key="index">
+                            <td>{{ index + 1 }}</td>
                             <td>{{ apartment.apartment_number }}</td>
                             <td>{{ getApartmentTypeLabel(apartment.ownership_type) }}</td>
                             <td>{{ apartment.area }}</td>
@@ -95,23 +97,23 @@
                                 </span>
                             </td>
                             <td>{{ apartment.updated_by?.name ?? '---' }}</td>
+                            
+
                             <td class="text-center">
-                                <div class="btn-group gap-2">
-                                    <NuxtLink :to="`/apartment/detail/${apartment.apartment_id}`"
-                                        class="btn btn-sm btn-outline-success d-flex align-items-center">
-                                        <Icon name="bxs:detail" size="16" class="me-1" /> Xem
-                                    </NuxtLink>
-                                    <NuxtLink :to="`/apartment/${apartment.apartment_id}/edit`"
-                                        class="btn btn-sm btn-outline-warning d-flex align-items-center">
-                                        <Icon name="basil:edit-solid" size="16" class="me-1" /> Sửa
-                                    </NuxtLink>
-                                    <!-- <NuxtLink v-if="authStore.isAdmin"
-                                        :to="`/apartment/detail/${apartment.apartment_id}`"
-                                        class="btn btn-sm btn-outline-danger d-flex align-items-center">
-                                        <Icon name="material-symbols:delete-outline" size="16" class="me-1" /> Xóa
-                                    </NuxtLink> -->
-                                </div>
-                            </td>
+                            <ActionDropdown buttonText="Thao tác" iconName="bx:chevron-down">
+                                <template #default="{ closeDropdown }">
+                                    <DropdownItem tag="NuxtLink" :to="`/apartment/detail/${apartment.apartment_id}`"
+                                        iconName="bxs:detail">
+                                        Xem
+                                    </DropdownItem>
+
+                                    <DropdownItem tag="NuxtLink" :to="`/apartment/${apartment.apartment_id}/edit`"
+                                        iconName="bxs:edit-alt">
+                                        Sửa
+                                    </DropdownItem>
+                                </template>
+                            </ActionDropdown>
+                        </td>
                         </tr>
                     </tbody>
                 </table>
@@ -128,6 +130,8 @@ import { onMounted } from 'vue';
 import { useApartmentStore } from '@/stores/apartment'
 import { useAuthStore } from '@/stores/auth'
 import Pagination from '@/components/pagination/Pagination.vue'
+import ActionDropdown from '@/components/dropdown/actionDropdown.vue'
+import DropdownItem from '@/components/dropdown/dropdownItem.vue'
 
 definePageMeta({
     middleware: "auth",

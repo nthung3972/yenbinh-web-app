@@ -27,6 +27,7 @@
         <table class="table table-hover align-middle" style="table-layout: fixed; width: 100%;">
           <thead class="table-light sticky-top" style="z-index: 1;">
             <tr>
+              <th style="width: 5%;">#</th>
               <th style="width: 20%;">Tên tòa nhà</th>
               <th style="width: 15%;">Hình ảnh</th>
               <th style="width: 10%;">Số tầng</th>
@@ -39,6 +40,7 @@
           </thead>
           <tbody>
             <tr v-for="(building, index) in buildingStore.buildingList" :key="index">
+              <td>{{ index +1 }}</td>
               <td>{{ building.name }}</td>
               <td style="height: 70px;">
                 <img v-if="building.image" :src="building.image" class="building-image rounded"

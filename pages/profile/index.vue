@@ -131,13 +131,15 @@ const handleAvatarChange = async (event) => {
         const formData = new FormData();
 
         formData.append('image', file); 
+        formData.append('folder', 'users'); 
         if (profileForm.value.avatar) {
-            formData.append('old_avatar', profileForm.value.avatar);
+            formData.append('old_path', profileForm.value.avatar);
         }
 
         try {
             const result = await uploadStore.uploadImage(formData)
             if(result) {
+                console.log('result.path:', result.path)
                 profileForm.value.avatar = result.path
                 userStore.setAvatar(result.path)
             }

@@ -1,0 +1,100 @@
+/* assets/css/action-dropdown.css */
+.action-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.action-dropdown .dropdown-menu {
+    min-width: 160px;
+    position: absolute;
+    right: 0;
+    left: auto;
+    /* Tăng z-index để đảm bảo hiển thị trên các phần tử khác */
+    display: none;
+    float: left;
+    padding: 0.5rem 0;
+    margin: 0.125rem 0 0;
+    font-size: 0.875rem;
+    color: #212529;
+    text-align: left;
+    list-style: none;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid rgba(0, 0, 0, 0.15);
+    border-radius: 0.25rem;
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.175);
+    transform: translateZ(0);
+    /* Tạo stacking context mới */
+}
+
+.action-dropdown .dropdown-menu.show {
+    display: block;
+}
+
+.action-dropdown .dropdown-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 0.5rem 1.5rem;
+    clear: both;
+    font-weight: 400;
+    color: #212529;
+    text-align: inherit;
+    white-space: nowrap;
+    background-color: transparent;
+    border: 0;
+    text-decoration: none;
+}
+
+.action-dropdown .dropdown-item:hover,
+.action-dropdown .dropdown-item:focus {
+    color: #16181b;
+    text-decoration: none;
+    background-color: #f8f9fa;
+}
+
+.action-dropdown .dropdown-item.disabled {
+    color: #6c757d;
+    pointer-events: none;
+    background-color: transparent;
+    cursor: not-allowed;
+    opacity: 0.65;
+}
+
+.action-dropdown .dropdown-item:active {
+    color: #fff;
+    text-decoration: none;
+    background-color: #0d6efd;
+}
+
+/* Nút toggle dropdown */
+.action-btn {
+    background-color: #f8f9fa;
+    border: 1px solid #dee2e6;
+    color: #495057;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 120px;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+    border-radius: 0.2rem;
+}
+
+.action-btn:hover {
+    background-color: #e9ecef;
+}
+
+/* Style cho icons trong dropdown */
+.dropdown-item i,
+.dropdown-item svg {
+    margin-right: 0.5rem;
+}
+
+/* Separator giữa các items (nếu cần) */
+.dropdown-divider {
+    height: 0;
+    margin: 0.5rem 0;
+    overflow: hidden;
+    border-top: 1px solid #e9ecef;
+}

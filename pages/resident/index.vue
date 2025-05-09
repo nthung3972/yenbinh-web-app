@@ -38,6 +38,7 @@
             <table class="table table-hover align-middle" style="table-layout: fixed; width: 100%;">
                 <thead class="table-light sticky-top" style="z-index: 1;">
                     <tr>
+                        <th style="width: 5%;">#</th>
                         <th style="width: 15%;">Họ và tên</th>
                         <th style="width: 15%;">Số CCCD</th>
                         <th style="width: 12%;">Điện thoại</th>
@@ -48,22 +49,27 @@
                 </thead>
                 <tbody>
                     <tr v-for="(resident, index) in useResident.residentList" :key="index">
+                        <td>{{ index + 1 }}</td>
                         <td>{{ resident.full_name }}</td>
                         <td>{{ resident.id_card_number ?? '---' }}</td>
                         <td>{{ resident.phone_number ?? '---' }}</td>
                         <td>{{ resident.email ?? '---' }}</td>
                         <td>{{ resident.updated_by?.name ?? '---' }}</td>
+
                         <td class="text-center">
-                            <div class="btn-group gap-2">
-                                <NuxtLink :to="`/resident/detail/${resident.resident_id}`"
-                                    class="btn btn-sm btn-outline-success d-flex align-items-center px-3 py-2">
-                                    <Icon name="bxs:detail" size="16" class="me-1" /> Xem
-                                </NuxtLink>
-                                <NuxtLink :to="`/resident/${resident.resident_id}/edit`"
-                                    class="btn btn-sm btn-outline-warning d-flex align-items-center px-3 py-2">
-                                    <Icon name="basil:edit-solid" size="16" class="me-1" /> Sửa
-                                </NuxtLink>
-                            </div>
+                            <ActionDropdown buttonText="Thao tác" iconName="bx:chevron-down">
+                                <template #default="{ closeDropdown }">
+                                    <DropdownItem tag="NuxtLink" :to="`/resident/detail/${resident.resident_id}`"
+                                        iconName="bxs:detail">
+                                        Xem
+                                    </DropdownItem>
+
+                                    <DropdownItem tag="NuxtLink" :to="`/resident/${resident.resident_id}/edit`"
+                                        iconName="bxs:edit-alt">
+                                        Sửa
+                                    </DropdownItem>
+                                </template>
+                            </ActionDropdown>
                         </td>
                     </tr>
                 </tbody>
@@ -77,6 +83,8 @@
 import { onMounted } from 'vue';
 import { useResidentStore } from '@/stores/resident'
 import Pagination from '@/components/pagination/Pagination.vue'
+import ActionDropdown from '@/components/dropdown/actionDropdown.vue'
+import DropdownItem from '@/components/dropdown/dropdownItem.vue'
 
 definePageMeta({
     middleware: "auth",

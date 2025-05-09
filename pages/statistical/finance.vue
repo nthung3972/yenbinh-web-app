@@ -109,6 +109,7 @@
         <table class="table table-striped">
           <thead>
             <tr>
+              <th style="width: 5%;">#</th>
               <th>Tòa nhà</th>
               <th>Căn hộ</th>
               <th>Tổng công nợ</th>
@@ -118,6 +119,7 @@
           </thead>
           <tbody>
             <tr v-for="(debt, index) in debtStore.debts.invoices" :key="index">
+              <td>{{ index + 1 }}</td>
               <td>{{ debt.building_name }}</td>
               <td> {{ debt.apartment_number }}</td>
               <td>{{ formatCurrency(debt.remaining_balance) }}</td>

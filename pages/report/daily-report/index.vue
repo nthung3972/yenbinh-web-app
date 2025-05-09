@@ -46,6 +46,7 @@
                 <table class="table table-hover align-middle" style="table-layout: fixed; width: 100%;">
                     <thead class="table-light sticky-top" style="z-index: 1;">
                         <tr>
+                            <th style="width: 5%;">Tòa nhà</th>
                             <th style="width: 23%;">Tòa nhà</th>
                             <th style="width: 23%;">Nội dung</th>
                             <th style="width: 10%;">Ca trực</th>
@@ -56,6 +57,7 @@
                     </thead>
                     <tbody>
                         <tr v-for="(report, index) in reportStore.dailyReports" :key="index">
+                            <td>{{ index + 1 }}</td>
                             <td>{{ report.building_name }}</td>
                             <td>{{ report.notes }}</td>
                             <td>{{ report.shift_count }}</td>
