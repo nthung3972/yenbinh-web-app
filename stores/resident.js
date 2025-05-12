@@ -18,15 +18,16 @@ export const useResidentStore = defineStore("resident", {
     }),
 
     actions: {
-        async fetchResidentList(page, perPage, keyword) {
+        async fetchResidentList(page, perPage, keyword, status) {
             const dashboardStore = useDashboardStore();
             const building_id = dashboardStore.getSelectedBuildingId;
 
             this.loading = true;
             try {
-                const response = await ResidentApi.getListResident(building_id, page, perPage, keyword);
+                const response = await ResidentApi.getListResident(building_id, page, perPage, keyword, status);
                 if (response) {
                     this.residentList = response.data.data.data.data;
+                    // console.log(this.residentList);
                     this.pagination = {
                         current_page: response.data.data.data.current_page,
                         per_page: response.data.data.data.per_page,
@@ -60,7 +61,7 @@ export const useResidentStore = defineStore("resident", {
             try {
                 const response = await ResidentApi.edit(id);
                 if(response.data) {
-                    this.resident = response.data.data.data[0]
+                    this.resident = response.data.data.data
                 }
                 this.error = null;
             }catch (error) {

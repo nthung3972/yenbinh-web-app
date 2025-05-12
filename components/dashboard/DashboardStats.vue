@@ -137,9 +137,9 @@ const processedData = computed(() => {
 </script>
 
 <style>
-.card {
+/* .card {
   border-left: 5px solid #4cc9f0;
-}
+} */
 
 .pt-20 {
   padding-top: 20px;

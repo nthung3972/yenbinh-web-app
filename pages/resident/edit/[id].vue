@@ -111,7 +111,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="(apartment, index) in residentForm.apartments" :key="index">
+                                    <tr v-for="(apartment, index) in residentForm.current_apartments" :key="index">
                                         <td>{{ apartment.apartment_number }}</td>
                                         <td>Tầng {{ apartment.floor_number }}</td>
                                         <td>{{ apartment.area }}</td>
@@ -185,7 +185,7 @@ const residentForm = ref({
     phone_number: '',
     email: '',
     created_at: '',
-    apartments: []
+    current_apartments: []
 });
 
 const leaveForm = ref({
@@ -232,8 +232,10 @@ const openAddModal = () => {
 }
 
 const loadResident = async () => {
+    console.log(resident_id);
     await useResident.fetchResident(resident_id);
     residentForm.value = { ...useResident.resident };
+    console.log(residentForm.value);
 }
 
 const updateResident = async () => {
