@@ -140,7 +140,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="apartment in useResident.resident.apartments" :key="apartment.id">
+                                    <tr v-for="apartment in useResident.resident.current_apartments" :key="apartment.id">
                                         <td>{{ apartment.apartment_number }}</td>
                                         <td>{{ apartment.floor_number }}</td>
                                         <td>{{ apartment.area }} m²</td>

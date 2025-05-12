@@ -67,9 +67,15 @@ export const useApartmentStore = defineStore("apartment", {
             this.loading = true;
             try {
                 const response = await ApartmentApi.edit(id);
-                if (response.data.data) {
-                    this.apartment = response.data.data[0]
-                }
+                const data = response.data.data.map(apartment => {
+                    const hasResident = Array.isArray(apartment.residents) && apartment.residents.length > 0;
+                    return {
+                        ...apartment,
+                        status: hasResident ? 'occupied' : 'vacant'
+                    };
+                });
+                this.apartment = data[0];
+                console.log("Căn hộ chi tiết:", this.apartment);
             } catch (error) {
                 console.error("Lỗi khi lấy thông tin căn hộ:", error);
                 this.error = "Đã xảy ra lỗi khi lấy thông tin căn hộ!";
@@ -100,14 +106,14 @@ export const useApartmentStore = defineStore("apartment", {
                     return response.data.data.data
                 }
                 this.error = null
-            }catch (error) {
+            } catch (error) {
                 console.error("Lỗi khi cập nhật căn hộ:", error);
                 this.error = "Đã xảy ra lỗi khi cập nhật căn hộ!";
                 throw error;
             } finally {
                 this.loading = false;
             }
-        }, 
+        },
 
         async getResidentsByApartment(code) {
             this.loading = true
@@ -131,7 +137,7 @@ export const useApartmentStore = defineStore("apartment", {
         apartmentsWithStatus: (state) => {
             return state.apartmentList.map(apartment => ({
                 ...apartment,
-                status: apartment.residents[0]?.full_name ? 'occupied' : 'vacant'
+                status: apartment.current_residents[0]?.full_name ? 'occupied' : 'vacant'
             }));
         },
         isLoading: (state) => state.loading,

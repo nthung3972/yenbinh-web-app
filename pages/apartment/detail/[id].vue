@@ -28,13 +28,30 @@
                                     <strong> Số căn hộ:</strong> {{ useApartment.apartment.apartment_number }}
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <strong> Diện tích:</strong> {{ useApartment.apartment.area }} m²
+                                    <strong>Trạng thái:</strong>
+                                        <span :class="[
+                                            'badge rounded-pill px-3 py-2 ms-2',
+                                            useApartment.apartment.status === 'occupied'
+                                            ? 'bg-success-subtle text-success'
+                                            : 'bg-secondary-subtle text-muted'
+                                        ]">
+                                            {{ useApartment.apartment.status === 'occupied' ? 'Đang sử dụng' : 'Căn hộ trống' }}
+                                        </span>   
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <strong> Tầng:</strong> {{ useApartment.apartment.floor_number }}
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <strong> Loại căn hộ:</strong> {{ useApartment.apartment.ownership_type }}
+                                    <strong> Diện tích:</strong> {{ useApartment.apartment.area }} m²
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <strong> Loại căn hộ:</strong> {{ getApartmentTypeLabel(useApartment.apartment.apartment_type) }}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <strong> Loại sở hữu:</strong> {{ getOwnershipTypeLabel(useApartment.apartment.ownership_type) }}
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <strong> Ghi chú:</strong> {{ useApartment.apartment.notes ?? 'Không có ghi chú' }}
                                 </div>
                             </div>
                         </div>
@@ -52,7 +69,7 @@
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-hover">
-                                    <thead class="table-light sticky-top">
+                                    <thead class="table-primary sticky-top">
                                         <tr>
                                             <th>Họ tên</th>
                                             <!-- <th>CMND/CCCD</th> -->
@@ -190,6 +207,33 @@ const formatDate = (date) => {
         year: 'numeric'
     })
 }
+
+const getApartmentTypeLabel = (type) => {
+    const labels = {
+        'studio': 'Phòng thu',
+        '1bedroom': '1 Phòng ngủ',
+        '2bedroom': '2 Phòng ngủ',
+        '3bedroom': '3 Phòng ngủ',
+        'dualkey': 'Căn hộ song lập',
+        'penthouse': 'Căn hộ áp mái',
+        'duplex': 'Căn hộ thông tầng',
+    }
+
+    return labels[type] || 'Không xác định'
+}
+
+const getOwnershipTypeLabel = (type) => {
+    const labels = {
+        'own': 'Sở hữu',
+        'lease': 'Cho thuê',
+        'lease_back': 'Cho thuê lại',
+        'mortgage': 'Thế chấp',
+        'shared_ownership': 'Sở hữu chung',
+    }
+
+    return labels[type] || 'Không xác định'
+}
+
 
 const goBack = () => {
     router.back()

@@ -6,10 +6,11 @@
         <p>Đang tạo căn hộ...</p>
     </div>
 
-    <div v-else class="container form-container animate-fade">
-        <div class="d-flex justify-content-between align-items-center mb-4">
+    <div v-else class="container-fluid form-container animate-fade">
+        <div class="card">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
                 <h4 class="fw-bold text-primary">
-                    <Icon name="mdi:receipt-text" size="24" class="me-2" />
+                    <Icon name="ion:home" size="24" class="me-2" />
                     Thêm căn hộ
                 </h4>
                 <button class="btn btn-outline-secondary" @click="goBack()">
@@ -17,13 +18,14 @@
                     Quay lại
                 </button>
             </div>
-        <div class="card">
             <div class="card-body">
                 <form @submit.prevent="handleSubmit">
                     <div class="form-section">
-                        <h5 class="section-title"><i class="fas fa-info-circle me-2"></i>Thông tin căn hộ</h5>
+                        <h5 class="section-title">
+                            <Icon name="mdi:information" size="20" class="me-2" />Thông tin căn hộ
+                        </h5>
                         <div class="row g-3">
-                            <div class="col-md-6">
+                            <div class="col-md-12">
                                 <div class="form-label-group">
                                     <input v-model="apartment.apartment_number" type="text" class="form-control"
                                         @input="onChange()" id="apartmentNumber" placeholder=" ">
@@ -34,6 +36,9 @@
                                     </small>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="row g-3 mt-2">
                             <div class="col-md-6">
                                 <div class="form-label-group">
                                     <input v-model="apartment.floor_number" type="number" min="1" class="form-control"
@@ -44,13 +49,10 @@
                                     </small>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="row g-3 mt-2">
                             <div class="col-md-6">
                                 <div class="form-label-group input-with-unit">
-                                    <input v-model="apartment.area" type="number" min="1" step="0.01" @input="onChange()"
-                                        class="form-control" id="areaInput" placeholder=" ">
+                                    <input v-model="apartment.area" type="number" min="1" step="0.01"
+                                        @input="onChange()" class="form-control" id="areaInput" placeholder=" ">
                                     <span class="input-unit">m²</span>
                                     <label for="areaInput">Diện tích<span class="required-mark">*</span></label>
                                     <small v-if="errors?.['area']" class="text-danger">
@@ -58,21 +60,54 @@
                                     </small>
                                 </div>
                             </div>
+                        </div>
+
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-6">
+                                <div class="form-label-group">
+                                    <select v-model="apartment.apartment_type" class="form-select" id="typeSelect"
+                                        @change="onChange()">
+                                        <option value="" disabled selected>Chọn loại căn hộ</option>
+                                        <option value="studio">Căn hộ studio</option>
+                                        <option value="1bedroom">1 Phòng ngủ</option>
+                                        <option value="2bedroom">2 Phòng ngủ</option>
+                                        <option value="3bedroom">3 Phòng ngủ</option>
+                                        <option value="duplex">Căn hộ thông tầng</option>
+                                        <option value="penthouse">Căn hộ áp mái</option>
+                                        <option value="dualkey">Căn hộ song lập</option>
+                                    </select>
+                                    <label for="typeSelect">Loại căn hộ<span class="required-mark"></span></label>
+                                    <small v-if="errors?.['apartment_type']" class="text-danger">
+                                        {{ errors?.['apartment_type'][0] }}
+                                    </small>
+                                </div>
+                            </div>
+
                             <div class="col-md-6">
                                 <div class="form-label-group">
                                     <select v-model="apartment.ownership_type" class="form-select" id="typeSelect"
                                         @change="onChange()">
-                                        <option value="" disabled selected>Chọn loại căn hộ</option>
-                                        <option value="studio">Studio</option>
-                                        <option value="2bedroom">1 Phòng ngủ</option>
-                                        <option value="3bedroom">2 Phòng ngủ</option>
-                                        <option value="4bedroom">3 Phòng ngủ</option>
-                                        <option value="penthouse">Penthouse</option>
-                                        <option value="duplex">Duplex</option>
+                                        <option value="" disabled selected>Chọn loại sở hữu</option>
+                                        <option value="own">Sở hữu</option>
+                                        <option value="lease">Thuê</option>
+                                        <option value="lease_back">Thuê lại</option>
+                                        <option value="mortgage">Thế chấp</option>
+                                        <option value="shared_ownership">Sở hữu chung</option>
                                     </select>
-                                    <label for="typeSelect">Loại căn hộ<span class="required-mark">*</span></label>
+                                    <label for="typeSelect">Loại sở hữu<span class="required-mark"></span></label>
                                     <small v-if="errors?.['ownership_type']" class="text-danger">
                                         {{ errors?.['ownership_type'][0] }}
+                                    </small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="form-label-group">
+                                    <input v-model="apartment.notes" type="text" class="form-control"
+                                        @input="onChange()" id="notes" placeholder=" ">
+                                    <label for="apartmentNumber">Ghi chú<span class="required-mark"></span></label>
+                                    <small v-if="errors?.['notes']" class="text-danger">
+                                        {{ errors?.['notes'][0] }}
                                     </small>
                                 </div>
                             </div>
@@ -80,9 +115,11 @@
                     </div>
 
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                        <button type="button" class="btn btn-secondary" @click="reset()">Làm mới</button>
+                        <button type="button" class="btn btn-secondary" @click="reset()">
+                            <Icon name="bx:reset" size="20" class="me-2" />Làm mới
+                        </button>
                         <button type="submit" class="btn btn-primary px-4">
-                            <i class="fas fa-save me-1"></i> Thêm căn hộ
+                            <Icon name="lsicon:submit-filled" size="20" class="me-2" /> Thêm căn hộ
                         </button>
                     </div>
                 </form>
@@ -116,14 +153,18 @@ const apartment = ref({
     apartment_number: '',
     floor_number: '',
     area: '',
-    ownership_type: ''
+    apartment_type: '',
+    ownership_type: '',
+    notes: ''
 })
 
 const reset = () => {
     apartment.value.apartment_number = '',
-    apartment.value.floor_number = '',
-    apartment.value.area = '',
-    apartment.value.ownership_type = '',
+        apartment.value.floor_number = '',
+        apartment.value.area = '',
+        apartment.value.ownership_type = '',
+        apartment.value.apartment_type = '',
+        apartment.value.notes = ''
     errors.value = ''
     setEditing(false)
 }
@@ -147,6 +188,7 @@ const goBack = () => {
 }
 
 const handleSubmit = async () => {
+    console.log("Submitting form...", apartment.value)
     isLoading.value = true
     try {
         const result = await apartmentStore.createApartment(apartment.value)
@@ -170,8 +212,8 @@ onMounted(() => {
 
 <style scoped>
 .form-container {
-    max-width: 1140px;
-    margin: 2rem auto;
+    width: 100%;
+    margin: 1rem auto;
 }
 
 .card {
@@ -182,13 +224,11 @@ onMounted(() => {
 }
 
 .card-header {
-    background: linear-gradient(45deg, #4e73df, #224abe);
     padding: 1.5rem;
-    border-bottom: none;
 }
 
 .card-body {
-    padding: 2rem;
+    padding: 1rem;
 }
 
 .form-label {
