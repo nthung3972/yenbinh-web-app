@@ -10,9 +10,9 @@
         <div v-else>
             <div class="d-flex justify-content-between align-items-center mb-4 border-bottom pb-2">
                 <!-- <h5 class="fw-bold text-primary mb-0">Danh Sách Căn Hộ</h5> -->
-                <h5 class="fw-bold text-primary mb-0">
-                    <Icon name="ic:baseline-people" size="24" class="me-2" /> Danh sách cư dân
-                </h5>
+                <h4 class="fw-bold text-primary mb-0">
+                    <Icon name="ic:baseline-people" size="28" class="me-2" /> Danh sách cư dân
+                </h4>
 
                 <div class="d-flex align-items-center gap-3">
                     <!-- Ô tìm kiếm -->
@@ -64,13 +64,13 @@
                 <thead class="table-primary sticky-top" style="z-index: 1;">
                     <tr>
                         <th style="width: 5%;">#</th>
-                        <th style="width: 15%;">Họ và tên</th>
-                        <th style="width: 15%;">Số CCCD</th>
-                        <th style="width: 12%;">Điện thoại</th>
+                        <th style="width: 20%;">Họ và tên</th>
+                        <th style="width: 10%;">Số CCCD</th>
+                        <th style="width: 10%;">Điện thoại</th>
                         <th style="width: 20%;">Email</th>
                         <!-- <th style="width: 20%;">Trạng thái</th> -->
                         <th style="width: 15%;">Cập nhật bởi</th>
-                        <th style="width: 23%; text-align: center;">Hành động</th>
+                        <th style="width: 20%; text-align: center;">Hành động</th>
                     </tr>
                 </thead>
                 <tbody>

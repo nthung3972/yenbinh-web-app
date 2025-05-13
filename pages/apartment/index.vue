@@ -11,9 +11,9 @@
 
         <div v-else>
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h5 class="fw-bold text-primary mb-0">
-                    <Icon name="ion:home" size="24" class="me-2" /> Danh sách căn hộ
-                </h5>
+                <h4 class="fw-bold text-primary mb-0">
+                    <Icon name="ion:home" size="28" class="me-2" /> Danh sách căn hộ
+                </h4>
 
                 <div class="d-flex align-items-center gap-3">
                     <div class="input-group">

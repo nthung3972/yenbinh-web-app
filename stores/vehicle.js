@@ -19,13 +19,13 @@ export const useVehicleStore = defineStore("vehicle", {
     }),
 
     actions: {
-        async fetchVehicleList(page, perPage, keyword, vehicle_type, status) {
+        async fetchVehicleList(page, perPage, keyword, vehicle_type_id, status) {
             const dashboardStore = useDashboardStore();
             const building_id = dashboardStore.getSelectedBuildingId;
 
             this.loading = true;
             try {
-                const response = await VehicleApi.getListVehicle(building_id, page, perPage, keyword, vehicle_type, status);
+                const response = await VehicleApi.getListVehicle(building_id, page, perPage, keyword, vehicle_type_id, status);
                 if (response.data && response.data.data) {
                     this.vehicleList = response.data?.data?.data?.data
                     this.pagination = {
