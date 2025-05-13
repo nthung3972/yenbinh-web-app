@@ -64,7 +64,10 @@
                 <div class="col-12">
                     <div class="card shadow">
                         <div class="card-header bg-white">
-                            <h5 class="mb-0">Danh sách cư dân trong căn hộ</h5>
+                            <h5 class="fw-bold text-primary">
+                                <Icon name="ep:list" size="20" class="me-1" />
+                                Danh sách cư dân
+                            </h5>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
@@ -78,7 +81,7 @@
                                             <th>Vai trò</th>
                                             <th>Ngày đăng ký</th>
                                             <th>Trạng thái</th>
-                                            <!-- <th>Ngày chuyển đi</th> -->
+                                            <th>Ngày chuyển đi</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -89,26 +92,29 @@
                                             <td>{{ resident.phone_number ?? '———'}}</td>
                                             <td>
                                                 <span :class="{
-                                                    'badge bg-success': resident.pivot.role_in_apartment === 0,
-                                                    'badge bg-info': resident.pivot.role_in_apartment === 1,
-                                                    'badge bg-warning text-dark': resident.pivot.role_in_apartment === 2
+                                                    'badge bg-primary': resident.pivot.role_in_apartment === 0,
+                                                    'badge bg-warning': resident.pivot.role_in_apartment === 1,
+                                                    'badge bg-info': resident.pivot.role_in_apartment === 2,
+                                                    'badge bg-success': resident.pivot.role_in_apartment === 3,
                                                 }">
                                                     {{
                                                         resident.pivot.role_in_apartment === 0
                                                             ? 'Chủ căn hộ'
                                                             : resident.pivot.role_in_apartment === 1
-                                                                ? 'Người thuê'
+                                                                ? 'Người thuê chính'
                                                                 : resident.pivot.role_in_apartment === 2
                                                                     ? 'Người thân'
-                                                                    : '----'
+                                                                    : resident.pivot.role_in_apartment === 3
+                                                                        ? 'Người thuê'
+                                                                        : '———'
                                                     }}
                                                 </span>
                                             </td>
                                             <td>{{ formatDate(resident.pivot?.registration_date) }}</td>
                                             <td>
                                                 <span class="badge" :class="{
-                                                    'bg-success': resident.pivot?.registration_status === '0',
-                                                    'bg-secondary': resident.pivot?.registration_status === '1'
+                                                    'bg-primary': resident.pivot?.registration_status === 0,
+                                                    'bg-secondary': resident.pivot?.registration_status === 1
                                                 }">
                                                     {{
                                                         resident.pivot?.registration_status === 0
@@ -119,12 +125,12 @@
                                                     }}
                                                 </span>
                                             </td>
-                                            <!-- <td>
+                                            <td>
                                                 {{ resident.pivot.move_out_date ?
                                                     formatDate(resident.pivot.move_out_date) :
                                                     '———'
                                                 }}
-                                            </td> -->
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>

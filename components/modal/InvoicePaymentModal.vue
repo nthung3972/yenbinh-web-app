@@ -1,59 +1,59 @@
 <template>
     <!-- <Teleport to="body"> -->
-        <div v-if="modelValue && invoice" class="modal-overlay">
-            <div v-if="isLoading" class="text-center">
-                <div class="spinner-border spinner-border-sm me-2" role="status">
-                    <span class="visually-hidden">Đang tải dữ liệu...</span>
-                </div>
-                <p>Đang tải dữ liệu...</p>
+    <div v-if="modelValue && invoice" class="modal-overlay">
+        <div v-if="isLoading" class="text-center">
+            <div class="spinner-border spinner-border-sm me-2" role="status">
+                <span class="visually-hidden">Đang tải dữ liệu...</span>
             </div>
-            <div v-else class="modal-container">
-                <form @submit.prevent="handleSubmit" novalidate>
-                    <div class="modal-header">
-                        <h3 class="modal-title">Thêm Thanh Toán</h3>
-                        <button class="close-btn" type="button" @click="close">×</button>
-                    </div>
-
-                    <div class="modal-body">
-                        <div class="form-group">
-                            <label>Số tiền thanh toán</label>
-                            <input v-model.number="form.amount" type="number" min="0" required/>
-                            <span v-if="error?.amount" class="error-message">{{ error.amount[0] }}</span>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Ngày thanh toán</label>
-                            <input v-model="form.payment_date" type="date" required/>
-                            <span v-if="error?.payment_date" class="error-message">{{ error.payment_date[0] }}</span>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Phương thức thanh toán</label>
-                            <select id="payment_method" v-model="form.payment_method" required
-                                class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
-                                <option value="">Chọn phương thức</option>
-                                <option value="bank_transfer">Chuyển khoản</option>
-                                <option value="cash">Tiền mặt</option>
-                                <option value="qr_code">QR code</option>
-                                <option value="other">Phương thức khác</option>
-                            </select>
-                            <span v-if="error?.payment_method" class="error-message">{{ error.payment_method[0] }}</span>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Ghi chú</label>
-                            <input v-model="form.notes" type="text" required/>
-                            <span v-if="error?.notes" class="error-message">{{ error.note }}</span>
-                        </div>
-                    </div>
-
-                    <div class="modal-footer">
-                        <button type="button" class="cancel-btn" @click="close">Hủy</button>
-                        <button type="submit" class="confirm-btn">Thêm</button>
-                    </div>
-                </form>
-            </div>
+            <p>Đang tải dữ liệu...</p>
         </div>
+        <div v-else class="modal-container">
+            <form @submit.prevent="handleSubmit" novalidate>
+                <div class="modal-header">
+                    <h3 class="modal-title">Thêm Thanh Toán</h3>
+                    <button class="close-btn" type="button" @click="close">×</button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label>Số tiền thanh toán</label>
+                        <input v-model.number="form.amount" type="number" min="0" required/>
+                        <span v-if="error?.amount" class="error-message">{{ error.amount[0] }}</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Phương thức thanh toán</label>
+                        <select id="payment_method" v-model="form.payment_method" required
+                            class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
+                            <option value="">Chọn phương thức</option>
+                            <option value="bank_transfer">Chuyển khoản</option>
+                            <option value="cash">Tiền mặt</option>
+                            <option value="qr_code">QR code</option>
+                            <option value="other">Phương thức khác</option>
+                        </select>
+                        <span v-if="error?.payment_method" class="error-message">{{ error.payment_method[0] }}</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ngày thanh toán</label>
+                        <input v-model="form.payment_date" type="date" required />
+                        <span v-if="error?.payment_date" class="error-message">{{ error.payment_date[0] }}</span>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Ghi chú</label>
+                        <input v-model="form.notes" type="text" required />
+                        <span v-if="error?.notes" class="error-message">{{ error.note }}</span>
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="cancel-btn" @click="close">Hủy</button>
+                    <button type="submit" class="confirm-btn">Thêm</button>
+                </div>
+            </form>
+        </div>
+    </div>
     <!-- </Teleport> -->
 </template>
 

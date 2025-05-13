@@ -6,11 +6,11 @@
         <p>Đang tải dữ liệu...</p>
     </div>
 
-    <div v-else class="container">
+    <div v-else class="container-fluid">
         <div class="card shadow-sm p-4">
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex justify-content-between align-items-center border-bottom mb-4 pb-4">
                 <h4 class="fw-bold text-primary">
-                    <Icon name="mdi:receipt-text" size="24" class="me-2" />
+                    <Icon name="material-symbols-light:box-edit" size="24" class="me-2" />
                     Sửa thông tin xe
                 </h4>
                 <button class="btn btn-outline-secondary" @click="goBack">
@@ -22,7 +22,7 @@
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Biển số xe</label>
+                        <label class="form-label fw-medium">Biển số xe</label>
                         <input type="text" class="form-control" v-model="vehicleForm.license_plate" @input="onChange">
                         <small v-if="errors?.['license_plate']" class="text-danger">
                             {{ errors?.['license_plate'][0] }}
@@ -47,7 +47,7 @@
 
                 <div class="row">
                     <div class="col-md-4 mb-3">
-                        <label class="form-label">Hãng xe</label>
+                        <label class="form-label fw-medium">Hãng xe</label>
                         <input type="text" class="form-control" v-model="vehicleForm.vehicle_company" @input="onChange">
                         <small v-if="errors?.['vehicle_company']" class="text-danger">
                             {{ errors?.['vehicle_company'][0] }}
@@ -55,7 +55,7 @@
                     </div>
 
                     <div class="col-md-4 mb-3">
-                        <label class="form-label">Mẫu xe</label>
+                        <label class="form-label fw-medium">Mẫu xe</label>
                         <input type="text" class="form-control" v-model="vehicleForm.vehicle_model" @input="onChange">
                         <small v-if="errors?.['vehicle_model']" class="text-danger">
                             {{ errors?.['vehicle_model'][0] }}
@@ -63,7 +63,7 @@
                     </div>
 
                     <div class="col-md-4 mb-3">
-                        <label class="form-label">Màu xe</label>
+                        <label class="form-label fw-medium">Màu xe</label>
                         <input type="text" class="form-control" v-model="vehicleForm.vehicle_color" @input="onChange">
                         <small v-if="errors?.['vehicle_color']" class="text-danger">
                             {{ errors?.['vehicle_color'][0] }}
@@ -73,14 +73,14 @@
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Vị trí đỗ</label>
+                        <label class="form-label fw-medium">Vị trí đỗ</label>
                         <input type="text" class="form-control" v-model="vehicleForm.parking_slot" @input="onChange">
                         <small v-if="errors?.['parking_slot']" class="text-danger">
                             {{ errors?.['parking_slot'][0] }}
                         </small>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Số căn hộ</label>
+                        <label class="form-label fw-medium">Số căn hộ</label>
                         <input type="text" class="form-control" v-model="vehicleForm.apartment_number"
                             @input="onChange">
                         <small v-if="errors?.['apartment_number']" class="text-danger">
@@ -91,7 +91,7 @@
 
                 <div class="row">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Trạng thái</label>
+                        <label class="form-label fw-medium">Trạng thái</label>
                         <select class="form-select" v-model="vehicleForm.status" @change="onChange">
                             <option :value="0">Đang hoạt động</option>
                             <option :value="1">Ngừng hoạt động</option>
@@ -101,7 +101,7 @@
                         </small>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Ngày đăng ký</label>
+                        <label class="form-label fw-medium">Ngày đăng ký</label>
                         <input v-model="vehicleForm.created_at" type="date" class="form-control" @input="onChange" />
                         <small v-if="errors?.['created_at']" class="text-danger">
                             {{ errors?.['created_at'][0] }}
@@ -110,8 +110,8 @@
                 </div>
 
                 <div class="d-flex justify-content-end">
-                    <button type="button" class="btn btn-secondary" @click="reset()">Làm mới</button>
-                    <button type="submit" class="btn btn-primary me-2">Lưu thay đổi</button>
+                    <button type="button" class="btn btn-secondary" @click="reset()"><Icon name="bx:reset" size="20" class="me-1"/>Làm mới</button>
+                    <button type="submit" class="btn btn-primary me-2"><Icon name="material-symbols-light:box-edit" size="20" class="me-1" />Lưu thay đổi</button>
                 </div>
             </form>
         </div>
@@ -235,11 +235,6 @@ onMounted(() => {
 </script>
 
 <style scoped>
-.container {
-    max-width: 1140px;
-    margin: 0 auto;
-}
-
 .d-flex {
     display: flex;
     align-items: center;

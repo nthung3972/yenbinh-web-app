@@ -7,41 +7,42 @@
   </div>
 
   <div v-else-if="hasError">{{ hasError }}</div>
-  <div v-else class="container">
-    <!-- Header -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h3 class="fw-bold text-primary">
-        <Icon name="mdi:receipt-text" size="24" class="me-2" />
-        Sửa hóa đơn
-      </h3>
-      <button class="btn btn-outline-secondary" @click="goBack()">
-        <Icon name="mdi:arrow-left-circle" size="20" class="me-2" />
-        Quay lại
-      </button>
-    </div>
+  <div v-else class="container-fluid">
+    <div class="card shadow-lg border-0 p-4" style="border-radius: 12px;">
+      <div class="d-flex justify-content-between align-items-center border-bottom mb-4 pb-4">
+        <h4 class="fw-bold text-primary">
+          <Icon name="material-symbols-light:box-edit" size="28" class="me-2" />
+          Sửa hóa đơn
+        </h4>
+        <button class="btn btn-outline-secondary" @click="goBack()">
+          <Icon name="mdi:arrow-left-circle" size="20" class="me-2" />
+          Quay lại
+        </button>
+      </div>
 
-    <!-- Card chính -->
-    <div v-if="invoice" class="card shadow-sm">
-      <div class="card-body">
-        <!-- Thông tin hóa đơn -->
-        <div class="mb-4">
-          <div class="row row-cols-1 row-cols-md-auto g-3 align-items-end">
-            <div class="col-md-4">
-              <label for="apartment" class="form-label fw-bold">Căn hộ</label>
-              <input :value="invoice.apartment_number" class="form-control" readonly />
-            </div>
-            <div class="col-md-4">
-              <label class="form-label fw-medium">Ngày ban hành<span class="text-danger">*</span></label>
-              <input v-model="invoice_date" type="date" class="form-control shadow-sm" @input="onChange()"
-                :class="{ 'is-invalid': errors?.invoice_date }" />
-            </div>
-            <div class="col-md-4">
-              <label class="form-label fw-medium">Hạn thanh toán<span class="text-danger">*</span></label>
-              <input v-model="due_date" type="date" class="form-control shadow-sm" @input="onChange()"
-                :class="{ 'is-invalid': errors?.due_date }" />
-            </div>
+      <!-- Card chính -->
+      <div v-if="invoice" class="card shadow-sm">
+        <div class="card-body">
+          <!-- Thông tin hóa đơn -->
+          <h5 class="fw-bold text-primary mb-3">Thông tin căn hộ</h5>
+          <div class="mb-4">
+            <div class="row row-cols-1 row-cols-md-auto g-3 align-items-end">
+              <div class="col-md-4">
+                <label for="apartment" class="form-label fw-bold">Căn hộ<span class="text-danger">*</span></label>
+                <input :value="invoice.apartment_number" class="form-control" readonly />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fw-medium">Ngày ban hành<span class="text-danger">*</span></label>
+                <input v-model="invoice_date" type="date" class="form-control shadow-sm" @input="onChange()"
+                  :class="{ 'is-invalid': errors?.invoice_date }" />
+              </div>
+              <div class="col-md-4">
+                <label class="form-label fw-medium">Hạn thanh toán<span class="text-danger">*</span></label>
+                <input v-model="due_date" type="date" class="form-control shadow-sm" @input="onChange()"
+                  :class="{ 'is-invalid': errors?.due_date }" />
+              </div>
 
-            <!-- <div class="col-md-4">
+              <!-- <div class="col-md-4">
               <label class="form-label fw-semibold">Trạng thái</label>
               <select v-model="status" class="form-select" @change="onChange(), changeStatus()">
                 <option :value="0">Chưa thanh toán</option>
@@ -49,8 +50,8 @@
               </select>
             </div> -->
 
-            <!-- Hiển thị input nếu đã thanh toán -->
-            <!-- <div class="col-md-4" v-if="status === 1">
+              <!-- Hiển thị input nếu đã thanh toán -->
+              <!-- <div class="col-md-4" v-if="status === 1">
               <label class="form-label fw-semibold">Hình thức thanh toán</label>
               <select v-model="paymentMethod" class="form-select">
                 <option disabled value="">-- Chọn hình thức thanh toán --</option>
@@ -61,94 +62,95 @@
               </select>
             </div> -->
 
-          </div>
-        </div>
-
-        <!-- Phí cố định -->
-        <div v-if="fees" class="mb-4">
-          <h5 class="fw-bold mb-3">Phí cố định</h5>
-          <table class="table table-bordered">
-            <thead class="table-light">
-              <tr>
-                <th>Loại phí</th>
-                <th>Số tiền (VNĐ)</th>
-                <th>Mô tả</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr v-for="(fee, index) in fees" :key="index">
-                <td>{{ fee.type }}</td>
-                <td>{{ formatCurrency(fee.amount) }}</td>
-                <td>{{ fee.description }}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Phí linh hoạt -->
-        <div class="mb-4">
-          <h5 class="fw-bold mb-3">Phí linh hoạt</h5>
-          <div v-for="(fee, index) in flexibleFees" :key="index" class="row mb-2 align-items-end">
-            <div class="col-md-2">
-              <label :for="'fee-type-' + index" class="form-label">Loại phí</label>
-              <select :id="'fee-type-' + index" v-model="fee.fee_type_id" class="form-select" @change="onChange()">
-                <option value="" disabled>Chọn loại phí</option>
-                <option v-for="feeType in flexibleFeeTypes" :key="feeType.fee_type_id" :value="feeType.fee_type_id">
-                  {{ feeType.fee_name }}
-                </option>
-              </select>
-            </div>
-            <div class="col-md-2">
-              <label :for="'fee-quantity-' + index" class="form-label">Số lượng</label>
-              <input :id="'fee-quantity-' + index" v-model.number="fee.quantity" type="number" class="form-control"
-                min="0" @input="calculateAmount(index)" />
-            </div>
-            <div class="col-md-2">
-              <label :for="'fee-price-' + index" class="form-label">Đơn giá (VNĐ)</label>
-              <input :id="'fee-price-' + index" v-model.number="fee.price" type="number" class="form-control" min="0"
-                @input="calculateAmount(index)" />
-            </div>
-            <div class="col-md-2">
-              <label :for="'fee-amount-' + index" class="form-label">Số tiền (VNĐ)</label>
-              <input :id="'fee-amount-' + index" :value="fee.amount" type="number" class="form-control" readonly />
-            </div>
-            <div class="col-md-2">
-              <label :for="'fee-description-' + index" class="form-label">Mô tả</label>
-              <input :id="'fee-description-' + index" v-model="fee.description" type="text" class="form-control"
-                @input="onChange()" />
-            </div>
-            <div class="col-md-2">
-              <button class="btn btn-outline-danger w-100" @click="removeFlexibleFee(index)">
-                <Icon name="ep:remove-filled" size="20" class="me-2" />Xóa
-              </button>
             </div>
           </div>
-          <button class="btn btn-outline-success mt-2" @click="addFlexibleFee">
-            <Icon name="gridicons:add" size="20" class="me-2" />Thêm phí linh hoạt
-          </button>
-        </div>
 
-        <!-- Tóm tắt hóa đơn -->
-        <div v-if="fees" class="mb-4">
-          <h5 class="fw-bold mb-3">Tóm tắt hóa đơn</h5>
-          <div class="alert alert-info">
-            <p class="mb-1">
-              <strong>Tổng phí cố định:</strong> {{ formatCurrency(totalFixedFees) }}
-            </p>
-            <p class="mb-1">
-              <strong>Tổng phí linh hoạt:</strong> {{ formatCurrency(totalFlexibleFees) }}
-            </p>
-            <p class="mb-0 fw-bold">
-              <strong>Tổng cộng:</strong> {{ formatCurrency(totalFees) }}
-            </p>
+          <!-- Phí cố định -->
+          <div v-if="fees" class="mb-4">
+            <h5 class="fw-bold text-primary mb-3">Phí cố định</h5>
+            <table class="table table-bordered">
+              <thead class="table-light">
+                <tr>
+                  <th>Loại phí</th>
+                  <th>Số tiền (VNĐ)</th>
+                  <th>Mô tả</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(fee, index) in fees" :key="index">
+                  <td>{{ fee.type }}</td>
+                  <td>{{ formatCurrency(fee.amount) }}</td>
+                  <td>{{ fee.description }}</td>
+                </tr>
+              </tbody>
+            </table>
           </div>
-        </div>
 
-        <!-- Nút lưu thay đổi -->
-        <div class="text-end">
-          <button class="btn btn-primary" :disabled="!canSaveInvoice" @click="updateInvoice">
-            <Icon name="lsicon:submit-filled" size="20" class="me-2" />Lưu thay đổi
-          </button>
+          <!-- Phí linh hoạt -->
+          <div class="mb-4">
+            <h5 class="fw-bold text-primary mb-3">Phí linh hoạt</h5>
+            <div v-for="(fee, index) in flexibleFees" :key="index" class="row mb-2 align-items-end">
+              <div class="col-md-2">
+                <label :for="'fee-type-' + index" class="form-label">Loại phí</label>
+                <select :id="'fee-type-' + index" v-model="fee.fee_type_id" class="form-select" @change="onChange()">
+                  <option value="" disabled>Chọn loại phí</option>
+                  <option v-for="feeType in flexibleFeeTypes" :key="feeType.fee_type_id" :value="feeType.fee_type_id">
+                    {{ feeType.fee_name }}
+                  </option>
+                </select>
+              </div>
+              <div class="col-md-2">
+                <label :for="'fee-quantity-' + index" class="form-label">Số lượng</label>
+                <input :id="'fee-quantity-' + index" v-model.number="fee.quantity" type="number" class="form-control"
+                  min="0" @input="calculateAmount(index)" />
+              </div>
+              <div class="col-md-2">
+                <label :for="'fee-price-' + index" class="form-label">Đơn giá (VNĐ)</label>
+                <input :id="'fee-price-' + index" v-model.number="fee.price" type="number" class="form-control" min="0"
+                  @input="calculateAmount(index)" />
+              </div>
+              <div class="col-md-2">
+                <label :for="'fee-amount-' + index" class="form-label">Số tiền (VNĐ)</label>
+                <input :id="'fee-amount-' + index" :value="fee.amount" type="number" class="form-control" readonly />
+              </div>
+              <div class="col-md-2">
+                <label :for="'fee-description-' + index" class="form-label">Mô tả</label>
+                <input :id="'fee-description-' + index" v-model="fee.description" type="text" class="form-control"
+                  @input="onChange()" />
+              </div>
+              <div class="col-md-2">
+                <button class="btn btn-outline-danger w-100" @click="removeFlexibleFee(index)">
+                  <Icon name="ep:remove-filled" size="20" class="me-2" />Xóa
+                </button>
+              </div>
+            </div>
+            <button class="btn btn-outline-success mt-2" @click="addFlexibleFee">
+              <Icon name="gridicons:add" size="20" class="me-2" />Thêm phí linh hoạt
+            </button>
+          </div>
+
+          <!-- Tóm tắt hóa đơn -->
+          <div v-if="fees" class="mb-4">
+            <h5 class="fw-bold text-success mb-3"><Icon name="fluent:feed-32-filled" size="24" class="me-2" />CHI TIẾT HÓA ĐƠN</h5>
+            <div class="alert alert-info">
+              <p class="mb-1">
+                <strong>Tổng phí cố định:</strong> {{ formatCurrency(totalFixedFees) }}
+              </p>
+              <p class="mb-1">
+                <strong>Tổng phí linh hoạt:</strong> {{ formatCurrency(totalFlexibleFees) }}
+              </p>
+              <p class="mb-0 fw-bold">
+                <strong>Tổng cộng:</strong> {{ formatCurrency(totalFees) }}
+              </p>
+            </div>
+          </div>
+
+          <!-- Nút lưu thay đổi -->
+          <div class="text-end">
+            <button class="btn btn-primary" :disabled="!canSaveInvoice" @click="updateInvoice">
+              <Icon name="lsicon:submit-filled" size="20" class="me-2" />Lưu thay đổi
+            </button>
+          </div>
         </div>
       </div>
     </div>

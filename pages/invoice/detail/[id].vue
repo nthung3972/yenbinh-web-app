@@ -7,7 +7,7 @@
   </div>
   <div v-else-if="hasError">{{ hasError }}</div>
 
-  <div v-else class="container mt-5">
+  <div v-else class="container-fluid mt-3">
     <div class="invoice-display">
       <!-- Header -->
       <div class="d-flex justify-content-between align-items-center mb-4">
