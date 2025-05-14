@@ -16,13 +16,13 @@
 
                 <div class="modal-body">
                     <div class="form-group">
-                        <label>Số tiền thanh toán</label>
-                        <input v-model.number="form.amount" type="number" min="0" required/>
+                        <label>Số tiền thanh toán<span class="text-danger">*</span></label>
+                        <input v-money="moneyConfig" v-model="form.amount" type="text" required/>
                         <span v-if="error?.amount" class="error-message">{{ error.amount[0] }}</span>
                     </div>
 
                     <div class="form-group">
-                        <label>Phương thức thanh toán</label>
+                        <label>Phương thức thanh toán<span class="text-danger">*</span></label>
                         <select id="payment_method" v-model="form.payment_method" required
                             class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm">
                             <option value="">Chọn phương thức</option>
@@ -35,7 +35,7 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Ngày thanh toán</label>
+                        <label>Ngày thanh toán<span class="text-danger">*</span></label>
                         <input v-model="form.payment_date" type="date" required />
                         <span v-if="error?.payment_date" class="error-message">{{ error.payment_date[0] }}</span>
                     </div>
@@ -89,6 +89,15 @@ function resetForm() {
     error.value = null
 }
 
+const moneyConfig = {
+  decimal: '.', // Dấu thập phân
+  thousands: ',', // Dấu phân cách hàng nghìn
+  prefix: '', // Tiền tố
+  suffix: '', // Hậu tố
+  precision: 0, // Không có số thập phân
+  masked: false, // Lưu giá trị số gốc vào v-model
+};
+
 function close() {
     emit('update:modelValue', false)
     resetForm()
@@ -101,9 +110,11 @@ watch(() => props.modelValue, (val) => {
 async function handleSubmit() {
     if (!props.invoice) return
 
+    const amount = form.amount ? Number(form.amount.replace(/,/g, '')) : ''
+
     const data = {
         invoice_id: props.invoice.invoice_id,
-        amount: form.amount,
+        amount: amount,
         payment_date: form.payment_date,
         payment_method: form.payment_method,
         notes: form.notes

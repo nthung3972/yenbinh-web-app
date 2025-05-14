@@ -81,33 +81,48 @@
                 </div>
             </div>
 
+            <div class="mb-3 text-end" v-if="selectedInvoices.length > 0">
+                <button @click="exportInvoices" class="btn btn-success" :disabled="exportLoading">
+                    <Icon name="mdi:file-excel" class="me-1" />
+                    <span v-if="exportLoading" class="spinner-border spinner-border-sm me-2"></span>
+                    {{ exportLoading ? "Đang xử lý..." : "Xuất Hóa Đơn" }}
+                </button>
+            </div>
             <table class="table table-hover align-middle" style="table-layout: fixed; width: 100%;">
                 <thead class="table-primary sticky-top" style="z-index: 1;">
                     <tr>
+                        <th style="width: 5%;">
+                            <input type="checkbox" v-model="checkAll" @change="toggleCheckAll" />
+                        </th>
                         <th style="width: 5%;">#</th>
                         <th style="width: 10%;">Mã căn hộ</th>
-                        <th style="width: 10%;">Tổng tiền (VNĐ)</th>
-                        <th style="width: 14%;">Ngày ban hành</th>
-                        <th style="width: 14%;">Đã thanh toán (VNĐ)</th>
-                        <th style="width: 10%;">Trạng thái</th>
+                        <th style="width: 10%;">Tổng hóa đơn</th>
+                        <th style="width: 10%;">Ngày ban hành</th>
+                        <th style="width: 10%;">Đã thanh toán</th>
+                        <th style="width: 10%;">Còn lại</th>
+                        <th style="width: 15%;">Trạng thái</th>
                         <th style="width: 10%;">Người tạo</th>
-                        <th style="width: 27%; text-align: center;">Hành động</th>
+                        <th style="width: 20%; text-align: center;">Hành động</th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr v-for="(invoice, index) in useInvoice.invoiceList" :key="index">
+                        <td>
+                            <input type="checkbox" :value="invoice.invoice_id" v-model="selectedInvoices" />
+                        </td>
                         <td>{{ index + 1 }}</td>
                         <td>{{ invoice.apartment.apartment_number }}</td>
                         <td>{{ formatVND(invoice.total_amount) }}</td>
                         <td>{{ invoice.invoice_date }}</td>
                         <td>{{ formatVND(invoice.total_paid) }}</td>
+                        <td>{{ formatVND(invoice.remaining_balance) }}</td>
                         <td>
                             <span :class="[
-                                'badge',
-                                invoice.status === 0 ? 'bg-warning'
-                                    : invoice.status === 1 ? 'bg-success'
-                                        : invoice.status === 2 ? 'bg-danger'
-                                            : 'bg-primary'
+                                'badge rounded-pill px-3 py-2',
+                                invoice.status === 0 ? 'bg-warning-subtle text-warning'
+                                    : invoice.status === 1 ? 'bg-primary-subtle text-primary'
+                                        : invoice.status === 2 ? 'bg-secondary-subtle text-muted'
+                                            : 'bg-info-subtle text-info'
                             ]">
                                 {{ invoice.status === 0 ? 'Chưa thanh toán'
                                     : invoice.status === 1 ? 'Đã thanh toán'
@@ -134,7 +149,7 @@
                                     <DropdownItem tag="NuxtLink"
                                         :to="invoice.status !== 1 ? `/invoice/edit/${invoice.invoice_id}` : '#'"
                                         :disabled="invoice.status === 1"
-                                        :title="invoice.status === 1 ? 'Báo cáo không thể chỉnh sửa vì trạng thái không phải draft' : 'Chỉnh sửa báo cáo'"
+                                        :title="invoice.status === 1 ? 'Hóa đơn đã thanh toán không thể sửa' : 'Chỉnh sửa báo cáo'"
                                         iconName="bxs:edit-alt">
                                         Sửa
                                     </DropdownItem>
@@ -163,9 +178,10 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import axios from 'axios'
+import { ref, watch, onMounted } from 'vue'
 import { useInvoiceStore } from '@/stores/invoice'
-import { useAuthStore } from '@/stores/auth'
+import { useAuthStore } from "~/stores/auth"
 import Pagination from '@/components/pagination/Pagination.vue'
 import ActionDropdown from '@/components/dropdown/actionDropdown.vue'
 import DropdownItem from '@/components/dropdown/dropdownItem.vue'
@@ -185,6 +201,24 @@ const selectedInvoice = ref(null)
 const showDeleteModal = ref(false)
 const invoice_id = ref(null)
 const toast = useToast()
+const exportLoading = ref(false)
+
+const checkAll = ref(false)
+const selectedInvoices = ref([])
+
+// Khi click "check all"
+const toggleCheckAll = () => {
+    if (checkAll.value) {
+        selectedInvoices.value = useInvoice.invoiceList.map(i => i.invoice_id)
+    } else {
+        selectedInvoices.value = []
+    }
+}
+
+// Đồng bộ checkAll nếu user tự bỏ tick từng cái
+watch(selectedInvoices, (newVal) => {
+    checkAll.value = newVal.length === useInvoice.invoiceList.length
+})
 
 const { formatVND } = useCurrencyFormat()
 
@@ -239,7 +273,7 @@ const handleDateChange = () => {
     loadInvoices()
 }
 
-const loadInvoices = async() => {
+const loadInvoices = async () => {
     const params = { ...filters.value }
     await useInvoice.fetchtInvoiceList(
         params.page,
@@ -256,12 +290,45 @@ const deleteInvoice = async () => {
         const result = await useInvoice.deleteInvoice(invoice_id.value)
         if (result) {
             toast.success("Xóa hóa đơn thành công!")
-            loadInvoices
+            loadInvoices()
         }
     } catch (error) {
         toast.error(error.message || "Lỗi khi xóa hóa đơn!");
     }
 }
+
+const exportInvoices = async () => {
+    exportLoading.value = true
+    try {
+        const response = await axios.post(
+            'http://localhost:8000/api/admin/export/invoices/export',
+            { invoice_ids: selectedInvoices.value },
+            {
+                responseType: 'blob',
+                headers: {
+                    Accept: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+                    Authorization: `Bearer ${authStore.token}`,
+                },
+            }
+        );
+
+        const blob = new Blob([response.data], {
+            type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        })
+        const url = window.URL.createObjectURL(blob)
+        const link = document.createElement('a')
+        link.href = url
+        link.download = 'hoa_don.xlsx'
+        document.body.appendChild(link)
+        link.click()
+        window.URL.revokeObjectURL(url)
+        document.body.removeChild(link)
+    } catch (error) {
+        console.error('Export failed:', error);
+    } finally {
+        exportLoading.value = false
+    }
+};
 
 onMounted(loadInvoices)
 </script>

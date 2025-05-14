@@ -82,7 +82,7 @@
             </h5>
             <div class="table-responsive">
               <table class="table table-borderless table-hover">
-                <thead class="table-light">
+                <thead class="table-primary text-white">
                   <tr>
                     <th style="width: 20%;">
                       <Icon name="mdi:file-document" size="16" class="me-2" />
@@ -130,7 +130,7 @@
             <div class="text-end mt-4">
               <h4 class="fw-bold text-success">
                 <Icon name="mdi:cash-register" size="20" class="me-2" />
-                Tổng Tiền: {{ formatVND(invoiceStore.invoice.total_amount) }}
+                Tổng Hóa Đơn: {{ formatVND(invoiceStore.invoice.total_amount) }}
               </h4>
             </div>
 
@@ -141,7 +141,7 @@
                 Lịch Sử Thanh Toán
               </h5>
               <table class="table table-bordered">
-                <thead class="table-light">
+                <thead class="table-primary text-white">
                   <tr>
                     <th>Ngày Thanh Toán</th>
                     <th>Số Tiền</th>
@@ -204,11 +204,11 @@ const loading = ref(false)
 
 const getStatusBadgeClass = (status) => {
   switch (status) {
-    case 0: return 'bg-warning text-dark' // vàng
-    case 1: return 'bg-success'           // xanh
-    case 2: return 'bg-danger'
-    case 3: return 'bg-primary'           // đỏ
-    default: return 'bg-secondary'        // xám
+    case 0: return 'bg-warning text-dark'
+    case 1: return 'bg-primary'           
+    case 2: return 'bg-secondary'
+    case 3: return 'bg-info'          
+    default: return 'bg-secondary'        
   }
 }
 
@@ -236,12 +236,12 @@ const downloadInvoice = async (id) => {
   loading.value = true
   try {
     const response = await axios.get(
-      `http://localhost:8000/api/admin/export/invoices/${id}`, // Thay bằng đúng URL của bạn
+      `http://localhost:8000/api/admin/export/invoices/${id}`,
       {
         responseType: 'blob',
         headers: {
           Accept: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-          Authorization: `Bearer ${authStore.token}`, // Nếu có
+          Authorization: `Bearer ${authStore.token}`, 
         }
       }
     )

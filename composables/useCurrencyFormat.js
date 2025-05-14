@@ -1,7 +1,7 @@
 export function useCurrencyFormat() {
     const formatVND = (amount) => {
         if (isNaN(amount)) return '0 VNĐ'
-        return new Intl.NumberFormat('vi-VN').format(amount)
+        return new Intl.NumberFormat('vi-VN').format(amount) + 'đ'
     }
 
     const formatVNDWithSymbol = (amount) => {
