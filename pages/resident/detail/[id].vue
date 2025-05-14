@@ -123,12 +123,15 @@
             <div class="col-12">
                 <div class="card shadow">
                     <div class="card-header bg-white">
-                        <h5 class="mb-0">Danh sách căn hộ sở hữu</h5>
+                        <h6 class="fw-bold text-primary">
+                            <Icon name="ep:list" size="20" class="me-1" />
+                            Căn hộ sở hữu
+                        </h6>
                     </div>
                     <div class="card-body">
                         <div class="table-responsive">
                             <table class="table table-hover">
-                                <thead class="table-light sticky-top">
+                                <thead class="table-primary sticky-top">
                                     <tr>
                                         <th>Căn hộ</th>
                                         <th>Tầng</th>
@@ -140,11 +143,11 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="apartment in useResident.resident.apartments" :key="apartment.id">
+                                    <tr v-for="apartment in useResident.resident.current_apartments" :key="apartment.id">
                                         <td>{{ apartment.apartment_number }}</td>
                                         <td>{{ apartment.floor_number }}</td>
                                         <td>{{ apartment.area }} m²</td>
-                                        <td>{{ apartment.ownership_type }}</td>
+                                        <td>{{ getApartmentTypeLabel(apartment.apartment_type) }}</td>
                                         <td>
                                             <span
                                             :class="{
@@ -274,6 +277,20 @@ const formatDate = (date) => {
     month: '2-digit',
     year: 'numeric'
   })
+}
+
+const getApartmentTypeLabel = (type) => {
+    const labels = {
+        'studio': 'Phòng thu',
+        '1bedroom': '1 Phòng ngủ',
+        '2bedroom': '2 Phòng ngủ',
+        '3bedroom': '3 Phòng ngủ',
+        'dualkey': 'Căn hộ song lập',
+        'penthouse': 'Căn hộ áp mái',
+        'duplex': 'Căn hộ thông tầng',
+    }
+
+    return labels[type] || 'Không xác định'
 }
 
 const goBack = () => {

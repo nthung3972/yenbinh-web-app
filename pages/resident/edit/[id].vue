@@ -8,23 +8,25 @@
 
     <div v-else>
         <form @submit.prevent="updateResident">
-            <div class="container mt-4">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4 class="fw-bold text-primary">
-                        <Icon name="mdi:receipt-text" size="24" class="me-2" />
-                        Chỉnh sửa thông tin cư dân
-                    </h4>
-                    <button type="button" class="btn btn-secondary" @click="goBack">
-                        <Icon name="mdi:arrow-left-circle" size="20" class="me-2" />
-                        Quay lại
-                    </button>
-                </div>
+            <div class="container-fluid">
                 <div class="card p-4 shadow-sm">
-                    <h3 class="h5 mb-3">Thông tin cư dân</h3>
+                    <div class="d-flex justify-content-between align-items-center pb-3 border-bottom">
+                        <h4 class="fw-bold text-primary">
+                            <Icon name="material-symbols-light:box-edit" size="28" class="me-2" />
+                            Sửa thông tin cư dân
+                        </h4>
+                        <button type="button" class="btn btn-secondary" @click="goBack">
+                            <Icon name="mdi:arrow-left-circle" size="20" class="me-2" />
+                            Quay lại
+                        </button>
+                    </div>
+                    <h4 class="d-flex fw-bold text-secondary align-items-center mt-3">
+                        THÔNG TIN CƯ DÂN
+                    </h4>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Họ và tên</label>
+                                <label class="form-label fw-bold">Họ và tên</label>
                                 <input v-model="residentForm.full_name" type="text" class="form-control" required
                                     @input="onChange()" />
                                 <small v-if="errors?.full_name" class="error-message">
@@ -33,7 +35,7 @@
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Căn cước công dân</label>
+                                <label class="form-label fw-bold">Căn cước công dân</label>
                                 <input v-model="residentForm.id_card_number" class="form-control" @input="onChange()"
                                     required placeholder="Số căn cước (nếu có)" />
                                 <small v-if="errors?.id_card_number" class="error-message">
@@ -44,7 +46,7 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Ngày sinh</label>
+                                <label class="form-label fw-bold">Ngày sinh</label>
                                 <input v-model="residentForm.date_of_birth" type="date" class="form-control" required
                                     @input="onChange()" />
                                 <small v-if="errors?.date_of_birth" class="error-message">
@@ -53,7 +55,7 @@
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Giới tính</label>
+                                <label class="form-label fw-bold">Giới tính</label>
                                 <div class="d-flex" style="justify-content: unset;">
                                     <div class="form-check me-3">
                                         <input v-model="residentForm.gender" class="form-check-input" type="radio"
@@ -71,7 +73,7 @@
 
                         <div class="row">
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Số điện thoại</label>
+                                <label class="form-label fw-bold">Số điện thoại</label>
                                 <input v-model="residentForm.phone_number" type="tel" class="form-control" required
                                     @input="onChange()" placeholder="Nhập số điện thoại" />
                                 <small v-if="errors?.phone_number" class="error-message">
@@ -80,7 +82,7 @@
                             </div>
 
                             <div class="col-md-6 mb-3">
-                                <label class="form-label">Email</label>
+                                <label class="form-label fw-bold">Email</label>
                                 <input v-model="residentForm.email" type="email" class="form-control" required
                                     @input="onChange()" placeholder="Nhập email" />
                                 <small v-if="errors?.email" class="error-message">
@@ -92,33 +94,36 @@
 
                     <div class="card mt-4">
                         <div class="card-header d-flex justify-content-between align-items-center">
-                            Danh Sách Căn Hộ
+                            <h6 class="fw-bold text-primary">
+                                <Icon name="ep:list" size="20" class="me-1" />
+                                Căn hộ sở hữu
+                            </h6>
                             <button type="button" class="btn btn-success btn-sm" @click="openAddModal()">
                                 <Icon name="ic:baseline-add-circle-outline" size="16" class="me-1" /> Thêm Căn Hộ
                             </button>
                         </div>
                         <div class="card-body table-apartments">
                             <table class="table table-striped">
-                                <thead>
+                                <thead class="table-primary">
                                     <tr>
-                                        <th>Mã Căn Hộ</th>
-                                        <th>Địa Chỉ</th>
-                                        <th>Diện Tích (m²)</th>
+                                        <th>Số căn hộ</th>
+                                        <th>Số tầng</th>
+                                        <th>Diện tích (m²)</th>
                                         <th>Loại căn hộ</th>
-                                        <th>Ngày sở hữu</th>
-                                        <th>Loại sở hữu</th>
+                                        <th>Ngày đăng ký</th>
+                                        <th>Vai trò</th>
                                         <th>Hành Động</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr v-for="(apartment, index) in residentForm.apartments" :key="index">
+                                    <tr v-for="(apartment, index) in residentForm.current_apartments" :key="index">
                                         <td>{{ apartment.apartment_number }}</td>
                                         <td>Tầng {{ apartment.floor_number }}</td>
                                         <td>{{ apartment.area }}</td>
-                                        <td>{{ apartment.ownership_type }}</td>
+                                        <td>{{ getApartmentTypeLabel(apartment.apartment_type) }}</td>
                                         <td>{{ apartment.pivot.registration_date }}</td>
-                                        <td>{{ apartment.pivot.role_in_apartment === 0 ? 'Chủ hộ' :
-                                            (apartment.pivot.role_in_apartment === 1 ? 'Người thuê' : 'Người thân') }}
+                                        <td>
+                                            {{ getRoleLabel(apartment.pivot.role_in_apartment) }}
                                         </td>
                                         <td>
                                             <button type="button" class="btn btn-danger btn-sm"
@@ -132,11 +137,13 @@
                         </div>
                     </div>
 
-                    <div class="mt-3 text-end d-flex">
-                        <button style="min-width: 120px;" type="button" class="btn btn-secondary" @click="reset()">Làm
-                            mới</button>
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                        <button style="min-width: 120px;" type="button" class="btn btn-secondary" @click="reset()">
+                            <Icon name="bx:reset" size="20" class="me-2" />
+                            Làm mới
+                        </button>
                         <button style="min-width: 120px;" type="submit" class="btn btn-primary me-2">
-                            Lưu Thay Đổi
+                            <Icon name="material-symbols-light:box-edit" size="20" class="me-2" /> Lưu thay đổi
                         </button>
                     </div>
                 </div>
@@ -147,7 +154,7 @@
     <ConfirmModal v-model="showDeleteModal" title="Xác nhận xóa căn hộ"
         :message="`Bạn có chắc chắn muốn xóa căn hộ này không?`" confirmText="Xóa" @confirm="deleteApartment" />
 
-    <<AddApartmentModal v-model="showAddModal" :errors="formErrors" @submit="createApartment"/>
+    <AddApartmentModal v-model="showAddModal" :apartments="apartments" :errors="formErrors" @submit="createApartment" />
 
     <ConfirmNavigationModal v-model="showConfirmModal" @confirm="confirmNavigation" @cancel="cancelNavigation" />
 </template>
@@ -156,6 +163,8 @@
 import { ref, onMounted } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { useResidentStore } from '@/stores/resident';
+import { useApartmentStore } from '@/stores/apartment'
+import { useDashboardStore } from '@/stores/dashboard'
 import { useToast } from 'vue-toastification';
 import ConfirmNavigationModal from '@/components/modal/UnsavedChangesModal.vue'
 import ConfirmModal from '@/components/modal/ConfirmModal.vue'
@@ -167,6 +176,8 @@ definePageMeta({
 })
 
 const useResident = useResidentStore()
+const useApartment = useApartmentStore()
+const dashboardStore = useDashboardStore()
 const route = useRoute()
 const router = useRouter()
 const resident_id = route.params.id
@@ -176,6 +187,8 @@ const isLoading = computed(() => useResident.isLoading)
 const showDeleteModal = ref(false)
 const showAddModal = ref(false)
 const formErrors = ref({})
+const apartments = ref([])
+const building_id = dashboardStore.getSelectedBuildingId;
 
 const residentForm = ref({
     full_name: '',
@@ -185,7 +198,7 @@ const residentForm = ref({
     phone_number: '',
     email: '',
     created_at: '',
-    apartments: []
+    current_apartments: []
 });
 
 const leaveForm = ref({
@@ -221,6 +234,31 @@ const reset = () => {
     setEditing(true)
 }
 
+const getRoleLabel = (type) => {
+    const labels = {
+        0: 'Chủ hộ',
+        1: 'Người thuê chính',
+        2: 'Người thân',
+        3: 'Người thuê',
+    }
+
+    return labels[type] || 'Không xác định'
+}
+
+const getApartmentTypeLabel = (type) => {
+    const labels = {
+        'studio': 'Phòng thu',
+        '1bedroom': '1 Phòng ngủ',
+        '2bedroom': '2 Phòng ngủ',
+        '3bedroom': '3 Phòng ngủ',
+        'dualkey': 'Căn hộ song lập',
+        'penthouse': 'Căn hộ áp mái',
+        'duplex': 'Căn hộ thông tầng',
+    }
+
+    return labels[type] || 'Không xác định'
+}
+
 const setSelectedApartment = (id) => {
     leaveForm.value.apartment_id = id;
     leaveForm.value.resident_id = parseInt(resident_id)
@@ -234,6 +272,17 @@ const openAddModal = () => {
 const loadResident = async () => {
     await useResident.fetchResident(resident_id);
     residentForm.value = { ...useResident.resident };
+    console.log(residentForm.value);
+}
+
+// Lấy danh sách căn hộ
+const fetchApartments = async () => {
+    try {
+        const data = await useApartment.getCodeApartments(building_id)
+        apartments.value = data
+    } catch (error) {
+        toast.error('Lỗi khi lấy danh sách căn hộ')
+    }
 }
 
 const updateResident = async () => {
@@ -276,8 +325,8 @@ const createApartment = async (formData) => {
         }
     } catch (error) {
         if (error && error.errors) {
-            formErrors.value.apartment_number  = error.errors.apartment_number
-            formErrors.value.role_in_apartment  = error.errors.role_in_apartment
+            formErrors.value.apartment_number = error.errors.apartment_number
+            formErrors.value.role_in_apartment = error.errors.role_in_apartment
         } else {
             errors.value = {
                 general: error.message || "Đã có lỗi xảy ra khi thêm cư dân"
@@ -290,6 +339,7 @@ const createApartment = async (formData) => {
 };
 
 onMounted(() => {
+    fetchApartments()
     loadResident()
     setupRouteGuard()
 }) 

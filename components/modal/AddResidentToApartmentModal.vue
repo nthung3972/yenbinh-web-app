@@ -10,11 +10,18 @@
 
                     <div class="modal-body">
                         <div class="form-group">
-                            <label>Tên căn hộ</label>
-                            <input v-model="form.apartment_number" type="text" />
-                            <span v-if="errors?.apartment_number" class="error-message">
-                                {{ errors.apartment_number }}
-                            </span>
+                            <label for="apartment">Chọn căn hộ:</label>
+                            <select v-model="form.apartment_number">
+                                <option disabled value="">-- Chọn căn hộ --</option>
+                                <option v-for="apt in props.apartments" :key="apt.apartment_number"
+                                    :value="apt.apartment_number">
+                                    {{ apt.apartment_number }}
+                                </option>
+                            </select>
+
+                            <div v-if="props.errors?.apartment_number" class="text-danger">
+                                {{ props.errors.apartment_number }}
+                            </div>
                         </div>
 
                         <div class="form-group">
@@ -22,8 +29,9 @@
                             <select v-model="form.role_in_apartment">
                                 <option value="">Chọn vai trò</option>
                                 <option :value="0">Chủ hộ</option>
-                                <option :value="1">Người thuê chính</option>
                                 <option :value="2">Người thân</option>
+                                <option :value="1">Người thuê chính</option>
+                                <option :value="3">Người thuê</option>
                             </select>
                             <span v-if="errors?.role_in_apartment" class="error-message">
                                 {{ errors.role_in_apartment }}
@@ -44,7 +52,8 @@
 <script setup>
 const props = defineProps({
     modelValue: Boolean,
-    errors: Object
+    errors: Object,
+    apartments: Array
 })
 
 const emit = defineEmits(['update:modelValue', 'submit'])
@@ -55,8 +64,8 @@ const form = reactive({
 })
 
 function resetForm() {
-  form.apartment_number = ''
-  form.role_in_apartment = ''
+    form.apartment_number = ''
+    form.role_in_apartment = ''
 }
 
 function closeModal() {
@@ -65,8 +74,7 @@ function closeModal() {
 }
 
 watch(() => props.modelValue, (newVal) => {
-  // Khi mở lại modal, reset lỗi và dữ liệu
-  if (newVal) resetForm()
+    if (newVal) resetForm()
 })
 
 

@@ -28,13 +28,30 @@
                                     <strong> Số căn hộ:</strong> {{ useApartment.apartment.apartment_number }}
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <strong> Diện tích:</strong> {{ useApartment.apartment.area }} m²
+                                    <strong>Trạng thái:</strong>
+                                        <span :class="[
+                                            'badge rounded-pill px-3 py-2 ms-2',
+                                            useApartment.apartment.status === 'occupied'
+                                            ? 'bg-success-subtle text-success'
+                                            : 'bg-secondary-subtle text-muted'
+                                        ]">
+                                            {{ useApartment.apartment.status === 'occupied' ? 'Đang sử dụng' : 'Căn hộ trống' }}
+                                        </span>   
                                 </div>
                                 <div class="col-md-6 mb-3">
                                     <strong> Tầng:</strong> {{ useApartment.apartment.floor_number }}
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <strong> Loại căn hộ:</strong> {{ useApartment.apartment.ownership_type }}
+                                    <strong> Diện tích:</strong> {{ useApartment.apartment.area }} m²
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <strong> Loại căn hộ:</strong> {{ getApartmentTypeLabel(useApartment.apartment.apartment_type) }}
+                                </div>
+                                <div class="col-md-6 mb-3">
+                                    <strong> Loại sở hữu:</strong> {{ getOwnershipTypeLabel(useApartment.apartment.ownership_type) }}
+                                </div>
+                                <div class="col-md-12 mb-3">
+                                    <strong> Ghi chú:</strong> {{ useApartment.apartment.notes ?? 'Không có ghi chú' }}
                                 </div>
                             </div>
                         </div>
@@ -47,12 +64,15 @@
                 <div class="col-12">
                     <div class="card shadow">
                         <div class="card-header bg-white">
-                            <h5 class="mb-0">Danh sách cư dân trong căn hộ</h5>
+                            <h5 class="fw-bold text-primary">
+                                <Icon name="ep:list" size="20" class="me-1" />
+                                Danh sách cư dân
+                            </h5>
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
                                 <table class="table table-hover">
-                                    <thead class="table-light sticky-top">
+                                    <thead class="table-primary sticky-top">
                                         <tr>
                                             <th>Họ tên</th>
                                             <!-- <th>CMND/CCCD</th> -->
@@ -61,7 +81,7 @@
                                             <th>Vai trò</th>
                                             <th>Ngày đăng ký</th>
                                             <th>Trạng thái</th>
-                                            <!-- <th>Ngày chuyển đi</th> -->
+                                            <th>Ngày chuyển đi</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -72,26 +92,29 @@
                                             <td>{{ resident.phone_number ?? '———'}}</td>
                                             <td>
                                                 <span :class="{
-                                                    'badge bg-success': resident.pivot.role_in_apartment === 0,
-                                                    'badge bg-info': resident.pivot.role_in_apartment === 1,
-                                                    'badge bg-warning text-dark': resident.pivot.role_in_apartment === 2
+                                                    'badge bg-primary': resident.pivot.role_in_apartment === 0,
+                                                    'badge bg-warning': resident.pivot.role_in_apartment === 1,
+                                                    'badge bg-info': resident.pivot.role_in_apartment === 2,
+                                                    'badge bg-success': resident.pivot.role_in_apartment === 3,
                                                 }">
                                                     {{
                                                         resident.pivot.role_in_apartment === 0
                                                             ? 'Chủ căn hộ'
                                                             : resident.pivot.role_in_apartment === 1
-                                                                ? 'Người thuê'
+                                                                ? 'Người thuê chính'
                                                                 : resident.pivot.role_in_apartment === 2
                                                                     ? 'Người thân'
-                                                                    : '----'
+                                                                    : resident.pivot.role_in_apartment === 3
+                                                                        ? 'Người thuê'
+                                                                        : '———'
                                                     }}
                                                 </span>
                                             </td>
                                             <td>{{ formatDate(resident.pivot?.registration_date) }}</td>
                                             <td>
                                                 <span class="badge" :class="{
-                                                    'bg-success': resident.pivot?.registration_status === '0',
-                                                    'bg-secondary': resident.pivot?.registration_status === '1'
+                                                    'bg-primary': resident.pivot?.registration_status === 0,
+                                                    'bg-secondary': resident.pivot?.registration_status === 1
                                                 }">
                                                     {{
                                                         resident.pivot?.registration_status === 0
@@ -102,12 +125,12 @@
                                                     }}
                                                 </span>
                                             </td>
-                                            <!-- <td>
+                                            <td>
                                                 {{ resident.pivot.move_out_date ?
                                                     formatDate(resident.pivot.move_out_date) :
                                                     '———'
                                                 }}
-                                            </td> -->
+                                            </td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -190,6 +213,33 @@ const formatDate = (date) => {
         year: 'numeric'
     })
 }
+
+const getApartmentTypeLabel = (type) => {
+    const labels = {
+        'studio': 'Phòng thu',
+        '1bedroom': '1 Phòng ngủ',
+        '2bedroom': '2 Phòng ngủ',
+        '3bedroom': '3 Phòng ngủ',
+        'dualkey': 'Căn hộ song lập',
+        'penthouse': 'Căn hộ áp mái',
+        'duplex': 'Căn hộ thông tầng',
+    }
+
+    return labels[type] || 'Không xác định'
+}
+
+const getOwnershipTypeLabel = (type) => {
+    const labels = {
+        'own': 'Sở hữu',
+        'lease': 'Cho thuê',
+        'lease_back': 'Cho thuê lại',
+        'mortgage': 'Thế chấp',
+        'shared_ownership': 'Sở hữu chung',
+    }
+
+    return labels[type] || 'Không xác định'
+}
+
 
 const goBack = () => {
     router.back()

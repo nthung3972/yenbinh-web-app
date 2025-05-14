@@ -1,5 +1,5 @@
 <template>
-  <div class="container">
+  <div class="container-fluid">
     <!-- Loading State -->
     <div v-if="isLoading" class="text-center py-5">
       <div class="spinner-border text-primary" role="status">
@@ -10,10 +10,10 @@
 
     <!-- Form Content -->
     <div v-else class="card shadow-lg border-0 p-3" style="border-radius: 12px;">
-      <div class="d-flex justify-content-between align-items-center mb-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
         <h4 class="fw-bold text-primary">
-          <Icon name="mdi:receipt-text" size="24" class="me-2" />
-          Thêm xe mới
+          <Icon name="fluent:vehicle-cab-20-filled" size="28" class="me-2" />
+          THÊM DANH SÁCH XE
         </h4>
         <button class="btn btn-outline-secondary" @click="goBack">
           <Icon name="mdi:arrow-left-circle" size="20" class="me-2" />
@@ -23,11 +23,11 @@
 
       <form @submit.prevent="createdVehicle">
         <!-- Danh sách xe -->
-        <fieldset class="mb-4">
+        <fieldset class="mb-2">
           <div v-for="(vehicle, index) in vehicles" :key="index" class="card mb-3 shadow-sm border-0"
             style="border-radius: 8px;">
             <div class="card-header bg-light d-flex justify-content-between align-items-center">
-              <h6 class="mb-0 fw-semibold">Xe {{ index + 1 }}</h6>
+              <h6 class="mb-0 fw-semibold">XE SỐ - {{ index + 1 }}</h6>
               <button v-if="vehicles.length > 1" type="button" class="btn btn-sm btn-outline-danger"
                 style="padding: 0.25rem 0.5rem;" @click="removeVehicle(index)">
                 <Icon name="mdi:delete" size="16" /> Xóa
@@ -36,7 +36,7 @@
 
             <div class="card-body">
               <!-- THÔNG TIN XE -->
-              <h6 class="fw-bold mb-3 text-primary">Thông tin xe</h6>
+              <h6 class="fw-bold mb-3 text-primary">THÔNG TIN XE</h6>
               <div class="row g-3">
                 <div class="col-md-6">
                   <label class="form-label fw-medium">Biển số xe <span class="text-danger">*</span></label>
@@ -61,7 +61,7 @@
                   </div>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-4">
                   <label class="form-label fw-medium">Hãng xe <span class="text-danger">*</span></label>
                   <input v-model="vehicle.vehicle_company" type="text" class="form-control shadow-sm"
                     :class="{ 'is-invalid': errors?.[`${index}.vehicle_company`] }" placeholder="Nhập tên hãng xe"
@@ -71,7 +71,7 @@
                   </div>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-4">
                   <label class="form-label fw-medium">Mẫu xe <span class="text-danger">*</span></label>
                   <input v-model="vehicle.vehicle_model" type="text" class="form-control shadow-sm"
                     :class="{ 'is-invalid': errors?.[`${index}.vehicle_model`] }" placeholder="Nhập tên mẫu xe"
@@ -81,7 +81,7 @@
                   </div>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-4">
                   <label class="form-label fw-medium">Màu xe <span class="text-danger">*</span></label>
                   <input v-model="vehicle.vehicle_color" type="text" class="form-control shadow-sm"
                     :class="{ 'is-invalid': errors?.[`${index}.vehicle_color`] }" placeholder="Nhập tên màu xe"
@@ -91,7 +91,7 @@
                   </div>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-4">
                   <label class="form-label fw-medium">Vị trí đỗ</label>
                   <input v-model="vehicle.parking_slot" type="text" class="form-control shadow-sm"
                     :class="{ 'is-invalid': errors?.[`${index}.parking_slot`] }" placeholder="Nhập vị trí đỗ (nếu có)"
@@ -101,7 +101,7 @@
                   </div>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-4">
                   <label class="form-label fw-medium">Trạng thái <span class="text-danger">*</span></label>
                   <select v-model="vehicle.status" class="form-select shadow-sm"
                     :class="{ 'is-invalid': errors?.[`${index}.status`] }" @change="onChange()" required>
@@ -113,7 +113,7 @@
                   </div>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-4">
                   <label class="form-label fw-medium">Ngày đăng ký <span class="text-danger">*</span></label>
                   <input v-model="vehicle.created_at" type="date" class="form-control shadow-sm"
                     :class="{ 'is-invalid': errors?.[`${index}.created_at`] }" @input="onChange()" required />
@@ -123,27 +123,25 @@
                 </div>
               </div>
 
-              <hr class="my-4" />
+              <hr class="my-4"/>
 
               <!-- THÔNG TIN CHỦ XE -->
-              <h5 class="fw-semibold mb-3">Thông tin chủ xe</h5>
+              <h6 class="fw-bold mb-3 text-primary">THÔNG TIN CHỦ XE</h6>
               <div class="row g-3">
-                <div class="col-md-6">
+                <div class="col-md-4">
                   <!-- Mã căn hộ -->
-                  <div class="col-md-6">
-                    <label class="form-label">Mã căn hộ</label>
+                    <label class="form-label fw-medium">Mã căn hộ<span class="text-danger">*</span></label>
                     <input v-model="vehicle.apartment_number" @input="onApartmentInput(index)" list="apartmentList"
                       class="form-control" placeholder="Nhập mã căn hộ" />
                     <datalist id="apartmentList">
                       <option v-for="apt in filteredApartments" :key="apt.apartment_id" :value="apt.apartment_number" />
                     </datalist>
-                  </div>
                   <div v-if="errors?.[`${index}.apartment_number`]" class="invalid-feedback">
                     {{ errors[`${index}.apartment_number`][0] }}
                   </div>
                 </div>
 
-                <div class="col-md-6">
+                <div class="col-md-4">
                   <label class="form-label fw-medium">Tên chủ xe <span class="text-danger">*</span></label>
                   <select v-model="vehicle.resident_id" class="form-select shadow-sm"
                     :class="{ 'is-invalid': errors?.[`${index}.resident_id`] }">
@@ -155,6 +153,16 @@
                   </select>
                   <div v-if="errors?.[`${index}.resident_id`]" class="invalid-feedback">
                     {{ errors[`${index}.resident_id`][0] }}
+                  </div>
+                </div>
+
+                <div class="col-md-4">
+                  <!-- Mã căn hộ -->
+                    <label class="form-label fw-medium">Ghi chú<span class="text-danger">*</span></label>
+                    <input v-model="vehicle.notes" @input="onApartmentInput(index)" list="apartmentList"
+                      class="form-control" placeholder="Ghi chú phương tiện" />
+                  <div v-if="errors?.[`${index}.notes`]" class="invalid-feedback">
+                    {{ errors[`${index}.notes`][0] }}
                   </div>
                 </div>
               </div>
@@ -170,10 +178,11 @@
         <!-- Action Buttons -->
         <div class="d-flex justify-content-end gap-2">
           <button type="button" class="btn btn-secondary" style="min-width: 120px;" @click="reset()">
+            <Icon name="bx:reset" size="20" class="me-1"/>
             Làm mới
           </button>
           <button type="submit" class="btn btn-primary" style="min-width: 120px;">
-            Lưu thay đổi
+            <Icon name="material-symbols-light:box-edit" size="20" class="me-1" />Lưu thay đổi
           </button>
         </div>
       </form>
@@ -237,6 +246,7 @@ const vehicles = ref([
     vehicle_company: '',
     vehicle_model: '',
     vehicle_color: '',
+    notes: '',
     building_id: building_id,
     residents: []
   }
@@ -281,7 +291,7 @@ const onApartmentInput = (index) => {
 }
 
 const addVehicle = () => {
-  vehicles.value.push({ license_plate: '', vehicle_type: '', parking_slot: '', apartment_number: '', status: 0, created_at: '', building_id: building_id });
+  vehicles.value.push({ license_plate: '', vehicle_type: '', parking_slot: '', apartment_number: '', status: 0, created_at: '',vehicle_company: '', vehicle_model: '', vehicle_color: '',  building_id: building_id, notes: '' });
 };
 
 const removeVehicle = (index) => {
@@ -290,7 +300,7 @@ const removeVehicle = (index) => {
 
 const reset = () => {
   vehicles.value = [
-    { license_plate: '', vehicle_type: '', parking_slot: '', amapartment_numberount: '', status: 0, created_at: '', vehicle_company: '', vehicle_model: '', vehicle_color: '', building_id: building_id,  }
+    { license_plate: '', vehicle_type: '', parking_slot: '', amapartment_numberount: '', status: 0, created_at: '', vehicle_company: '', vehicle_model: '', vehicle_color: '', building_id: building_id,  notes: '', residents: [] }
   ]
   setEditing(false)
 }
@@ -300,8 +310,8 @@ const goBack = () => {
 }
 
 const createdVehicle = async () => {
+  // console.log(vehicles.value)
   try {
-    console.log(vehicles.value)
     const result = await vehicleStore.create(vehicles.value)
     if (result) {
       toast.success('Thêm danh sách xe thành công!')

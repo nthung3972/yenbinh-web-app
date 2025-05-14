@@ -1,5 +1,5 @@
 <template>
-    <div class="container">
+    <div class="container-fluid">
         <!-- Loading State -->
         <div v-if="isLoading" class="text-center py-5">
             <div class="spinner-border text-primary" role="status">
@@ -10,10 +10,10 @@
 
         <!-- Form Content -->
         <div v-else class="card shadow-lg border-0 p-4" style="border-radius: 12px;">
-            <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="d-flex justify-content-between align-items-center border-bottom pb-3">
                 <h4 class="fw-bold text-primary">
-                    <Icon name="mdi:receipt-text" size="24" class="me-2" />
-                    Thêm cư dân
+                     <Icon name="ic:baseline-people" size="28" class="me-2"/>
+                    THÊM CƯ DÂN
                 </h4>
                 <button class="btn btn-outline-secondary" @click="goBack()">
                     <Icon name="mdi:arrow-left-circle" size="20" class="me-2" />
@@ -23,7 +23,9 @@
             <form @submit.prevent="handleSubmit">
                 <!-- Thông tin cư dân -->
                 <fieldset class="mb-4">
-                    <legend class="h5 fw-semibold text-dark mb-3">Thông tin cư dân</legend>
+                    <h4 class="d-flex fw-bold text-secondary justify-content-center align-items-center mt-3 mb-3">
+                        THÔNG TIN CƯ DÂN
+                    </h4>
                     <div class="row g-3">
                         <div class="col-md-6">
                             <label class="form-label fw-medium">Họ và tên <span class="text-danger">*</span></label>
@@ -79,7 +81,9 @@
 
                 <!-- Thông tin căn hộ -->
                 <fieldset class="mb-4">
-                    <legend class="h5 fw-semibold text-dark mb-3">Thông tin căn hộ</legend>
+                    <h5 class="d-flex fw-bold text-secondary align-items-center mt-3">
+                        THÔNG TIN CĂN HỘ
+                    </h5>
                     <div v-if="errors?.apartments" class="alert alert-danger mb-3">{{ errors.apartments }}</div>
                     <div v-for="(apartment, index) in defaultApartment" :key="index"
                         class="card mb-3 shadow-sm border-0" style="border-radius: 8px;">
@@ -113,8 +117,9 @@
                                         :class="{ 'is-invalid': errors?.apartments }" @change="onChange()">
                                         <option value="">Vai trò trong căn hộ</option>
                                         <option value="0">Chủ hộ</option>
-                                        <option value="1">Người thuê chính</option>
                                         <option value="2">Người thân</option>
+                                        <option value="1">Người thuê chính</option>
+                                        <option value="3">Người thuê</option>
                                     </select>
                                     <div v-if="errors?.[`apartments.${index}.role_in_apartment`]"
                                         class="invalid-feedback">
@@ -122,7 +127,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label fw-medium">Quan hệ với người sở hữu <span
-                                            class="text-danger">*</span></label>
+                                            class="text-danger"></span></label>
                                     <input v-model="apartment.notes" type="text" class="form-control shadow-sm"
                                         @input="onChange()" placeholder="Ghi rõ mối quan hệ với người sở hữu căn hộ"
                                         :class="{ 'is-invalid': errors?.notes }" />
@@ -140,10 +145,11 @@
                 <!-- Action Buttons -->
                 <div class="d-flex justify-content-end gap-2">
                     <button type="button" class="btn btn-outline-secondary" style="min-width: 120px;" @click="reset()">
+                        <Icon name="bx:reset" size="20" class="me-2" />
                         Làm mới
                     </button>
                     <button type="submit" class="btn btn-primary" style="min-width: 120px;" :disabled="isSubmitting">
-                        {{ isSubmitting ? 'Đang thêm...' : 'Thêm cư dân' }}
+                       <Icon name="material-symbols-light:box-edit" size="20" class="me-2" /> {{ isSubmitting ? 'Đang thêm...' : 'Thêm cư dân' }}
                     </button>
                 </div>
             </form>
