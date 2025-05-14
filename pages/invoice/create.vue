@@ -233,8 +233,7 @@ const totalFlexibleFees = computed(() => {
 })
 
 const totalFees = computed(() => {
-  console.log('Total Fixed Fees:', totalFixedFees.value)
-  return totalFixedFees.value + totalFlexibleFees.value
+  return Math.round(totalFixedFees.value) + Math.round(totalFlexibleFees.value)
 })
 
 const canCreateInvoice = computed(() => {
@@ -352,11 +351,10 @@ const createInvoice = async () => {
       due_date: due_date.value,
       fees: allFees,
     }
-    console.log('Data to create invoice:', data)
-
-    // await invoiceStore.createInvoice(data)
-    // toast.success('Tạo hóa đơn thành công')
-    // reset()
+    
+    await invoiceStore.createInvoice(data)
+    toast.success('Tạo hóa đơn thành công')
+    reset()
   } catch (error) {
     errors.value = error.errors
     toast.error('Lỗi khi tạo hóa đơn')
