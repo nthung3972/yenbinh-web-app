@@ -111,7 +111,7 @@
                             <input type="checkbox" :value="invoice.invoice_id" v-model="selectedInvoices" />
                         </td>
                         <td>{{ index + 1 }}</td>
-                        <td>{{ invoice.apartment.apartment_number }}</td>
+                        <td>{{ invoice.apartment?.apartment_number }}</td>
                         <td>{{ formatVND(invoice.total_amount) }}</td>
                         <td>{{ invoice.invoice_date }}</td>
                         <td>{{ formatVND(invoice.total_paid) }}</td>
