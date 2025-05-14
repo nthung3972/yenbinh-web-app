@@ -301,7 +301,7 @@ const exportInvoices = async () => {
     exportLoading.value = true
     try {
         const response = await axios.post(
-            'http://localhost:8000/api/admin/export/invoices/export',
+            'https://api.yenbinhmanagement.vn/api/admin/export/invoices/export',
             { invoice_ids: selectedInvoices.value },
             {
                 responseType: 'blob',
