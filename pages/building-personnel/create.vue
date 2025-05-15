@@ -11,7 +11,7 @@
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
                 <h4 class="fw-bold text-primary">
                     <Icon name="ion:home" size="24" class="me-2" />
-                    Thêm căn hộ
+                    Thêm nhân viên mới
                 </h4>
                 <button class="btn btn-outline-secondary" @click="goBack()">
                     <Icon name="mdi:arrow-left-circle" size="20" class="me-2" />
@@ -22,104 +22,102 @@
                 <form @submit.prevent="handleSubmit">
                     <div class="form-section">
                         <h5 class="section-title">
-                            <Icon name="mdi:information" size="20" class="me-2" />Thông tin căn hộ
+                            <Icon name="mdi:information" size="20" class="me-2" />Thông tin nhân viên
                         </h5>
                         <div class="row g-3">
-                            <div class="col-md-12">
+                            <div class="col-md-6">
                                 <div class="form-label-group">
-                                    <input v-model="apartment.apartment_number" type="text" class="form-control"
-                                        @input="onChange()" id="apartmentNumber" placeholder=" ">
-                                    <label for="apartmentNumber">Số căn hộ<span class="required-mark">*</span></label>
-                                    <div class="help-text">Ví dụ: A101, B202, v.v.</div>
-                                    <small v-if="errors?.['apartment_number']" class="text-danger">
-                                        {{ errors?.['apartment_number'][0] }}
+                                    <input v-model="personnel.personnel_name" type="text" class="form-control"
+                                        @input="onChange()" id="personnelName" placeholder=" ">
+                                    <label for="personnelName">Tên nhân viên<span class="required-mark">*</span></label>
+                                    <small v-if="errors?.['personnel_name']" class="text-danger">
+                                        {{ errors?.['personnel_name'][0] }}
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-label-group">
+                                    <input v-model="personnel.personnel_birth" type="date" class="form-control"
+                                        @input="onChange()" id="floorInput" placeholder=" ">
+                                    <label for="floorInput">Ngày sinh<span class="required-mark">*</span></label>
+                                    <small v-if="errors?.['personnel_birth']" class="text-danger">
+                                        {{ errors?.['personnel_birth'][0] }}
                                     </small>
                                 </div>
                             </div>
                         </div>
 
                         <div class="row g-3 mt-2">
-                            <div class="col-md-6">
-                                <div class="form-label-group">
-                                    <input v-model="apartment.floor_number" type="number" min="1" class="form-control"
-                                        @input="onChange()" id="floorInput" placeholder=" ">
-                                    <label for="floorInput">Số tầng<span class="required-mark">*</span></label>
-                                    <small v-if="errors?.['floor_number']" class="text-danger">
-                                        {{ errors?.['floor_number'][0] }}
-                                    </small>
-                                </div>
-                            </div>
                             <div class="col-md-6">
                                 <div class="form-label-group input-with-unit">
-                                    <input v-model="apartment.area" type="number" min="1" step="0.01"
-                                        @input="onChange()" class="form-control" id="areaInput" placeholder=" ">
-                                    <span class="input-unit">m²</span>
-                                    <label for="areaInput">Diện tích<span class="required-mark">*</span></label>
-                                    <small v-if="errors?.['area']" class="text-danger">
-                                        {{ errors?.['area'][0] }}
-                                    </small>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="row g-3 mt-2">
-                            <div class="col-md-6">
-                                <div class="form-label-group">
-                                    <select v-model="apartment.apartment_type" class="form-select" id="typeSelect"
-                                        @change="onChange()">
-                                        <option value="" disabled selected>Chọn loại căn hộ</option>
-                                        <option value="studio">Căn hộ studio</option>
-                                        <option value="1bedroom">1 Phòng ngủ</option>
-                                        <option value="2bedroom">2 Phòng ngủ</option>
-                                        <option value="3bedroom">3 Phòng ngủ</option>
-                                        <option value="duplex">Căn hộ thông tầng</option>
-                                        <option value="penthouse">Căn hộ áp mái</option>
-                                        <option value="dualkey">Căn hộ song lập</option>
-                                    </select>
-                                    <label for="typeSelect">Loại căn hộ<span class="required-mark"></span></label>
-                                    <small v-if="errors?.['apartment_type']" class="text-danger">
-                                        {{ errors?.['apartment_type'][0] }}
+                                    <input v-model="personnel.personnel_phone" type="text" @input="onChange()"
+                                        class="form-control" id="personnelPhone" placeholder=" ">
+                                    <label for="personnelPhone">Số điện thoại<span
+                                            class="required-mark">*</span></label>
+                                    <small v-if="errors?.['personnel_phone']" class="text-danger">
+                                        {{ errors?.['personnel_phone'][0] }}
                                     </small>
                                 </div>
                             </div>
 
                             <div class="col-md-6">
-                                <div class="form-label-group">
-                                    <select v-model="apartment.ownership_type" class="form-select" id="typeSelect"
-                                        @change="onChange()">
-                                        <option value="" disabled selected>Chọn loại sở hữu</option>
-                                        <option value="own">Sở hữu</option>
-                                        <option value="lease">Thuê</option>
-                                        <option value="lease_back">Thuê lại</option>
-                                        <option value="mortgage">Thế chấp</option>
-                                        <option value="shared_ownership">Sở hữu chung</option>
-                                    </select>
-                                    <label for="typeSelect">Loại sở hữu<span class="required-mark"></span></label>
-                                    <small v-if="errors?.['ownership_type']" class="text-danger">
-                                        {{ errors?.['ownership_type'][0] }}
-                                    </small>
-                                </div>
-                            </div>
-
-                            <div class="col-md-12">
-                                <div class="form-label-group">
-                                    <input v-model="apartment.notes" type="text" class="form-control"
-                                        @input="onChange()" id="notes" placeholder=" ">
-                                    <label for="apartmentNumber">Ghi chú<span class="required-mark"></span></label>
-                                    <small v-if="errors?.['notes']" class="text-danger">
-                                        {{ errors?.['notes'][0] }}
+                                <div class="form-label-group input-with-unit">
+                                    <input v-model="personnel.personnel_address" type="text" @input="onChange()"
+                                        class="form-control" id="personnelAddress" placeholder=" ">
+                                    <label for="personnelAddress">Địa chỉ<span class="required-mark">*</span></label>
+                                    <small v-if="errors?.['personnel_phone']" class="text-danger">
+                                        {{ errors?.['personnel_phone'][0] }}
                                     </small>
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                    <div class="form-section">
+                        <h5 class="section-title">
+                            <Icon name="mdi:information" size="20" class="me-2" />Thông tin công việc
+                        </h5>
+                        <div class="row g-3 mt-2">
+                            <div class="col-md-6">
+                                <div class="form-label-group">
+                                    <select v-model="personnel.position" class="form-select" id="typeSelect"
+                                        @change="onChange()">
+                                        <option value="" disabled selected>Vị trí làm việc</option>
+                                        <option value="accountant">Kế toán</option>
+                                        <option value="cleaner">Vệ sinh</option>
+                                        <option value="security">Bảo vệ</option>
+                                        <option value="receptionist">Lễ tân</option>
+                                        <option value="technical">Kỹ thuật</option>
+                                        <option value="supervisor">Giám sát</option>
+                                        <option value="assistant_manager">Phó trưởng BQL</option>
+                                        <option value="manager">Trưởng BQL</option>
+                                    </select>
+                                    <label for="typeSelect">Vị trí<span class="required-mark">*</span></label>
+                                    <small v-if="errors?.['position']" class="text-danger">
+                                        {{ errors?.['position'][0] }}
+                                    </small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-label-group input-with-unit">
+                                    <input v-money="moneyConfig" v-model="personnel.monthly_salary" type="text"
+                                        @input="onChange()" class="form-control" id="monthlySalary" placeholder=" ">
+                                    <label for="monthlySalary">Mức lương<span class="required-mark">*</span></label>
+                                    <small v-if="errors?.['monthly_salary']" class="text-danger">
+                                        {{ errors?.['monthly_salary'][0] }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-3">
                         <button type="button" class="btn btn-secondary" @click="reset()">
                             <Icon name="bx:reset" size="20" class="me-2" />Làm mới
                         </button>
                         <button type="submit" class="btn btn-primary px-4">
-                            <Icon name="lsicon:submit-filled" size="20" class="me-2" /> Thêm căn hộ
+                            <Icon name="lsicon:submit-filled" size="20" class="me-2" /> Lưu thay đổi
                         </button>
                     </div>
                 </form>
@@ -133,7 +131,7 @@
 
 <script setup>
 import { onMounted, ref } from 'vue'
-import { useApartmentStore } from '@/stores/apartment'
+import { useBuildingPersonnelStore } from '@/stores/building-personnel'
 import { useToast } from 'vue-toastification'
 import { useRouter } from 'vue-router'
 import ConfirmNavigationModal from '@/components/modal/UnsavedChangesModal.vue'
@@ -143,28 +141,35 @@ definePageMeta({
     layout: "dashboard"
 })
 
-const apartmentStore = useApartmentStore()
+const buildingPersonnelStore = useBuildingPersonnelStore()
 const toast = useToast()
 const isLoading = ref(false)
 const router = useRouter()
 const errors = ref({})
 
-const apartment = ref({
-    apartment_number: '',
-    floor_number: '',
-    area: '',
-    apartment_type: '',
-    ownership_type: '',
-    notes: ''
+const moneyConfig = {
+    prefix: '',          // Không cần tiền tố
+    thousands: ',',      // Dấu phân cách hàng nghìn
+    decimal: '.',        // Dấu thập phân
+    precision: 0         // Không có số thập phân
+}
+
+const personnel = ref({
+    personnel_name: '',
+    personnel_birth: '',
+    personnel_phone: '',
+    personnel_address: '',
+    position: '',
+    monthly_salary: 0
 })
 
 const reset = () => {
-    apartment.value.apartment_number = '',
-    apartment.value.floor_number = '',
-    apartment.value.area = '',
-    apartment.value.ownership_type = '',
-    apartment.value.apartment_type = '',
-    apartment.value.notes = ''
+    personnel.value.personnel_name = '',
+    personnel.value.personnel_birth = '',
+    personnel.value.personnel_phone = '',
+    personnel.value.personnel_address = '',
+    personnel.value.position = '',
+    personnel.value.monthly_salary = 0
     errors.value = ''
     setEditing(false)
 }
@@ -188,10 +193,18 @@ const goBack = () => {
 }
 
 const handleSubmit = async () => {
-    console.log("Submitting form...", apartment.value)
+    const salary = personnel.value.monthly_salary;
+    const monthly_salary = salary
+        ? Number(salary.toString().replace(/,/g, ''))
+        : 0;
+
+    const payload = {
+        ...personnel.value,
+        monthly_salary
+    };
     isLoading.value = true
     try {
-        const result = await apartmentStore.createApartment(apartment.value)
+        const result = await buildingPersonnelStore.create(payload)
         if (result) {
             toast.success("Thêm căn hộ thành công!", { timeout: 3000 })
             setEditing(false)
@@ -260,7 +273,7 @@ onMounted(() => {
 .btn-primary {
     background: linear-gradient(45deg, #4e73df, #224abe);
     border: none;
-    padding: 0.75rem;
+    padding: 0.5rem;
     font-weight: 600;
     border-radius: 7px;
     transition: all 0.3s;

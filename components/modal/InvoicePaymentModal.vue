@@ -90,12 +90,12 @@ function resetForm() {
 }
 
 const moneyConfig = {
-  decimal: '.', // Dấu thập phân
-  thousands: ',', // Dấu phân cách hàng nghìn
-  prefix: '', // Tiền tố
-  suffix: '', // Hậu tố
-  precision: 0, // Không có số thập phân
-  masked: false, // Lưu giá trị số gốc vào v-model
+    decimal: '.', 
+    thousands: ',', 
+    prefix: '', 
+    suffix: '', 
+    precision: 0, 
+    masked: false, 
 };
 
 function close() {

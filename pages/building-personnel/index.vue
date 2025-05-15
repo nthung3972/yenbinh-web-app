@@ -12,7 +12,7 @@
         <div v-else>
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h4 class="fw-bold text-primary mb-0">
-                    <Icon name="ion:home" size="28" class="me-2" /> Danh sách căn hộ
+                    <Icon name="icon-park-outline:file-staff-one" size="28" class="me-2" /> Danh sách nhân sự
                 </h4>
 
                 <div class="d-flex align-items-center gap-3">
@@ -21,16 +21,16 @@
                             <Icon name="material-symbols:search" />
                         </span>
                         <input v-model="filters.key_search" @keyup.enter="onSearch" type="text" class="form-control"
-                            placeholder="Nhập số căn hộ..." />
+                            placeholder="Nhập tên nhân sự..." />
                         <button class="btn btn-outline-primary" @click="onSearch">
                             Tìm
                         </button>
                     </div>
-                    <NuxtLink to="/apartment/create"
+                    <NuxtLink to="/building-personnel/create"
                         class="btn btn-success d-flex align-items-center justify-content-center"
                         style="white-space: nowrap;">
                         <Icon name="ic:baseline-add-circle-outline" size="20" class="me-1" />
-                        Thêm căn hộ
+                        Thêm nhân sự
                     </NuxtLink>
                 </div>
             </div>
@@ -45,21 +45,22 @@
                     </div>
 
                     <div class="row row-cols-1 row-cols-md-auto g-3 align-items-end">
-                        <!-- Loại căn hộ -->
+                        <!-- Vị trí -->
                         <div class="col-md-3">
                             <div class="form-label-group">
-                                <select v-model="filters.apartment_type" @change="onFilter" class="form-select"
+                                <select v-model="filters.position" @change="onFilter" class="form-select"
                                     id="typeSelect">
                                     <option value="">Tất cả</option>
-                                    <option value="studio">Căn hộ Studio</option>
-                                    <option value="1bedroom">1 Phòng ngủ</option>
-                                    <option value="2bedroom">2 Phòng ngủ</option>
-                                    <option value="3bedroom">3 Phòng ngủ</option>
-                                    <option value="duplex">Căn hộ thông tầng</option>
-                                    <option value="penthouse">Căn hộ áp mái</option>
-                                    <option value="dualkey">Căn hộ song lập</option>
+                                    <option value="manager">Trưởng BQL</option>
+                                    <option value="assistant_manager">Phó trưởng BQL</option>
+                                    <option value="supervisor">Giám sát</option>
+                                    <option value="accountant">Kế toán</option>
+                                    <option value="receptionist">Lễ tân</option>
+                                    <option value="cleaner">Vệ sinh</option>
+                                    <option value="technical">Kỹ thuật</option>
+                                    <option value="security">Bảo vệ</option>
                                 </select>
-                                <label for="typeSelect">Loại căn hộ<span class="required-mark"></span></label>
+                                <label for="typeSelect">Vị trí làm việc<span class="required-mark"></span></label>
                             </div>
                         </div>
 
@@ -68,8 +69,8 @@
                             <div class="form-label-group">
                                 <select v-model="filters.status" @change="onFilter" class="form-select">
                                     <option value="">Tất cả</option>
-                                    <option value="occupied">Đang sử dụng</option>
-                                    <option value="vacant">Căn hộ trống</option>
+                                    <option :value="0">Đang làm việc</option>
+                                    <option :value="1">Đã nghỉ việc</option>
                                 </select>
                                 <label for="typeSelect">Trạng thái<span class="required-mark"></span></label>
                             </div>
@@ -84,42 +85,34 @@
                     <thead class="table-primary sticky-top" style="z-index: 1;">
                         <tr>
                             <th style="width: 5%;">#</th>
-                            <th style="width: 10%;">Mã căn hộ</th>
-                            <th style="width: 15%;">Loại căn hộ</th>
-                            <th style="width: 15%;">Diện tích(m²)</th>
-                            <th style="width: 20%;">Chủ sở hữu</th>
-                            <th style="width: 15%;">Tình trạng</th>
-                            <th style="width: 15%;">Cập nhật bởi</th>
-                            <th style="width: 15%; text-align: center;">Hành động</th>
+                            <th style="width: 20%;">Tên nhân viên</th>
+                            <th style="width: 15%;">Số điện thoại</th>
+                            <th style="width: 15%;">Địa chỉ</th>
+                            <th style="width: 12%;">Vị trí</th>
+                            <th style="width: 12%;">Ngày bắt đầu</th>
+                            <th style="width: 11%;">Ngày kết thúc</th>
+                            <th style="width: 10%; text-align: center;">Hành động</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(apartment, index) in apartmentStore.apartmentsWithStatus" :key="index">
+                        <tr v-for="(personnel, index) in buildingPersonnelStore.buildingPersonnels" :key="index">
                             <td>{{ index + 1 }}</td>
-                            <td>{{ apartment.apartment_number }}</td>
-                            <td>{{ getApartmentTypeLabel(apartment.apartment_type) }}</td>
-                            <td>{{ apartment.area }}</td>
-                            <td>{{ apartment.current_residents[0]?.full_name ?? '---' }}</td>
-                            <td>
-                                <span :class="[
-                                    'badge rounded-pill px-3 py-2',
-                                    apartment.status === 'occupied' ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-muted'
-                                ]">
-                                    {{ apartment.status === 'occupied' ? 'Đang sử dụng' : 'Căn hộ trống' }}
-                                </span>
-                            </td>
-                            <td>{{ apartment.updated_by?.name ?? '---' }}</td>
-
-
+                            <td>{{ personnel.personnel_name }}</td>
+                            <td>{{ personnel.personnel_phone }}</td>   
+                            <td>{{ personnel.personnel_address }}</td>
+                            <td>{{ getPositionLabel(personnel.position) }}</td>
+                            <td>{{ formatDate(personnel.created_at) }}</td>
+                            <td>{{ personnel.move_out_date ? formatDate(personnel.move_out_date) : '----' }}</td>
                             <td class="text-center">
                                 <ActionDropdown buttonText="Thao tác" iconName="bx:chevron-down">
                                     <template #default="{ closeDropdown }">
-                                        <DropdownItem tag="NuxtLink" :to="`/apartment/detail/${apartment.apartment_id}`"
+                                        <!-- <DropdownItem tag="NuxtLink" :to="`/apartment/detail/${personnel.building_personnel_id
+}`"
                                             iconName="bxs:detail">
                                             Chi tiết
-                                        </DropdownItem>
+                                        </DropdownItem> -->
 
-                                        <DropdownItem tag="NuxtLink" :to="`/apartment/${apartment.apartment_id}/edit`"
+                                        <DropdownItem tag="NuxtLink" :to="`/apartment/edit/${personnel.building_personnel_id}`"
                                             iconName="bxs:edit-alt">
                                             Chỉnh sửa
                                         </DropdownItem>
@@ -132,7 +125,7 @@
             </div>
 
             <!-- Pagination -->
-            <Pagination :pagination="apartmentStore.pagination" @page-change="handlePageChange"
+            <Pagination :pagination="buildingPersonnelStore.pagination" @page-change="handlePageChange"
                 @rows-per-page-change="rowsPerPageChange" />
         </div>
     </div>
@@ -140,8 +133,7 @@
 
 <script setup>
 import { onMounted } from 'vue';
-import { useApartmentStore } from '@/stores/apartment'
-import { useAuthStore } from '@/stores/auth'
+import { useBuildingPersonnelStore } from '@/stores/building-personnel'
 import Pagination from '@/components/pagination/Pagination.vue'
 import ActionDropdown from '@/components/dropdown/actionDropdown.vue'
 import DropdownItem from '@/components/dropdown/dropdownItem.vue'
@@ -151,66 +143,71 @@ definePageMeta({
     layout: "dashboard"
 })
 
-const apartmentStore = useApartmentStore()
-const authStore = useAuthStore()
+const buildingPersonnelStore = useBuildingPersonnelStore()
 
 const filters = ref({
-    apartment_type: '',
+    position: '',
     status: '',
     key_search: '',
     page: 1,
     per_page: 10,
 })
 
-const getApartmentTypeLabel = (type) => {
+const getPositionLabel = (type) => {
     const labels = {
-        'studio': 'Căn hộ Studio',
-        '1bedroom': '1 Phòng ngủ',
-        '2bedroom': '2 Phòng ngủ',
-        '3bedroom': '3 Phòng ngủ',
-        'dualkey': 'Căn hộ song lập',
-        'penthouse': 'Căn hộ áp mái',
-        'duplex': 'Căn hộ thông tầng',
+        'accountant': 'Kế toán',
+        'cleaner': 'Vệ sinh',
+        'security': 'Bảo vệ',
+        'receptionist': 'Lễ tân',
+        'technical': 'Kỹ thuật',
+        'supervisor': 'Giám sát',
+        'assistant_manager': 'Phó trưởng BQL',
+        'manager': 'Trưởng BQL',
     }
 
     return labels[type] || 'Không xác định'
 }
 
-const isLoading = computed(() => apartmentStore.isLoading)
-const hasError = computed(() => apartmentStore.hasError)
+const formatDate = (date) => {
+  return new Date(date).toLocaleDateString("vi-VN");
+}
+
+const isLoading = computed(() => buildingPersonnelStore.isLoading)
+const hasError = computed(() => buildingPersonnelStore.hasError)
 
 const handlePageChange = (page) => {
     filters.value.page = page
-    loadApartments();
+    loadBuildingPersonnels();
 };
 
 const rowsPerPageChange = (per_page) => {
     filters.value.per_page = per_page
-    loadApartments();
+    loadBuildingPersonnels();
 };
 
 const onSearch = () => {
     filters.value.page = 1
-    loadApartments();
+    loadBuildingPersonnels();
 };
 
 const onFilter = () => {
     filters.value.page = 1
-    loadApartments()
+    loadBuildingPersonnels()
 }
 
-const loadApartments = async() => {
+const loadBuildingPersonnels = async() => {
     const params = { ...filters.value }
-    await apartmentStore.apartmentsByBuilding(
+    await buildingPersonnelStore.getBuildingPersonnels(
         params.page,
         params.per_page,
         params.key_search,
-        params.apartment_type,
+        params.position,
         params.status
     )
+    console.log('params', buildingPersonnelStore.buildingPersonnels)
 }
 
-onMounted(loadApartments);
+onMounted(loadBuildingPersonnels);
 </script>
 
 <style scoped>
