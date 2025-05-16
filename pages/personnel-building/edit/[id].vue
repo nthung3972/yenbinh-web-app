@@ -10,7 +10,7 @@
         <div class="card">
             <div class="card-header bg-white d-flex justify-content-between align-items-center">
                 <h4 class="fw-bold text-primary">
-                    <Icon name="ion:home" size="24" class="me-2" />
+                    <Icon name="mdi:user-add" size="28" class="me-2" />
                     Thêm nhân viên mới
                 </h4>
                 <button class="btn btn-outline-secondary" @click="goBack()">
@@ -19,16 +19,16 @@
                 </button>
             </div>
             <div class="card-body">
-                <form @submit.prevent="handleSubmit">
+                <form @submit.prevent="updatePersonnel">
                     <div class="form-section">
                         <h5 class="section-title">
-                            <Icon name="mdi:information" size="20" class="me-2" />Thông tin nhân viên
+                            <Icon name="lets-icons:user-alt-fill" size="20" class="me-2" />Thông tin nhân viên
                         </h5>
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <div class="form-label-group">
                                     <input v-model="personnel.personnel_name" type="text" class="form-control"
-                                        @input="onChange()" id="personnelName" placeholder=" ">
+                                    id="personnelName" placeholder=" ">
                                     <label for="personnelName">Tên nhân viên<span class="required-mark">*</span></label>
                                     <small v-if="errors?.['personnel_name']" class="text-danger">
                                         {{ errors?.['personnel_name'][0] }}
@@ -38,7 +38,7 @@
                             <div class="col-md-6">
                                 <div class="form-label-group">
                                     <input v-model="personnel.personnel_birth" type="date" class="form-control"
-                                        @input="onChange()" id="floorInput" placeholder=" ">
+                                    id="floorInput" placeholder=" ">
                                     <label for="floorInput">Ngày sinh<span class="required-mark">*</span></label>
                                     <small v-if="errors?.['personnel_birth']" class="text-danger">
                                         {{ errors?.['personnel_birth'][0] }}
@@ -50,7 +50,7 @@
                         <div class="row g-3 mt-2">
                             <div class="col-md-6">
                                 <div class="form-label-group input-with-unit">
-                                    <input v-model="personnel.personnel_phone" type="text" @input="onChange()"
+                                    <input v-model="personnel.personnel_phone" type="text"
                                         class="form-control" id="personnelPhone" placeholder=" ">
                                     <label for="personnelPhone">Số điện thoại<span
                                             class="required-mark">*</span></label>
@@ -62,7 +62,7 @@
 
                             <div class="col-md-6">
                                 <div class="form-label-group input-with-unit">
-                                    <input v-model="personnel.personnel_address" type="text" @input="onChange()"
+                                    <input v-model="personnel.personnel_address" type="text"
                                         class="form-control" id="personnelAddress" placeholder=" ">
                                     <label for="personnelAddress">Địa chỉ<span class="required-mark">*</span></label>
                                     <small v-if="errors?.['personnel_phone']" class="text-danger">
@@ -75,13 +75,12 @@
 
                     <div class="form-section">
                         <h5 class="section-title">
-                            <Icon name="mdi:information" size="20" class="me-2" />Thông tin công việc
+                            <Icon name="material-symbols:work" size="20" class="me-2" />Thông tin công việc
                         </h5>
                         <div class="row g-3 mt-2">
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-label-group">
-                                    <select v-model="personnel.position" class="form-select" id="typeSelect"
-                                        @change="onChange()">
+                                    <select v-model="personnel.position" class="form-select" id="typeSelect">
                                         <option value="" disabled selected>Vị trí làm việc</option>
                                         <option value="accountant">Kế toán</option>
                                         <option value="cleaner">Vệ sinh</option>
@@ -99,13 +98,50 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-md-4">
                                 <div class="form-label-group input-with-unit">
                                     <input v-money="moneyConfig" v-model="personnel.monthly_salary" type="text"
-                                        @input="onChange()" class="form-control" id="monthlySalary" placeholder=" ">
+                                    class="form-control" id="monthlySalary" placeholder=" ">
                                     <label for="monthlySalary">Mức lương<span class="required-mark">*</span></label>
                                     <small v-if="errors?.['monthly_salary']" class="text-danger">
                                         {{ errors?.['monthly_salary'][0] }}
+                                    </small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-label-group">
+                                    <select v-model="personnel.status" class="form-select" id="typeSelect">
+                                        <option value="" disabled selected>Chọn trạng thái</option>
+                                        <option :value="0">Đang làm việc</option>
+                                        <option :value="1">Đã nghỉ việc</option>
+                                    </select>
+                                    <label for="typeSelect">Trạng thái<span class="required-mark">*</span></label>
+                                    <small v-if="errors?.['status']" class="text-danger">
+                                        {{ errors?.['status'][0] }}
+                                    </small>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-4">
+                                <div class="form-label-group input-with-unit">
+                                    <input v-model="personnel.start_date" type="date"
+                                        class="form-control" id="startDate" placeholder=" ">
+                                    <label for="startDate">Ngày bắt đầu<span class="required-mark">*</span></label>
+                                    <small v-if="errors?.['start_date']" class="text-danger">
+                                        {{ errors?.['start_date'][0] }}
+                                    </small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-4">
+                                <div class="form-label-group input-with-unit">
+                                    <input v-model="personnel.inactive_date" type="date"
+                                        class="form-control" id="startDate" placeholder=" ">
+                                    <label for="startDate">Ngày kết thúc<span class="required-mark"></span></label>
+                                    <small v-if="errors?.['inactive_date']" class="text-danger">
+                                        {{ errors?.['inactive_date'][0] }}
                                     </small>
                                 </div>
                             </div>
@@ -124,16 +160,13 @@
             </div>
         </div>
     </div>
-
-    <!-- Modal xác nhận chuyển hướng -->
-    <ConfirmNavigationModal v-model="showConfirmModal" @confirm="confirmNavigation" @cancel="cancelNavigation" />
 </template>
 
 <script setup>
 import { onMounted, ref } from 'vue'
 import { useBuildingPersonnelStore } from '@/stores/building-personnel'
 import { useToast } from 'vue-toastification'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import ConfirmNavigationModal from '@/components/modal/UnsavedChangesModal.vue'
 
 definePageMeta({
@@ -143,15 +176,19 @@ definePageMeta({
 
 const buildingPersonnelStore = useBuildingPersonnelStore()
 const toast = useToast()
-const isLoading = ref(false)
 const router = useRouter()
 const errors = ref({})
+const route = useRoute()
+const building_personnel_id = route.params.id
+
+const isLoading = computed(() => buildingPersonnelStore.isLoading);
 
 const moneyConfig = {
     prefix: '',          // Không cần tiền tố
     thousands: ',',      // Dấu phân cách hàng nghìn
     decimal: '.',        // Dấu thập phân
-    precision: 0         // Không có số thập phân
+    precision: 0,         // Không có số thập phân
+    masked: true
 }
 
 const personnel = ref({
@@ -159,8 +196,11 @@ const personnel = ref({
     personnel_birth: '',
     personnel_phone: '',
     personnel_address: '',
+    start_date: '',
+    inactive_date: '',
     position: '',
-    monthly_salary: 0
+    monthly_salary: '',
+    status: ''
 })
 
 const reset = () => {
@@ -169,58 +209,56 @@ const reset = () => {
     personnel.value.personnel_phone = '',
     personnel.value.personnel_address = '',
     personnel.value.position = '',
-    personnel.value.monthly_salary = 0
+    personnel.value.monthly_salary = '',
+    personnel.value.start_date = '',
+    personnel.value.inactive_date = '',
+    personnel.value.status = '',
     errors.value = ''
-    setEditing(false)
-}
-
-const {
-    hasUnsavedChanges,
-    showConfirmModal,
-    setupRouteGuard,
-    setEditing,
-    confirmNavigation,
-    cancelNavigation,
-    navigateSafely
-} = useUnsavedChangesGuard()
-
-const onChange = () => {
-    setEditing(true)
 }
 
 const goBack = () => {
     router.back();
 }
 
-const handleSubmit = async () => {
-    const salary = personnel.value.monthly_salary;
-    const monthly_salary = salary
-        ? Number(salary.toString().replace(/,/g, ''))
-        : 0;
+const loadPersonnel = async () => {
+    try {
+        await buildingPersonnelStore.getPersonnel(building_personnel_id);
+        const salary = buildingPersonnelStore.personnel.monthly_salary || 0;
+        personnel.value = {
+            ...buildingPersonnelStore.personnel,
+            monthly_salary: Number(salary).toLocaleString('en-US', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            })
+        };
+    } catch (error) {
+        console.error('Lỗi khi tải dữ liệu nhân sự:', error);
+    }
+};
+
+const updatePersonnel = async () => {
+    const salary = personnel.value.monthly_salary || '0';
+
+    const monthly_salary = Number(salary.toString().replace(/,/g, ''));
 
     const payload = {
         ...personnel.value,
         monthly_salary
     };
-    isLoading.value = true
-    try {
-        const result = await buildingPersonnelStore.create(payload)
-        if (result) {
-            toast.success("Thêm căn hộ thành công!", { timeout: 3000 })
-            setEditing(false)
-            errors.value = null
-            reset()
-        }
-    } catch (error) {
-        errors.value = error.errors
-        toast.error("Thêm căn hộ thất bại!", { timeout: 3000 });
-    }
-    isLoading.value = false
-}
 
-onMounted(() => {
-    setupRouteGuard()
-})
+    try {
+        await buildingPersonnelStore.updatePersonnel(building_personnel_id, payload);
+        toast.success('Cập nhật thông tin thành công!');
+        router.push('/personnel-building');
+    } catch (error) {
+        errors.value = error.data ?? error.errors;
+        toast.error('Cập nhật dữ liệu nhân sự thất bại!');
+    }
+};
+
+onMounted(async () => {
+    await loadPersonnel();
+});
 </script>
 
 <style scoped>
@@ -305,6 +343,7 @@ onMounted(() => {
 }
 
 .section-title {
+    display: flex;
     font-size: 1.1rem;
     color: #4e73df;
     border-bottom: 2px solid #eaecf4;

@@ -26,7 +26,7 @@
                             Tìm
                         </button>
                     </div>
-                    <NuxtLink to="/building-personnel/create"
+                    <NuxtLink to="/personnel-building/create"
                         class="btn btn-success d-flex align-items-center justify-content-center"
                         style="white-space: nowrap;">
                         <Icon name="ic:baseline-add-circle-outline" size="20" class="me-1" />
@@ -85,8 +85,8 @@
                     <thead class="table-primary sticky-top" style="z-index: 1;">
                         <tr>
                             <th style="width: 5%;">#</th>
-                            <th style="width: 20%;">Tên nhân viên</th>
-                            <th style="width: 15%;">Số điện thoại</th>
+                            <th style="width: 17%;">Tên nhân viên</th>
+                            <th style="width: 13%;">Số điện thoại</th>
                             <th style="width: 15%;">Địa chỉ</th>
                             <th style="width: 12%;">Vị trí</th>
                             <th style="width: 12%;">Ngày bắt đầu</th>
@@ -101,7 +101,7 @@
                             <td>{{ personnel.personnel_phone }}</td>   
                             <td>{{ personnel.personnel_address }}</td>
                             <td>{{ getPositionLabel(personnel.position) }}</td>
-                            <td>{{ formatDate(personnel.created_at) }}</td>
+                            <td>{{ formatDate(personnel.start_date) }}</td>
                             <td>{{ personnel.move_out_date ? formatDate(personnel.move_out_date) : '----' }}</td>
                             <td class="text-center">
                                 <ActionDropdown buttonText="Thao tác" iconName="bx:chevron-down">
@@ -112,7 +112,7 @@
                                             Chi tiết
                                         </DropdownItem> -->
 
-                                        <DropdownItem tag="NuxtLink" :to="`/apartment/edit/${personnel.building_personnel_id}`"
+                                        <DropdownItem tag="NuxtLink" :to="`/personnel-building/edit/${personnel.building_personnel_id}`"
                                             iconName="bxs:edit-alt">
                                             Chỉnh sửa
                                         </DropdownItem>
@@ -204,7 +204,6 @@ const loadBuildingPersonnels = async() => {
         params.position,
         params.status
     )
-    console.log('params', buildingPersonnelStore.buildingPersonnels)
 }
 
 onMounted(loadBuildingPersonnels);
