@@ -7,5 +7,13 @@ export const buildingPersonnelApi = {
 
     create(data) {
         return apiService.post('/building-personnel/create', data)
-    }
+    },
+
+    edit($id) {
+        return apiService.get(`/building-personnel/edit/${$id}`);
+    },
+
+    update($id, data) {
+        return apiService.put(`/building-personnel/update/${$id}`, data);
+    },
 };

@@ -5,6 +5,7 @@ import { useDashboardStore } from '@/stores/dashboard'
 export const useBuildingPersonnelStore = defineStore("building-personnel", {
     state: () => ({
         buildingPersonnels: [],
+        personnel: {},
         pagination: {
             current_page: 1,
             per_page: '',
@@ -42,6 +43,22 @@ export const useBuildingPersonnelStore = defineStore("building-personnel", {
             }
         },
 
+        async getPersonnel(id) {
+            this.loading = true
+            try {
+                const response = await buildingPersonnelApi.edit(id)
+                if (response.data) {
+                    this.personnel = response.data.data.data
+                }
+                this.error = null
+            } catch (error) {
+                this.error = "Đã xảy ra lỗi khi tải thông tin tòa nhà!";
+                throw error;
+            } finally {
+                this.loading = false
+            }
+        },
+
         async create(data) {
             const dashboardStore = useDashboardStore();
             const building_id = dashboardStore.getSelectedBuildingId;
@@ -59,6 +76,21 @@ export const useBuildingPersonnelStore = defineStore("building-personnel", {
                 throw error;
             } finally {
                 this.loading = false;
+            }
+        },
+
+        async updatePersonnel(id, data) {
+            this.loading = true
+            try {
+                console.log(data)
+                const response = await buildingPersonnelApi.update(id, data)
+                console.log('response', response)
+                this.error = null
+            } catch (error) {
+                this.error = "Đã xảy ra lỗi khi cập nhật thông tin nhân sự!";
+                throw error;
+            } finally {
+                this.loading = false
             }
         },
 
