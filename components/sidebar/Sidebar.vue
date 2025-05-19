@@ -118,6 +118,14 @@
                             </span>Quản lý xe
                         </a>
                     </li>
+                    <li>
+                        <a href="#" :class="getActiveClass('/personnel-building')" class="nav-link text-white py-2"
+                            @click.prevent="$emit('check-building-and-navigate', '/personnel-building')">
+                            <span>
+                                <Icon name="icon-park-outline:file-staff-one" size="24" />
+                            </span>Quản lý nhân sự
+                        </a>
+                    </li>
                 </div>
             </div>
 

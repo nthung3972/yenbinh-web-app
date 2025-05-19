@@ -12,7 +12,11 @@ export default defineNuxtConfig({
       ],
     },
   },
-  modules: ['@pinia/nuxt', '@nuxt/icon'], 
+  modules: [
+    '@pinia/nuxt',
+    '@nuxt/icon',
+    'pinia-plugin-persistedstate/nuxt',
+  ], 
   runtimeConfig: {
     public: {
       apiUrl: process.env.NUXT_PUBLIC_API_URL || "https://api.yenbinhmanagement.vn/api/admin",

@@ -6,8 +6,9 @@ export const useDashboardStore = defineStore("dashboard", {
         apiData: null,
         statsBuilding: null,
         selectedBuildingId: 'all',
-        error: null
+        error: null,
     }),
+    persist: true,
 
     actions: {
         async fetchStatsBuildings() {
