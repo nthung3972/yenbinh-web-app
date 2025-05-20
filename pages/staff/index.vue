@@ -9,13 +9,13 @@
         <div v-else-if="hasError">{{ hasError }}</div>
         <div v-else>
             <div class="d-flex justify-content-between align-items-center mb-3 p-bottom">
-                <h5 class="fw-bold text-primary mb-0"><Icon name="ic:baseline-people" size="24" />Danh sách nhân viên</h5>
+                <h5 class="fw-bold text-primary mb-0"><Icon name="ic:baseline-people" size="24" class="me-2"/>Danh sách nhân viên</h5>
                 <div class="input-group w-50">
                     <span class="input-group-text">
                         <Icon name="material-symbols:search" />
                     </span>
                     <input v-model="searchKeyword" @keyup.enter="onSearch" type="text" class="form-control"
-                        placeholder="Điền tên tòa nhà..." />
+                        placeholder="Điền tên nhân viên hoặc tên tòa nhà..." />
                     <button class="btn btn-primary" @click="onSearch">Tìm</button>
                 </div>
                 <NuxtLink to="/staff/create" class="btn btn-primary d-flex align-items-center">
