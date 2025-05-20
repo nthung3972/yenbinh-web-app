@@ -22,6 +22,7 @@ export const useApartmentStore = defineStore("apartment", {
         async apartmentsByBuilding(page = 1, perPage = 10, keyword = '', apartment_type = '', status) {
             const dashboardStore = useDashboardStore();
             const building_id = dashboardStore.getSelectedBuildingId;
+            console.log(building_id)
 
             this.loading = true;
             try {
