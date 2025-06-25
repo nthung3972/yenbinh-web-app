@@ -10,7 +10,7 @@
     <div v-else>
       <div class="d-flex justify-content-between align-items-center mb-3 p-bottom">
   
-        <h5 class="fw-bold text-primary mb-0"><Icon name="mdi:building" size="24" />Danh sách tòa nhà</h5>
+        <h5 class="fw-bold text-primary mb-0"><Icon name="mdi:building" size="24" class="me-2"/>Danh sách tòa nhà</h5>
         <div class="input-group w-50">
           <span class="input-group-text">
             <Icon name="material-symbols:search" />
@@ -49,7 +49,7 @@
               </td>
               <td>{{ building.floors }}</td>
               <td>{{ building.total_area }} (m²)</td>
-              <td>{{ formatVND(building.management_fee_per_m2) }}đ</td>
+              <td>{{ formatVND(building.management_fee_per_m2) }}</td>
               <td>{{ getBuildingType(building.building_type) }}</td>
               <td>
                 <span :class="[

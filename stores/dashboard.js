@@ -43,9 +43,9 @@ export const useDashboardStore = defineStore("dashboard", {
             this.selectedBuildingId = id;
         },
 
-        resetStore() {
-            this.selectedBuildingId = 'all'
-        }
+        // resetStore() {
+        //     this.selectedBuildingId = 'all'
+        // }
     },
 
     getters: {
