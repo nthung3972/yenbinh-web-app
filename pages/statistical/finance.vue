@@ -177,7 +177,7 @@
         <div class="col-lg-5">
           <div class="card shadow-sm h-100">
             <div class="card-header bg-white d-flex align-items-center border-0 me-2">
-              <h5 class="mb-0">Hóa đơn chưa thanh toán </h5> 
+              <h5 class="mb-0">Hóa đơn chưa thanh toán ({{ debtStore.pagination.total }} hóa đơn)</h5> 
             </div>
             <div class="card-body p-0">
               <div class="table-responsive" style="max-height: 400px; overflow-y: auto;">
@@ -358,7 +358,7 @@ const totalDebt = computed(() => debtStore.debts.total_debt);
 const overdueDebt = computed(() => debtStore.debts.overdue_debt);
 const totalFees = computed(() => debtStore.debts.total_fees);
 const totalFeesAmount = computed(() => {
-  return totalFees?.value.reduce((sum, fee) => sum + fee.amount, 0);
+  return totalFees?.value?.reduce((sum, fee) => sum + fee.amount, 0);
 });
 
 const unpaidInvoices = computed(() => {
@@ -404,7 +404,7 @@ const renderCharts = () => {
   // 1. Biểu đồ tỷ lệ thanh toán
   const paymentRatioCtx = document.getElementById('paymentRatioChart');
   if (paymentRatioCtx) {
-    if (paymentRatioChart) paymentRatioChart.destroy(); // Hủy biểu đồ cũ
+    if (paymentRatioChart) paymentRatioChart.destroy(); 
 
     paymentRatioChart = new Chart(paymentRatioCtx, {
       type: 'doughnut',
@@ -430,19 +430,20 @@ const renderCharts = () => {
   // 2. Biểu đồ trạng thái hóa đơn
   const invoiceStatusCtx = document.getElementById('invoiceStatusChart');
   if (invoiceStatusCtx) {
-    if (invoiceStatusChart) invoiceStatusChart.destroy(); // Hủy biểu đồ cũ
+    if (invoiceStatusChart) invoiceStatusChart.destroy(); 
 
-    const statusCounts = { 0: 0, 1: 0, 2: 0, 3: 0 };
-    debtStore.debts.invoices.forEach(invoice => {
-      statusCounts[invoice.status] = (statusCounts[invoice.status] || 0) + 1;
-    });
+    // const statusCounts = { 0: 0, 1: 0, 2: 0, 3: 0 };
+
+    // debtStore.debts.invoices.forEach(invoice => {
+    //   statusCounts[invoice.status] = (statusCounts[invoice.status] || 0) + 1;
+    // });
 
     invoiceStatusChart = new Chart(invoiceStatusCtx, {
       type: 'pie',
       data: {
         labels: ['Chưa thanh toán', 'Đã thanh toán', 'Đã quá hạn', 'Thanh toán một phần'],
         datasets: [{
-          data: [statusCounts[0], statusCounts[1], statusCounts[2], statusCounts[3]],
+          data: [debtStore.debts.unpaid_count, debtStore.debts.paid_count, debtStore.debts.partially_paid_count, debtStore.debts.overdue_count],
           backgroundColor: ['#ffc107', '#28a745', 'red', '#17a2b8'],
           borderWidth: 1
         }]
@@ -461,7 +462,7 @@ const renderCharts = () => {
   // 3. Biểu đồ phân bổ chi phí
   const feeDistributionCtx = document.getElementById('feeDistributionChart');
   if (feeDistributionCtx) {
-    if (feeDistributionChart) feeDistributionChart.destroy(); // Hủy biểu đồ cũ
+    if (feeDistributionChart) feeDistributionChart.destroy();
 
     const feeLabels = totalFees.value.map(fee => fee.type);
     const feeAmounts = totalFees.value.map(fee => fee.amount);

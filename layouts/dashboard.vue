@@ -4,7 +4,7 @@
       <Sidebar :buildings="buildings" :selected-building-id="String(selectedBuildingId)" @building-change="handleBuildingChange"
       @check-building-and-navigate="checkBuildingAndNavigate" />
     <div class="content flex-grow-1">
-      <Header :user-info="userInfo.user" />
+      <Header :user-info="userInfo?.user" />
       <main>
         <slot />
       </main>
