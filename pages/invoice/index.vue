@@ -96,12 +96,13 @@
                         </th>
                         <th style="width: 5%;">#</th>
                         <th style="width: 10%;">Mã căn hộ</th>
-                        <th style="width: 10%;">Tổng hóa đơn</th>
                         <th style="width: 10%;">Ngày ban hành</th>
+                        <th style="width: 10%;">Tổng hóa đơn</th>
+                        <th style="width: 10%;">Phí tháng</th>
+                        <th style="width: 10%;">Dư nợ</th>
                         <th style="width: 10%;">Đã thanh toán</th>
                         <th style="width: 10%;">Còn lại</th>
                         <th style="width: 15%;">Trạng thái</th>
-                        <th style="width: 10%;">Người tạo</th>
                         <th style="width: 20%; text-align: center;">Hành động</th>
                     </tr>
                 </thead>
@@ -112,8 +113,10 @@
                         </td>
                         <td>{{ index + 1 }}</td>
                         <td>{{ invoice.apartment.apartment_number }}</td>
-                        <td>{{ formatVND(invoice.total_amount) }}</td>
                         <td>{{ invoice.invoice_date }}</td>
+                        <td>{{ formatVND(invoice.total_amount) }}</td>
+                        <td>{{ formatVND(invoice.monthly_fee) }}</td>
+                        <td>{{ formatVND(invoice.previous_balance) }}</td>
                         <td>{{ formatVND(invoice.total_paid) }}</td>
                         <td>{{ formatVND(invoice.remaining_balance) }}</td>
                         <td>
@@ -130,7 +133,6 @@
                                             : 'Thanh toán một phần' }}
                             </span>
                         </td>
-                        <td>{{ invoice.updated_by?.name ?? '----' }}</td>
                         <td class="text-center">
                             <ActionDropdown buttonText="Thao tác" iconName="bx:chevron-down">
                                 <template #default="{ closeDropdown }">
