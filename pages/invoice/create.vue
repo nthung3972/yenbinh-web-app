@@ -76,6 +76,27 @@
             </table>
           </div>
 
+           <!-- Dư nợ tháng trước -->
+          <div v-if="carryOverBalances" class="mb-4">
+            <h5 class="fw-bold text-primary mb-3">Dư nợ</h5>
+            <table class="table table-bordered">
+              <thead class="table-light">
+                <tr>
+                  <th style="width: 30%;">Tháng</th>
+                  <th style="width: 20%;">Số tiền (VNĐ)</th>
+                  <th style="width: 50%;">Mô tả</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr v-for="(balance, index) in carryOverBalances" :key="index">
+                  <td>{{ balance.month }}</td>
+                  <td>{{ formatCurrency(balance.amount) }}</td>
+                  <td>{{ balance.description }}</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
           <!-- Phí linh hoạt -->
           <div class="mb-4">
             <h5 class="fw-bold text-primary mb-3">Phí linh hoạt</h5>
@@ -90,21 +111,26 @@
                 </select>
               </div>
               <div class="col-md-1">
-                <label :for="'fee-quantity-' + index" class="form-label">Số lượng<span class="text-danger">*</span></label>
+                <label :for="'fee-quantity-' + index" class="form-label">Số lượng<span
+                    class="text-danger">*</span></label>
                 <input :id="'fee-quantity-' + index" v-model.number="fee.quantity" type="number" class="form-control"
                   min="0" @input="calculateAmount(index), onChange()" />
               </div>
               <div class="col-md-2">
-                <label :for="'fee-price-' + index" class="form-label">Đơn giá (VNĐ)<span class="text-danger">*</span></label>
+                <label :for="'fee-price-' + index" class="form-label">Đơn giá (VNĐ)<span
+                    class="text-danger">*</span></label>
                 <input :id="'fee-price-' + index" v-model.number="fee.price" type="number" class="form-control" min="0"
                   @input="calculateAmount(index), onChange()" />
               </div>
               <div class="col-md-2">
-                <label :for="'fee-amount-' + index" class="form-label">Số tiền (VNĐ)<span class="text-danger">*</span></label>
-                <input :id="'fee-amount-' + index" :value="formatAmount(fee.amount)" type="number" class="form-control" readonly />
+                <label :for="'fee-amount-' + index" class="form-label">Số tiền (VNĐ)<span
+                    class="text-danger">*</span></label>
+                <input :id="'fee-amount-' + index" :value="formatAmount(fee.amount)" type="number" class="form-control"
+                  readonly />
               </div>
               <div class="col-md-4">
-                <label :for="'fee-description-' + index" class="form-label">Mô tả<span class="text-danger">*</span></label>
+                <label :for="'fee-description-' + index" class="form-label">Mô tả<span
+                    class="text-danger">*</span></label>
                 <input :id="'fee-description-' + index" v-model="fee.description" type="text" class="form-control"
                   @input="onChange()" />
               </div>
@@ -121,10 +147,15 @@
 
           <!-- Tóm tắt hóa đơn -->
           <div v-if="fees" class="mb-4">
-            <h5 class="fw-bold text-success mb-3"><Icon name="fluent:feed-32-filled" size="24" class="me-2" />CHI TIẾT HÓA ĐƠN</h5>
+            <h5 class="fw-bold text-success mb-3">
+              <Icon name="fluent:feed-32-filled" size="24" class="me-2" />CHI TIẾT HÓA ĐƠN
+            </h5>
             <div class="alert alert-info">
               <p class="mb-1">
                 <strong>Tổng phí cố định:</strong> {{ formatCurrency(totalFixedFees) }}
+              </p>
+              <p class="mb-1">
+                <strong>Tổng dư nợ:</strong> {{ formatCurrency(totalCarryOverBalance) }}
               </p>
               <p class="mb-1">
                 <strong>Tổng phí linh hoạt:</strong> {{ formatCurrency(totalFlexibleFees) }}
@@ -172,6 +203,7 @@ definePageMeta({
 const apartments = ref([])
 const selectedApartmentId = ref('')
 const fees = ref(null)
+const carryOverBalances = ref([])
 const flexibleFees = ref([])
 const flexibleFeeTypes = ref([])
 const dashboardStore = useDashboardStore()
@@ -223,17 +255,24 @@ const totalFixedFees = computed(() => {
   }, 0)
 })
 
+const totalCarryOverBalance = computed(() => {
+  if (!carryOverBalances.value || !Array.isArray(carryOverBalances.value)) return 0
+  return carryOverBalances.value.reduce((sum, balance) => {
+    return sum + parseFloat(balance.amount || 0)
+  }, 0)
+})
+
 const formatAmount = (value) => {
-    if (typeof value !== 'number') return value;
-    return value.toLocaleString('vi-VN'); // hoặc 'en-US' nếu bạn muốn dùng dấu phẩy
-  }
+  if (typeof value !== 'number') return value;
+  return value.toLocaleString('vi-VN');
+}
 
 const totalFlexibleFees = computed(() => {
   return flexibleFees.value.reduce((sum, fee) => sum + Number(fee.amount || 0), 0)
 })
 
 const totalFees = computed(() => {
-  return Math.round(totalFixedFees.value) + Math.round(totalFlexibleFees.value)
+  return Math.round(totalFixedFees.value) + Math.round(totalFlexibleFees.value) + Math.round(totalCarryOverBalance.value)
 })
 
 const canCreateInvoice = computed(() => {
@@ -274,7 +313,10 @@ const fetchApartmentFees = async () => {
   if (!selectedApartmentId.value) return
   try {
     const data = await invoiceStore.getApartmentFees(selectedApartmentId.value)
-    fees.value = data
+    console.log('Fetched fees:', data)
+    fees.value = data.fixed_fees || []
+    carryOverBalances.value = data.carry_over_balances || []
+
   } catch (error) {
     toast.error('Lỗi khi lấy phí cố định')
     fees.value = null
@@ -317,10 +359,13 @@ const getFixedFees = () => {
     else if (fee.type === 'Thù lao ban quản trị') {
       fee_type_id = 6
     }
+    else if (fee.type.includes('Nợ tháng') || fee.type.includes('Dư tháng')) {
+      fee_type_id = 8
+    }
 
     return {
       fee_type_id,
-      amount: fee.amount,
+      amount: Number(fee.amount),
       description: fee.description,
     }
   })
@@ -343,15 +388,22 @@ const createInvoice = async () => {
       })),
     ]
 
+    const monllyAmount = allFees.reduce((sum, fee) => {
+      return sum + (fee.amount || 0)
+    }, 0)
+
     const data = {
       apartment_id: selectedApartmentId.value,
       building_id: building_id,
+      monthly_amount: monllyAmount,
       total_amount: totalFees.value,
       invoice_date: invoice_date.value,
       due_date: due_date.value,
       fees: allFees,
     }
-    
+
+    console.log('Creating invoice with data:', data)
+
     await invoiceStore.createInvoice(data)
     toast.success('Tạo hóa đơn thành công')
     reset()
