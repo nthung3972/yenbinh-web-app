@@ -219,7 +219,12 @@ import { useToast } from 'vue-toastification'
 
 definePageMeta({
     middleware: "auth",
-    layout: "dashboard"
+    layout: "dashboard",
+    parent: '/staff',
+    intermediates: [
+        { label: 'Chi tiết', to: null }
+    ],
+    useStaffName: true 
 })
 
 const staffStore = useStaffStore()

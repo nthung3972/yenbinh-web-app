@@ -1,5 +1,6 @@
 <!-- pages/login.vue -->
 <template>
+  <GlobalLoading />
   <div class="container-fluid vh-100 p-0">
     <div class="row h-100 g-0">
       <div class="col-md-6 d-none d-md-block bg-image">
@@ -46,9 +47,9 @@
                 </div>
               </div>
 
-              <button type="submit" class="btn btn-primary w-100 mt-3" :disabled="loading">
-                <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span>
-                {{ loading ? "Đang xử lý..." : "Đăng nhập" }}
+              <button type="submit" class="btn btn-primary w-100 mt-3">
+                <!-- <span v-if="loading" class="spinner-border spinner-border-sm me-2"></span> -->
+                Đăng nhập
               </button>
 
               <!-- <button type="submit" class="btn btn-primary w-100 py-2 mb-3">Đăng nhập</button> -->
@@ -84,22 +85,24 @@
 import { ref, reactive } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import AuthService from '~/services/auth.service';
+import { useLoadingStore } from '~/stores/loading';
+import GlobalLoading from '@/components/GlobalLoading.vue';
 
 const form = reactive({
   email: '',
   password: '',
 });
 
-const loading = ref(false);
 const errorMessage = ref('');
 const router = useRouter();
 const route = useRoute();
 const showPassword = ref(false);
+const loadingStore = useLoadingStore();
 
 // Xử lý form submit
 const handleLogin = async () => {
   try {
-    loading.value = true;
+    loadingStore.showLoading();
     errorMessage.value = '';
 
     // Gọi auth service để xử lý đăng nhập
@@ -108,15 +111,10 @@ const handleLogin = async () => {
       password: form.password
     });
 
-    console.log(response.data.user.email_verified_at)
-
     if (!response.data.user.email_verified_at) {
       // Email chưa xác thực, chuyển sang trang verify
       return navigateTo('/auth/verify-email');
     }
-
-    // Hiển thị thông báo thành công (tùy chọn)
-    // toast.success('Đăng nhập thành công');
 
     // Chuyển hướng sau khi đăng nhập thành công
     return navigateTo('/dashboard');
@@ -132,7 +130,7 @@ const handleLogin = async () => {
       errorMessage.value = 'Đã xảy ra lỗi khi đăng nhập';
     }
   } finally {
-    loading.value = false;
+    loadingStore.hideLoading();
   }
 };
 

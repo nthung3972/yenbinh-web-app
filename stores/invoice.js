@@ -18,13 +18,13 @@ export const useInvoiceStore = defineStore("invoice", {
     }),
 
     actions: {
-        async fetchtInvoiceList(page = 1, perPage = '', keyword = '', status ='', invoice_date_from, invoice_date_to) {
+        async fetchtInvoiceList(page = 1, perPage = '', keyword = '', status ='', period) {
             const dashboardStore = useDashboardStore();
             const building_id = dashboardStore.getSelectedBuildingId;
 
             this.loading = true;
             try {
-                const response = await InvoiceApi.getListInvoice(building_id, page, perPage, keyword, status, invoice_date_from, invoice_date_to);
+                const response = await InvoiceApi.getListInvoice(building_id, page, perPage, keyword, status, period);
                 if (response.data) {
                     this.invoiceList = response.data.data.data.data;
 
@@ -44,24 +44,6 @@ export const useInvoiceStore = defineStore("invoice", {
             }
         },
 
-        async createInvoice(data) {
-            this.loading = true;
-            try {
-                const response = await InvoiceApi.createInvoice(data);
-                if (response.data) {
-                    this.error = null
-                    return response.data
-                }
-            } catch (error) {
-                if (error.data) {
-                    this.error = error.data.general[0]
-                }
-                throw error
-            } finally {
-                this.loading = false;
-            }
-        },
-
         async fetchInvoice(id) {
             this.loading = true
             try {
@@ -69,20 +51,6 @@ export const useInvoiceStore = defineStore("invoice", {
                 if (response.data) {
                     this.invoice = response.data.data.data
                     return this.invoice
-                }
-            } catch (error) {
-                throw error
-            } finally {
-                this.loading = false;
-            }
-        },
-
-        async updateInvoice(id, data) {
-            this.loading = true
-            try {
-                const response = await InvoiceApi.updateInvoice(id,data);
-                if (response.data) {
-                    return response.data
                 }
             } catch (error) {
                 throw error
@@ -117,6 +85,17 @@ export const useInvoiceStore = defineStore("invoice", {
                 throw error
             } finally {
                 this.loading = false;
+            }
+        },
+
+        async generateInvoices(data) {
+            try {
+                const response = await InvoiceApi.generateInvoices(data);
+                if (response) {
+                    return response.data.data
+                }
+            } catch (error) {
+                throw error
             }
         }
     },

@@ -2,7 +2,7 @@ import apiService from "@/services/api.service";
 
 export const VehicleApi = {
     getListVehicle(building_id, page, per_page, keyword, vehicle_type_id, status) {
-        return apiService.get(`/vehicle/list-by-building/${building_id}?page=${page}&per_page=${per_page}&keyword=${encodeURIComponent(keyword)}&vehicle_type=${(vehicle_type_id)}&status=${status}`);
+        return apiService.get(`/vehicle/list-by-building/${building_id}?page=${page}&per_page=${per_page}&keyword=${encodeURIComponent(keyword)}&vehicle_type_id=${vehicle_type_id}&status=${status}`);
     },
 
     create(data) {

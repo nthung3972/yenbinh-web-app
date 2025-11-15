@@ -189,7 +189,9 @@ import ConfirmNavigationModal from '@/components/modal/UnsavedChangesModal.vue'
 
 definePageMeta({
     middleware: "auth",
-    layout: "dashboard"
+    layout: "dashboard",
+    parent: '/building',
+    breadcrumb: 'Thêm tòa nhà',
 })
 
 const router = useRouter()

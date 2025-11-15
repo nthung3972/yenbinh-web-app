@@ -28,12 +28,12 @@
                             </button>
                         </div>
                     </div>
-                    <NuxtLink to="/invoice/create"
-                        class="btn btn-success d-flex align-items-center justify-content-center"
-                        style="white-space: nowrap;">
-                        <Icon name="ic:baseline-add-circle-outline" size="20" class="me-1" />
-                        Tạo hóa đơn
-                    </NuxtLink>
+                    
+                    <button class="btn btn-success d-flex align-items-center justify-content-center"
+                        style="white-space: nowrap;"
+                        @click="openGenerateMonthlyModal()">
+                        <Icon name="ic:baseline-add-circle-outline" size="20" class="me-1" />Tạo hóa đơn tháng
+                    </button>
                 </div>
             </div>
 
@@ -50,31 +50,20 @@
                         <div class="col-md-3">
                             <div class="form-label-group">
                                 <select v-model="filters.status" @change="onFilter" class="form-select">
-                                    <option value="">Tất cả</option>
-                                    <option :value="0">Chưa thanh toán</option>
-                                    <option :value="1">Đã thanh toán</option>
-                                    <option :value="3">Chưa thanh toán hết</option>
-                                    <option :value="2">Đã quá hạn</option>
+                                    <option value="">Tất cả hóa đơn</option>
+                                    <option value="pending">Chưa thanh toán</option>
+                                    <option value="paid">Đã thanh toán</option>
+                                    <option value="partial">Còn nợ</option>
+                                    <option value="overdue">Quá hạn</option>
                                 </select>
-                                <label for="typeSelect">Trạng thái<span class="required-mark"></span></label>
+                                <label for="typeSelect">Trạng thái hóa đơn<span class="required-mark"></span></label>
                             </div>
                         </div>
 
-                        <!-- Từ ngày -->
-                        <div class="col-md-2">
+                        <div class="col-md-3">
                             <div class="form-label-group">
-                                <input type="date" v-model="filters.invoice_date_from" @change="handleDateChange"
-                                    class="form-select" />
-                                <label class="form-label fw-semibold">Từ ngày</label>
-                            </div>
-                        </div>
-
-                        <!-- Đến ngày -->
-                        <div class="col-md-2">
-                            <div class="form-label-group">
-                                <input type="date" v-model="filters.invoice_date_to" @change="handleDateChange"
-                                    class="form-select" />
-                                <label class="form-label fw-semibold">Từ ngày</label>
+                                <input v-model="filters.period" type="month" class="form-select" @change="onFilter" />
+                                <label for="typeSelect">Kỳ thu phí<span class="required-mark"></span></label>
                             </div>
                         </div>
                     </div>
@@ -94,43 +83,41 @@
                         <th style="width: 5%;">
                             <input type="checkbox" v-model="checkAll" @change="toggleCheckAll" />
                         </th>
-                        <th style="width: 5%;">#</th>
+                        <th style="width: 15%;">Mã hóa đơn</th>
                         <th style="width: 10%;">Mã căn hộ</th>
-                        <th style="width: 10%;">Ngày ban hành</th>
+                        <th style="width: 10%;">Kỳ thu phí</th>
                         <th style="width: 10%;">Tổng hóa đơn</th>
-                        <th style="width: 10%;">Phí tháng</th>
-                        <th style="width: 10%;">Dư nợ</th>
                         <th style="width: 10%;">Đã thanh toán</th>
-                        <th style="width: 10%;">Còn lại</th>
-                        <th style="width: 15%;">Trạng thái</th>
-                        <th style="width: 20%; text-align: center;">Hành động</th>
+                        <th style="width: 10%;">Dư nợ đầu kỳ</th>
+                        <th style="width: 10%;">Dư nợ cuối kỳ</th>
+                        <th style="width: 13%;">Trạng thái</th>
+                        <th style="width: 17%; text-align: center;">Hành động</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody v-if="useInvoice.invoiceList.length > 0">
                     <tr v-for="(invoice, index) in useInvoice.invoiceList" :key="index">
                         <td>
                             <input type="checkbox" :value="invoice.invoice_id" v-model="selectedInvoices" />
                         </td>
-                        <td>{{ index + 1 }}</td>
+                        <td>{{ invoice.invoice_number }}</td>
                         <td>{{ invoice.apartment.apartment_number }}</td>
-                        <td>{{ invoice.invoice_date }}</td>
+                        <td>{{ formatPeriod(invoice.period) }}</td>
                         <td>{{ formatVND(invoice.total_amount) }}</td>
-                        <td>{{ formatVND(invoice.monthly_fee) }}</td>
-                        <td>{{ formatVND(invoice.previous_balance) }}</td>
-                        <td>{{ formatVND(invoice.total_paid) }}</td>
-                        <td>{{ formatVND(invoice.remaining_balance) }}</td>
+                        <td>{{ formatVND(invoice.paid_amount) }}</td>
+                        <td>{{ formatVND(invoice.opening_balance) }}</td>
+                        <td>{{ formatVND(invoice.closing_balance) }}</td>
                         <td>
                             <span :class="[
                                 'badge rounded-pill px-3 py-2',
-                                invoice.status === 0 ? 'bg-warning-subtle text-warning'
-                                    : invoice.status === 1 ? 'bg-primary-subtle text-primary'
-                                        : invoice.status === 2 ? 'bg-secondary-subtle text-muted'
-                                            : 'bg-info-subtle text-info'
+                                invoice.status == 'pending' ? 'bg-warning-subtle text-warning'
+                                    : invoice.status == 'paid' ? 'bg-primary-subtle text-primary'
+                                        : invoice.status == 'partial' ? 'bg-info-subtle text-muted'
+                                            : 'bg-secondary-subtle text-info'
                             ]">
-                                {{ invoice.status === 0 ? 'Chưa thanh toán'
-                                    : invoice.status === 1 ? 'Đã thanh toán'
-                                        : invoice.status === 2 ? 'Đã quá hạn'
-                                            : 'Thanh toán một phần' }}
+                                {{ invoice.status == 'pending' ? 'Chưa thanh toán'
+                                    : invoice.status == 'paid' ? 'Đã thanh toán'
+                                        : invoice.status == 'partial' ? 'Còn nợ'
+                                            : 'Quá hạn' }}
                             </span>
                         </td>
                         <td class="text-center">
@@ -138,7 +125,7 @@
                                 <template #default="{ closeDropdown }">
                                     <DropdownItem tag="NuxtLink" :to="`/invoice/detail/${invoice.invoice_id}`"
                                         iconName="bxs:detail">
-                                        Xem
+                                        Chi tiết
                                     </DropdownItem>
 
                                     <DropdownItem :disabled="invoice.status === 1"
@@ -147,22 +134,16 @@
                                         :onClose="closeDropdown">
                                         Thanh toán
                                     </DropdownItem>
-
-                                    <DropdownItem tag="NuxtLink"
-                                        :to="invoice.status !== 1 ? `/invoice/edit/${invoice.invoice_id}` : '#'"
-                                        :disabled="invoice.status === 1"
-                                        :title="invoice.status === 1 ? 'Hóa đơn đã thanh toán không thể sửa' : 'Chỉnh sửa báo cáo'"
-                                        iconName="bxs:edit-alt">
-                                        Sửa
-                                    </DropdownItem>
-
-                                    <DropdownItem v-if="authStore.isAdmin" iconName="material-symbols:delete-outline"
-                                        :onClick="() => setSelectedInvoice(invoice.invoice_id)"
-                                        :onClose="closeDropdown">
-                                        Xóa
-                                    </DropdownItem>
                                 </template>
                             </ActionDropdown>
+                        </td>
+                    </tr>
+                </tbody>
+
+                <tbody v-else>
+                    <tr>
+                        <td colspan="10" class="text-center text-muted py-3">
+                            Chưa có hóa đơn hoặc không tìm thấy hóa đơn phù hợp!
                         </td>
                     </tr>
                 </tbody>
@@ -175,6 +156,8 @@
     <!-- Modal -->
     <InvoicePaymentModal v-model="showModal" :invoice="selectedInvoice" @submitted="handlePaymentSubmitted" />
 
+    <GenerateMonthlyInvoices v-if="showGenerateModal" :building-id="buildingId" @close="closeGenerateModal" @saved="loadInvoices"/>
+
     <ConfirmModal v-model="showDeleteModal" title="Xác nhận xóa hóa đơn"
         :message="`Bạn có chắc chắn muốn xóa hóa đơn này không?`" confirmText="Xóa" @confirm="deleteInvoice" />
 </template>
@@ -183,6 +166,7 @@
 import axios from 'axios'
 import { ref, watch, onMounted } from 'vue'
 import { useInvoiceStore } from '@/stores/invoice'
+import { useInitialData } from '@/composables/useInitialData';
 import { useAuthStore } from "~/stores/auth"
 import Pagination from '@/components/pagination/Pagination.vue'
 import ActionDropdown from '@/components/dropdown/actionDropdown.vue'
@@ -190,10 +174,12 @@ import DropdownItem from '@/components/dropdown/dropdownItem.vue'
 import InvoicePaymentModal from '@/components/modal/InvoicePaymentModal.vue'
 import ConfirmModal from '@/components/modal/ConfirmModal.vue'
 import { useToast } from 'vue-toastification'
+import GenerateMonthlyInvoices from '~/components/modal/GenerateMonthlyInvoices.vue';
 
 definePageMeta({
     middleware: "auth",
-    layout: "dashboard"
+    layout: "dashboard",
+    breadcrumb: 'Quản lý hóa đơn',
 })
 
 const useInvoice = useInvoiceStore()
@@ -204,9 +190,23 @@ const showDeleteModal = ref(false)
 const invoice_id = ref(null)
 const toast = useToast()
 const exportLoading = ref(false)
+const showGenerateModal = ref(false)
+const buildingId = ref(false)
 
 const checkAll = ref(false)
 const selectedInvoices = ref([])
+
+const { selectedBuildingId } = useInitialData();
+
+const openGenerateMonthlyModal = () => {
+    showGenerateModal.value = true
+    buildingId.value = selectedBuildingId.value
+    console.log(buildingId.value)
+}
+
+const closeGenerateModal = () => {
+    showGenerateModal.value = false
+}
 
 // Khi click "check all"
 const toggleCheckAll = () => {
@@ -239,12 +239,11 @@ const setSelectedInvoice = async (id) => {
 }
 
 const filters = ref({
-    invoice_date_from: '',
-    invoice_date_to: '',
     status: '',
     key_search: '',
     page: 1,
     per_page: 10,
+    period: ''
 })
 
 const isLoading = computed(() => useInvoice.isLoading);
@@ -282,8 +281,7 @@ const loadInvoices = async () => {
         params.per_page,
         params.key_search,
         params.status,
-        params.invoice_date_from,
-        params.invoice_date_to
+        params.period,
     )
 }
 
@@ -331,6 +329,12 @@ const exportInvoices = async () => {
         exportLoading.value = false
     }
 };
+
+const formatPeriod = (period) => {
+    if (!period) return ''
+    const [year, month] = period.split('-')
+    return `${month}/${year}`
+}
 
 onMounted(loadInvoices)
 </script>

@@ -46,7 +46,7 @@
 
                     <div class="row row-cols-1 row-cols-md-auto g-3 align-items-end">
                         <div class="col-md-3">
-                             <div class="form-label-group">
+                            <div class="form-label-group">
                                 <select v-model="filters.vehicle_type_id" @change="onFilter" class="form-select">
                                     <option value="">Tất cả</option>
                                     <option :value="1">Ô tô</option>
@@ -54,7 +54,7 @@
                                     <option :value="3">Xe đạp, xe đạp điện</option>
                                 </select>
                                 <label for="typeSelect">Loại phương tiện<span class="required-mark"></span></label>
-                             </div>
+                            </div>
                         </div>
 
                         <div class="col-md-3">
@@ -80,23 +80,23 @@
                         <th style="width: 10%;">Vị trí đỗ</th>
                         <th style="width: 12%;">Mã căn hộ</th>
                         <th style="width: 15%;">Trạng thái</th>
-                        <th style="width: 15%;">Cập nhật bởi</th>
+                        <th style="width: 15%;">Cập nhật</th>
                         <th style="width: 20%; text-align: center;">Hành động</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody v-if="vehicleStore.vehicleList.length > 0">
                     <tr v-for="(vehicle, index) in vehicleStore.vehicleList" :key="index">
                         <td>{{ index + 1 }}</td>
                         <td>{{ vehicle.license_plate }}</td>
-                        <td>{{ vehicle.vehicle_type?.vehicle_type_name }}</td>
+                        <td>{{ vehicle.vehicle_type?.name }}</td>
                         <td>{{ vehicle.parking_slot ?? '----' }}</td>
                         <td>{{ vehicle.apartment_number }}</td>
                         <td>
                             <span :class="[
-                                'badge rounded-pill px-3 py-2',,
-                                vehicle.status === 0 ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-muted'
+                                'badge rounded-pill px-3 py-2', ,
+                                vehicle.status == 0 ? 'bg-success-subtle text-success' : 'bg-secondary-subtle text-muted'
                             ]">
-                                {{ vehicle.status === 0 ? 'Đang hoạt động' : 'Ngừng hoạt động' }}
+                                {{ vehicle.status == 0 ? 'Đang hoạt động' : 'Ngừng hoạt động' }}
                             </span>
                         </td>
                         <td>{{ vehicle.updated_by?.name ?? '----' }}</td>
@@ -124,6 +124,15 @@
                         </td>
                     </tr>
                 </tbody>
+
+                <tbody v-else>
+                    <tr>
+                        <td colspan="8" class="text-center text-muted py-3">
+                            Chưa có phương tiện hoặc không tìm thấy phương tiện phù hợp!
+                        </td>
+                    </tr>
+                </tbody>
+
             </table>
             <Pagination :pagination="vehicleStore.pagination" @page-change="handlePageChange"
                 @rows-per-page-change="rowsPerPageChange" />
@@ -146,7 +155,8 @@ import DropdownItem from '@/components/dropdown/dropdownItem.vue'
 
 definePageMeta({
     middleware: "auth",
-    layout: "dashboard"
+    layout: "dashboard",
+    breadcrumb: 'Quản lý phương tiện',
 })
 
 const vehicleStore = useVehicleStore()
@@ -209,7 +219,7 @@ const deleteVehicle = async () => {
         fectVehicleList()
     } catch (error) {
         if (error) {
-            toast.error("Lỗi khi rời căn hộ!");
+            toast.error("Lỗi khi xóa phương tiện!");
         }
     }
 }

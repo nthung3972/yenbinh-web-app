@@ -73,7 +73,7 @@
                         <th style="width: 20%; text-align: center;">Hành động</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody v-if="useResident.residentList.length > 0">
                     <tr v-for="(resident, index) in useResident.residentList" :key="index">
                         <td>{{ index + 1 }}</td>
                         <td>{{ resident.full_name }}</td>
@@ -107,6 +107,14 @@
                         </td>
                     </tr>
                 </tbody>
+
+                <tbody v-else>
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-3">
+                            Chưa có cư dân hoặc không tìm thấy cư dân phù hợp!
+                        </td>
+                    </tr>
+                </tbody>
             </table>
             <Pagination :pagination="useResident.pagination" @page-change="handlePageChange"
                 @rows-per-page-change="rowsPerPageChange" />
@@ -123,7 +131,8 @@ import DropdownItem from '@/components/dropdown/dropdownItem.vue'
 
 definePageMeta({
     middleware: "auth",
-    layout: "dashboard"
+    layout: "dashboard",
+    breadcrumb: 'Quản lý cư dân',
 })
 
 const useResident = useResidentStore();
@@ -140,7 +149,6 @@ const hasError = computed(() => useResident.hasError);
 
 const loadResidents = async () => {
     const params = { ...filters.value }
-    console.log('params', params)
     await useResident.fetchResidentList(
         params.page,
         params.per_page,

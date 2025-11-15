@@ -1,29 +1,50 @@
 <template>
-    <nav class="navbar navbar-light px-4">
-        <div class="header-title">
-            <h1>{{ userInfo?.name ?? '' }}</h1>
-            <p>Quyền truy cập: {{ userInfo?.role === 'admin' ? 'Quản lý' : 'Nhân viên' }}</p>
-        </div>
-        <div class="navbar-actions d-flex align-items-center gap-3">
-            <!-- Icon thông báo -->
-            <button class="notification-btn position-relative" @click="handleNotificationClick" title="Thông báo">
-                <Icon name="bx:bell" :size="28" />
-                <!-- Badge hiển thị số lượng thông báo -->
-                <span v-if="notificationCount > 0" class="notification-badge">
-                    {{ notificationCount > 99 ? '99+' : notificationCount }}
-                </span>
-            </button>
-            <!-- UserAvatarDropdown -->
-            <UserAvatarDropdown :avatar="userInfo?.avatar" :username="userInfo?.name" :email="userInfo?.email"
-                @menu-item-click="handleMenuAction" />
-        </div>
-    </nav>
+  <nav class="navbar navbar-light px-4 m-2 header-container">
+
+    <!-- MOBILE MENU BUTTON -->
+    <button
+      class="mobile-menu-btn d-lg-none me-2"
+      @click="$emit('open-aside')"
+      title="Menu"
+    >
+      <Icon name="bx:menu" :size="28" />
+    </button>
+
+    <!-- USER INFO -->
+    <div class="header-title flex-grow-1">
+      <h1>{{ userInfo?.name ?? '' }}</h1>
+      <p class="role-text">
+        Quyền: {{ userInfo?.role === 'admin' ? 'Quản lý' : 'Nhân viên' }}
+      </p>
+    </div>
+
+    <!-- ACTIONS -->
+    <div class="navbar-actions d-flex align-items-center gap-3">
+
+      <!-- Bell Icon -->
+      <button class="notification-btn position-relative" @click="handleNotificationClick" title="Thông báo">
+        <Icon name="bx:bell" :size="28" />
+        <span v-if="notificationCount > 0" class="notification-badge">
+          {{ notificationCount > 99 ? '99+' : notificationCount }}
+        </span>
+      </button>
+
+      <!-- Avatar Dropdown -->
+      <UserAvatarDropdown
+        :avatar="userInfo?.avatar"
+        :username="userInfo?.name"
+        :email="userInfo?.email"
+        @menu-item-click="handleMenuAction"
+      />
+    </div>
+
+  </nav>
 </template>
 
 <script setup>
 import { useRouter } from 'vue-router';
 import AuthService from '~/services/auth.service';
-import UserAvatarDropdown from '~/components/header/UserAvatarDropdown.vue';
+import UserAvatarDropdown from '~/components/dropdown/UserAvatarDropdown.vue';
 import { useLoadingStore } from '@/stores/loading';
 // import { resetAllStores } from '@/stores';
 
@@ -78,10 +99,8 @@ nav {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 15px 20px;
     background-color: white;
-    padding: 15px;
-    border-radius: 8px;
+    padding: 13px 26px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
@@ -209,5 +228,60 @@ nav {
   text-align: center;
   border-radius: 8px;
   padding: 0 4px;
+}
+
+/* Wrapper chỉnh lại spacing mobile */
+.header-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 70px;
+}
+
+/* Nút menu mobile */
+.mobile-menu-btn {
+  border: none;
+  background: transparent;
+  padding: 4px;
+  cursor: pointer;
+  color: #444;
+}
+
+.mobile-menu-btn:hover {
+  opacity: 0.7;
+}
+
+/* Title */
+.header-title h1 {
+  font-size: 20px;
+  margin: 0;
+  font-weight: 600;
+}
+
+.header-title p {
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.8;
+}
+
+/* MOBILE RESPONSIVE */
+@media (max-width: 991px) {
+  /* Thu nhỏ title để không chiếm nhiều ngang */
+  .header-title h1 {
+    font-size: 16px;
+  }
+  
+  .role-text {
+    font-size: 12px;
+  }
+
+  /* Giảm spacing actions để vừa khung nhỏ */
+  .navbar-actions {
+    gap: 12px !important;
+  }
+
+  .notification-btn Icon {
+    font-size: 24px !important;
+  }
 }
 </style>

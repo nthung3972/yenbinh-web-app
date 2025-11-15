@@ -6,7 +6,7 @@ export const useAuthStore = defineStore('auth', {
     user: null,
     expiry: null,
   }),
-  
+
   getters: {
     isAuthenticated: (state) => {
       if (!state.token || !state.expiry) return false;
@@ -19,20 +19,20 @@ export const useAuthStore = defineStore('auth', {
     isStaff: (state) => state.user?.role === 'staff',
     isEmailVerified: (state) => !!state.user?.email_verified_at,
   },
-  
+
   actions: {
     setToken(token) {
       const expiryTime = new Date().getTime() + 60 * 60 * 1000;
 
       this.token = token;
       this.expiry = expiryTime.toString();
-      
+
       if (process.client) {
         localStorage.setItem('auth_token', token);
         localStorage.setItem('token_expiry', expiryTime.toString());
       }
     },
-    
+
     setUser(user) {
       this.user = user
       if (process.client && user) {
@@ -44,7 +44,7 @@ export const useAuthStore = defineStore('auth', {
       this.token = null;
       this.user = null;
       this.expiry = null;
-      
+
       if (process.client) {
         localStorage.removeItem('auth_token');
         localStorage.removeItem('auth_user');
@@ -66,13 +66,13 @@ export const useAuthStore = defineStore('auth', {
 
       return true;
     },
-    
+
     // Kiểm tra quyền hạn
     hasPermission(permission) {
       if (!this.user || !this.user.permissions) return false;
       return this.user.permissions.includes(permission);
     },
-    
+
     // Kiểm tra vai trò
     hasRole(role) {
       if (!this.user || !this.user.role) return false;

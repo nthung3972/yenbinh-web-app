@@ -1,20 +1,12 @@
 import apiService from "@/services/api.service";
 
 export const InvoiceApi = {
-    getListInvoice(building_id, page, per_page, keyword, status, invoice_date_from, invoice_date_to) {
-        return apiService.get(`/invoice/list-by-building/${building_id}?page=${page}&per_page=${per_page}&keyword=${encodeURIComponent(keyword)}&status=${status}&invoice_date_from=${invoice_date_from}&invoice_date_to=${invoice_date_to}`);
-    },
-
-    createInvoice(data) {
-        return apiService.post('/invoice/create', data);
+    getListInvoice(building_id, page, per_page, keyword, status, period ) {
+        return apiService.get(`/invoice/list-by-building/${building_id}?page=${page}&per_page=${per_page}&keyword=${encodeURIComponent(keyword)}&status=${status}&period=${period}`);
     },
 
     showInvoice($id) {
         return apiService.get(`/invoice/edit/${$id}`);
-    },
-
-    updateInvoice($id, data) {
-        return apiService.post(`/invoice/update/${$id}`, data);
     },
 
     getApartmentFees($id) {
@@ -24,4 +16,8 @@ export const InvoiceApi = {
     deleteInvoice($id) {
         return apiService.delete(`/invoice/delete/${$id}`);
     },
+
+    generateInvoices(data) {
+        return apiService.post('/invoice/generate', data)
+    }
 };

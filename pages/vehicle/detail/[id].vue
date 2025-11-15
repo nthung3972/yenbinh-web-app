@@ -33,11 +33,11 @@
                                 <p class="text-muted">Biển số: {{ useVehicle.vehicle.license_plate }}</p>
                                 <span
                                     :class="{
-                                        'badge bg-success': useVehicle.vehicle.status === 0,
-                                        'badge bg-secondary': useVehicle.vehicle.status !== 0
+                                        'badge bg-success': useVehicle.vehicle.status == 0,
+                                        'badge bg-secondary': useVehicle.vehicle.status != 0
                                     }">
                                     {{
-                                        useVehicle.vehicle.status === 0
+                                        useVehicle.vehicle.status == 0
                                             ? 'Đang hoạt động'
                                             : 'Ngừng hoạt động'
                                     }}
@@ -50,39 +50,38 @@
                             <div class="profile-body">
                                 <div class="info-section">
                                     <h4 class="section-title">
-                                        <Icon name="mdi:card-text" size="20" /> Thông tin cơ bản
+                                        <Icon name="mdi:car" size="20" /> Thông tin cơ bản
                                     </h4>
                                     <div class="info-grid">
                                         <div class="info-item">
-                                            <span class="info-icon"><Icon name="mdi:car-info" size="18" /></span>
+                                            <span class="info-icon"><Icon name="mdi:car" size="18" /></span>
                                             <div>
                                                 <p class="info-label">Loại phương tiện</p>
-                                                <!-- <p class="info-value">{{ getVehicleTypeLabel(useVehicle.vehicle.vehicle_type) }}</p> -->
-                                                 <p class="info-value">{{ useVehicle.vehicle.vehicle_type_name }}</p>
+                                                 <p class="info-value">{{ useVehicle.vehicle.vehicle_type?.name ?? '---' }}</p>
                                             </div>
                                         </div>
 
                                         <div class="info-item">
-                                            <span class="info-icon"><Icon name="mdi:tag-outline" size="18" /></span>
+                                            <span class="info-icon"><Icon name="mdi:car" size="18" /></span>
                                             <div>
                                                 <p class="info-label">Hãng xe</p>
-                                                <p class="info-value">{{ useVehicle.vehicle.vehicle_company }}</p>
+                                                <p class="info-value">{{ useVehicle.vehicle_type.vehicle_company ?? '---' }}</p>
                                             </div>
                                         </div>
 
                                         <div class="info-item">
-                                            <span class="info-icon"><Icon name="mdi:car-sports" size="18" /></span>
+                                            <span class="info-icon"><Icon name="mdi:car" size="18" /></span>
                                             <div>
                                                 <p class="info-label">Dòng xe</p>
-                                                <p class="info-value">{{ useVehicle.vehicle.vehicle_model }}</p>
+                                                <p class="info-value">{{ useVehicle.vehicle_type.vehicle_model ?? '---' }}</p>
                                             </div>
                                         </div>
 
                                         <div class="info-item">
-                                            <span class="info-icon"><Icon name="mdi:car-sports" size="18" /></span>
+                                            <span class="info-icon"><Icon name="mdi:car" size="18" /></span>
                                             <div>
                                                 <p class="info-label">Màu xe</p>
-                                                <p class="info-value">{{ useVehicle.vehicle.vehicle_color }}</p>
+                                                <p class="info-value">{{ useVehicle.vehicle_type.vehicle_color ?? '---' }}</p>
                                             </div>
                                         </div>
 
@@ -102,10 +101,10 @@
                                     </h4>
                                     <div class="info-grid">
                                         <div class="info-item">
-                                            <span class="info-icon"><Icon name="mdi:account" size="18" /></span>
+                                            <span class="info-icon"><Icon name="ic:baseline-people" size="18" /></span>
                                             <div>
                                                 <p class="info-label">Chủ sở hữu</p>
-                                                <p class="info-value">{{ useVehicle.vehicle.resident_full_name ?? '---' }}</p>
+                                                <p class="info-value">{{ useVehicle.vehicle.resident?.full_name ?? '---' }}</p>
                                             </div>
                                         </div>
 
@@ -118,10 +117,10 @@
                                         </div>
 
                                         <div class="info-item">
-                                            <span class="info-icon"><Icon name="mdi:email-outline" size="18" /></span>
+                                            <span class="info-icon"><Icon name="mdi:email" size="18" /></span>
                                             <div>
                                                 <p class="info-label">Email</p>
-                                                <p class="info-value">{{ useVehicle.vehicle.resident_email ?? '---' }}</p>
+                                                <p class="info-value">{{ useVehicle.vehicle.resident?.email ?? '---' }}</p>
                                             </div>
                                         </div>
 
@@ -129,7 +128,7 @@
                                             <span class="info-icon"><Icon name="mdi:phone-outline" size="18" /></span>
                                             <div>
                                                 <p class="info-label">Số điện thoại</p>
-                                                <p class="info-value">{{ useVehicle.vehicle.resident_phone ?? '---' }}</p>
+                                                <p class="info-value">{{ useVehicle.vehicle.resident?.phone_number ?? '---' }}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -198,7 +197,12 @@ import { useRouter, useRoute } from 'vue-router'
 
 definePageMeta({
     middleware: "auth",
-    layout: "dashboard"
+    layout: "dashboard",
+    parent: '/vehicle',
+    intermediates: [
+        { label: 'Chi tiết xe', to: null }
+    ],
+    useVehicleName: true 
 })
 
 const useVehicle = useVehicleStore()
@@ -215,7 +219,6 @@ const goBack = () => {
 
 const loadVehicle = async () => {
     await useVehicle.fechVehicle(vehicle_id)
-    console.log('Vehicle data:', useVehicle.vehicle)
 }
 
 onMounted(loadVehicle)
