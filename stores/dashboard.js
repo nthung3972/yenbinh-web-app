@@ -3,39 +3,48 @@ import { DashboardApi } from "~/services/api/dashboard.api";
 
 export const useDashboardStore = defineStore("dashboard", {
     state: () => ({
-        apiData: null,
+        buildings: null,
         statsBuilding: null,
         selectedBuildingId: 'all',
         error: null,
     }),
-    persist: true,
+    persist: {
+        paths: ['selectedBuildingId'], // Chỉ persist selectedBuildingId
+    },
 
     actions: {
         async fetchStatsBuildings() {
             try {
                 const response = await DashboardApi.getStatsBuildings();
                 if (response.data) {
+                    this.buildings = response.data?.data?.data;
                     this.error = null;
-                    return response.data?.data?.data
+                    return this.buildings;
                 }
             } catch (error) {
                 console.error("Lỗi khi lấy dữ liệu dashboard:", error);
                 this.error = error;
+                throw error;
             }
         },
 
         async fetchStatsBuilding(id) {
-            if (!id) return;
-            this.selectedBuildingId = id;
+            if (!id || id === 'all') {
+                this.statsBuilding = null;
+                return null;
+            }
+            
             try {
                 const response = await DashboardApi.getStatsBuilding(id);
                 if (response.data) {
+                    this.statsBuilding = response.data?.data?.data;
                     this.error = null;
-                    return response.data?.data?.data
+                    return this.statsBuilding;
                 }
             } catch (error) {
                 console.error("Lỗi khi lấy dashboard từng tòa nhà:", error);
                 this.error = error;
+                throw error;
             }
         },
 
@@ -43,16 +52,23 @@ export const useDashboardStore = defineStore("dashboard", {
             this.selectedBuildingId = id;
         },
 
-        // resetStore() {
-        //     this.selectedBuildingId = 'all'
-        // }
+        resetStore() {
+            this.selectedBuildingId = 'all';
+            this.statsBuilding = null;
+        }
     },
 
     getters: {
-        getData: (state) => state.apiData,
+        getBuildings: (state) => state.buildings,
         getStatsBuilding: (state) => state.statsBuilding,
         getSelectedBuildingId: (state) => state.selectedBuildingId,
-        isLoading: (state) => state.loading,
-        hasError: (state) => state.error
+        hasError: (state) => state.error,
+        
+        // Getter để lấy data hiển thị dựa trên selectedBuildingId
+        getSelectedStatsData: (state) => {
+            return state.selectedBuildingId === 'all' 
+                ? state.buildings 
+                : state.statsBuilding;
+        }
     },
 });

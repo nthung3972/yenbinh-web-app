@@ -6,6 +6,7 @@ export const useApartmentStore = defineStore("apartment", {
     state: () => ({
         apartmentList: [],
         apartment: [],
+        feeManagements: [],
         pagination: {
             current_page: 1,
             per_page: '',
@@ -22,7 +23,6 @@ export const useApartmentStore = defineStore("apartment", {
         async apartmentsByBuilding(page = 1, perPage = 10, keyword = '', apartment_type = '', status) {
             const dashboardStore = useDashboardStore();
             const building_id = dashboardStore.getSelectedBuildingId;
-            console.log(building_id)
 
             this.loading = true;
             try {
@@ -65,7 +65,6 @@ export const useApartmentStore = defineStore("apartment", {
         },
 
         async detailApartment(id) {
-            this.loading = true;
             try {
                 const response = await ApartmentApi.edit(id);
                 const data = response.data.data.map(apartment => {
@@ -76,12 +75,9 @@ export const useApartmentStore = defineStore("apartment", {
                     };
                 });
                 this.apartment = data[0];
-                console.log("Căn hộ chi tiết:", this.apartment);
             } catch (error) {
                 console.error("Lỗi khi lấy thông tin căn hộ:", error);
                 this.error = "Đã xảy ra lỗi khi lấy thông tin căn hộ!";
-            } finally {
-                this.loading = false;
             }
         },
 
@@ -130,6 +126,48 @@ export const useApartmentStore = defineStore("apartment", {
                 throw error;
             } finally {
                 this.loading = false;
+            }
+        },
+
+        async getFeeManagement(id) {
+            this.loading = true
+            try {
+                const response = await ApartmentApi.getFeeManagement(id)
+                if (response.data) {
+                    this.feeManagements = response.data.data.data
+                }
+                this.error = null
+            } catch (error) {
+                this.error = "Đã xảy ra lỗi khi cập nhật căn hộ!";
+                throw error;
+            } finally {
+                this.loading = false;
+            }
+        },
+
+        async apartmentBalance(id, page, perPage) {
+            try {
+                const response = await ApartmentApi.apartmentBalance(id, page, perPage)
+                if (response.data) {
+                    return response.data.data
+                }
+                this.error = null
+            } catch (error) {
+                this.error = "Đã xảy ra lỗi khi cập nhật căn hộ!";
+                throw error;
+            }
+        },
+
+        async apartmentInvoice(id, page, perPage) {
+            try {
+                const response = await ApartmentApi.apartmentInvoice(id, page, perPage)
+                if (response.data) {
+                    return response.data.data.data
+                }
+                this.error = null
+            } catch (error) {
+                this.error = "Đã xảy ra lỗi khi cập nhật căn hộ!";
+                throw error;
             }
         }
     },

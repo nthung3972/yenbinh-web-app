@@ -178,7 +178,12 @@ import defaultBuildingLogo from '@/assets/images/avatar-default.jpg'
 
 definePageMeta({
     middleware: 'auth',
-    layout: 'dashboard'
+    layout: 'dashboard',
+    parent: '/building',
+    intermediates: [
+        { label: 'Chi tiết', to: null }
+    ],
+    useBuildingName: true 
 })
 
 const route = useRoute()

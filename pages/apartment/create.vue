@@ -20,12 +20,29 @@
             </div>
             <div class="card-body">
                 <form @submit.prevent="handleSubmit">
-                    <div class="form-section">
-                        <h5 class="section-title">
+                    <div class="form-section mb-4">
+                        <h5 class="section-title pb-4">
                             <Icon name="mdi:information" size="20" class="me-2" />Thông tin căn hộ
                         </h5>
                         <div class="row g-3">
-                            <div class="col-md-12">
+                            <div class="col-md-6">
+                                <div class="form-label-group">
+                                    <select v-model="apartment.apartment_type" class="form-select" id="typeSelect"
+                                        @change="onChange()">
+                                        <option value="" disabled selected>Chọn loại căn hộ</option>
+                                        <option v-for="type in apartmentStore.feeManagements"
+                                            :value="type.fee_subtype_code">
+                                            {{ type.fee_subtype_code }}
+                                        </option>
+                                    </select>
+                                    <label for="typeSelect">Loại căn hộ<span class="required-mark"></span></label>
+                                    <small v-if="errors?.['apartment_type']" class="text-danger">
+                                        {{ errors?.['apartment_type'][0] }}
+                                    </small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
                                 <div class="form-label-group">
                                     <input v-model="apartment.apartment_number" type="text" class="form-control"
                                         @input="onChange()" id="apartmentNumber" placeholder=" ">
@@ -38,7 +55,7 @@
                             </div>
                         </div>
 
-                        <div class="row g-3 mt-2">
+                        <div class="row g-3">
                             <div class="col-md-6">
                                 <div class="form-label-group">
                                     <input v-model="apartment.floor_number" type="number" min="1" class="form-control"
@@ -63,44 +80,6 @@
                         </div>
 
                         <div class="row g-3 mt-2">
-                            <div class="col-md-6">
-                                <div class="form-label-group">
-                                    <select v-model="apartment.apartment_type" class="form-select" id="typeSelect"
-                                        @change="onChange()">
-                                        <option value="" disabled selected>Chọn loại căn hộ</option>
-                                        <option value="studio">Căn hộ studio</option>
-                                        <option value="1bedroom">1 Phòng ngủ</option>
-                                        <option value="2bedroom">2 Phòng ngủ</option>
-                                        <option value="3bedroom">3 Phòng ngủ</option>
-                                        <option value="duplex">Căn hộ thông tầng</option>
-                                        <option value="penthouse">Căn hộ áp mái</option>
-                                        <option value="dualkey">Căn hộ song lập</option>
-                                    </select>
-                                    <label for="typeSelect">Loại căn hộ<span class="required-mark"></span></label>
-                                    <small v-if="errors?.['apartment_type']" class="text-danger">
-                                        {{ errors?.['apartment_type'][0] }}
-                                    </small>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-label-group">
-                                    <select v-model="apartment.ownership_type" class="form-select" id="typeSelect"
-                                        @change="onChange()">
-                                        <option value="" disabled selected>Chọn loại sở hữu</option>
-                                        <option value="own">Sở hữu</option>
-                                        <option value="lease">Thuê</option>
-                                        <option value="lease_back">Thuê lại</option>
-                                        <option value="mortgage">Thế chấp</option>
-                                        <option value="shared_ownership">Sở hữu chung</option>
-                                    </select>
-                                    <label for="typeSelect">Loại sở hữu<span class="required-mark"></span></label>
-                                    <small v-if="errors?.['ownership_type']" class="text-danger">
-                                        {{ errors?.['ownership_type'][0] }}
-                                    </small>
-                                </div>
-                            </div>
-
                             <div class="col-md-12">
                                 <div class="form-label-group">
                                     <input v-model="apartment.notes" type="text" class="form-control"
@@ -140,7 +119,9 @@ import ConfirmNavigationModal from '@/components/modal/UnsavedChangesModal.vue'
 
 definePageMeta({
     middleware: "auth",
-    layout: "dashboard"
+    layout: "dashboard",
+    parent: '/apartment',
+    breadcrumb: 'Thêm căn hộ',
 })
 
 const apartmentStore = useApartmentStore()
@@ -154,7 +135,6 @@ const apartment = ref({
     floor_number: '',
     area: '',
     apartment_type: '',
-    ownership_type: '',
     notes: ''
 })
 
@@ -162,7 +142,6 @@ const reset = () => {
     apartment.value.apartment_number = '',
     apartment.value.floor_number = '',
     apartment.value.area = '',
-    apartment.value.ownership_type = '',
     apartment.value.apartment_type = '',
     apartment.value.notes = ''
     errors.value = ''
@@ -188,15 +167,13 @@ const goBack = () => {
 }
 
 const handleSubmit = async () => {
-    console.log("Submitting form...", apartment.value)
     isLoading.value = true
     try {
         const result = await apartmentStore.createApartment(apartment.value)
         if (result) {
             toast.success("Thêm căn hộ thành công!", { timeout: 3000 })
             setEditing(false)
-            errors.value = null
-            reset()
+            router.push('/apartment')
         }
     } catch (error) {
         errors.value = error.errors

@@ -3,8 +3,8 @@
     <div class="card">
       <div class="card-header bg-white d-flex justify-content-between align-items-center">
         <h4 class="fw-bold text-primary">
-          <Icon name="guidance:care-staff-area" size="24" />
-          Thêm nhân viên mới
+          <Icon name="guidance:care-staff-area" size="24" class="me-2" />
+           Thêm nhân viên mới
         </h4>
         <button class="btn btn-outline-secondary" @click="goBack()">
           <Icon name="mdi:arrow-left-circle" size="20" class="me-2" />
@@ -154,7 +154,9 @@ import ConfirmNavigationModal from '@/components/modal/UnsavedChangesModal.vue'
 
 definePageMeta({
   middleware: "auth",
-  layout: "dashboard"
+  layout: "dashboard",
+  parent: '/staff',
+  breadcrumb: 'Thêm nhân viên',
 })
 
 const staffStore = useStaffStore()

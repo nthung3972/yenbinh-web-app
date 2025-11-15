@@ -8,7 +8,7 @@ export default defineNuxtConfig({
   ],
   app: {
     head: {
-      title: 'Yên Bình',
+      title: 'Quản lý vận hành Yên Bình',
       htmlAttrs: {
         lang: 'en'
       },
@@ -18,7 +18,7 @@ export default defineNuxtConfig({
         { hid: 'description', name: 'description', content: '' },
         { name: 'format-detection', content: 'telephone=no' },
         { hid: 'og:image', property: 'og:image', content: 'https://yenbinhmanagement.vn/logo-yenbinh.png' },
-        { hid: 'og:title', property: 'og:title', content: 'Yên Bình' },
+        { hid: 'og:title', property: 'og:title', content: 'Quản lý vận hành Yên Bình' },
         { hid: 'og:description', property: 'og:description', content: 'Phần mềm quản lý tòa nhà chung cư Yên Bình' },
         { hid: 'og:url', property: 'og:url', content: 'https://yenbinhmanagement.vn/' },
         { hid: 'og:type', property: 'og:type', content: 'webapp' }
@@ -48,5 +48,5 @@ export default defineNuxtConfig({
     '~/plugins/unsavedChangesGuard.js'
   ],
 
-  compatibilityDate: '2025-03-13'
+  compatibilityDate: '2025-10-21'
 });

@@ -260,7 +260,12 @@ import defaultAvatar from '@/assets/images/avatar-default.jpg'
 
 definePageMeta({
     middleware: "auth",
-    layout: "dashboard"
+    layout: "dashboard",
+    parent: '/resident',
+    intermediates: [
+        { label: 'Chi tiết', to: null }
+    ],
+    useResidentName: true 
 })
 
 const useResident = useResidentStore()

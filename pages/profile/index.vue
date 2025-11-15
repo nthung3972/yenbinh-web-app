@@ -1,5 +1,5 @@
 <template>
-    <div class="container mt-5">
+    <div class="container">
         <!-- Loading State -->
         <div v-if="isLoading" class="text-center py-5">
             <div class="spinner-border text-primary" role="status">
@@ -10,7 +10,7 @@
 
         <!-- Form Content -->
         <div v-else class="card shadow-lg border-0 p-4" style="border-radius: 12px;">
-            <h4 class="fw-bold text-primary mb-4">Chỉnh sửa thông tin cá nhân</h4>
+            <h4 class="fw-bold text-primary mb-4">Thông tin tài khoản</h4>
             <form @submit.prevent="saveProfile">
                 <div class="d-flex flex-column flex-md-row gap-4">
                     <!-- Avatar Section -->
@@ -100,7 +100,8 @@ import { useToast } from 'vue-toastification'
 
 definePageMeta({
     middleware: "auth",
-    layout: "dashboard"
+    layout: "dashboard",
+    breadcrumb: 'Tài khoản',
 })
 
 const userStore = useUserStore()

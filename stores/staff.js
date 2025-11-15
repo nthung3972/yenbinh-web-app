@@ -5,6 +5,7 @@ import { StaffApi } from "~/services/api/staff.api";
 export const useStaffStore = defineStore("staff", {
     state: () => ({
         staffList: [],
+        staff: {},
         pagination: {
             current_page: 1,
             per_page: '',
@@ -60,6 +61,7 @@ export const useStaffStore = defineStore("staff", {
             try {
                 const response = await StaffApi.detail(id)
                 if(response.data) {
+                    this.staff = response.data.data.data
                     return response.data.data.data
                 }
                 this.error = null
@@ -90,6 +92,12 @@ export const useStaffStore = defineStore("staff", {
 
     getters: {
         isLoading: (state) => state.loading,
-        hasError: (state) => state.error
+        hasError: (state) => state.error,
+        getStaffById: (state) => (id) => {
+            if (state.staff?.id === Number(id)) {
+                return state.staff
+            }
+            return state.staffList.find(s => s.id === Number(id))
+        }
     },
 });

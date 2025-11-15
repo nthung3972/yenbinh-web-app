@@ -9,13 +9,15 @@
         <div v-else-if="hasError">{{ hasError }}</div>
         <div v-else>
             <div class="d-flex justify-content-between align-items-center mb-3 p-bottom">
-                <h5 class="fw-bold text-primary mb-0"><Icon name="ic:baseline-people" size="24" class="me-2"/>Danh sách nhân viên</h5>
+                <h5 class="fw-bold text-primary mb-0">
+                    <Icon name="ic:baseline-people" size="24" class="me-2" />Danh sách nhân viên
+                </h5>
                 <div class="input-group w-50">
                     <span class="input-group-text">
                         <Icon name="material-symbols:search" />
                     </span>
                     <input v-model="searchKeyword" @keyup.enter="onSearch" type="text" class="form-control"
-                        placeholder="Điền tên nhân viên hoặc tên tòa nhà..." />
+                        placeholder="Nhập tên nhân viên..." />
                     <button class="btn btn-primary" @click="onSearch">Tìm</button>
                 </div>
                 <NuxtLink to="/staff/create" class="btn btn-primary d-flex align-items-center">
@@ -27,15 +29,15 @@
                     <thead class="table-light sticky-top" style="z-index: 1;">
                         <tr>
                             <th style="width: 5%;">#</th>
-                            <th style="width: 20%;">Tên nhân viên</th>
-                            <th style="width: 25%;">Email</th>
-                            <th style="width: 10%;">Vai trò</th>
+                            <th style="width: 18%;">Tên nhân viên</th>
+                            <th style="width: 20%;">Email</th>
+                            <th style="width: 15%;">Loại tài khoản</th>
                             <th style="width: 20%;">Tòa nhà quản lý</th>
                             <th style="width: 10%;">Chức vụ</th>
                             <th style="width: 25%; text-align: center;">Hành động</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody v-if="staffStore.staffList.length > 0">
                         <tr v-for="(staff, index) in staffStore.staffList" :key="index">
                             <td>{{ index + 1 }}</td>
                             <td>{{ staff.name }}</td>
@@ -47,7 +49,7 @@
                             </td>
                             <td>{{ staff.building_name ?? '----' }}</td>
                             <td>
-                                <span>{{ staff.building_role === 'manager' ? 'Trưởng QBL' : 'Giám sát' }}</span>
+                                <span>{{ staff.building_role === 'manager' ? 'Quản lý' : 'Giám sát' }}</span>
                             </td>
                             <td class="text-center">
                                 <div class="btn-group gap-2">
@@ -62,6 +64,14 @@
                                         <Icon name="material-symbols:delete" size="16" class="me-1" /> Xóa
                                     </button>
                                 </div>
+                            </td>
+                        </tr>
+                    </tbody>
+
+                    <tbody v-else>
+                        <tr>
+                            <td colspan="7" class="text-center text-muted py-3">
+                                Chưa có nhân viên hoặc không tìm thấy nhân viên phù hợp!
                             </td>
                         </tr>
                     </tbody>
@@ -101,7 +111,8 @@ import { useToast } from 'vue-toastification'
 
 definePageMeta({
     middleware: "auth",
-    layout: "dashboard"
+    layout: "dashboard",
+    breadcrumb: 'Nhân viên',
 })
 
 const staffStore = useStaffStore()

@@ -1,6 +1,5 @@
 <template>
     <div>
-        <h2 class="fw-bold">Dashboard</h2>
         <div v-if="isLoading">
             <div class="text-center">
                 <div class="spinner-border spinner-border-sm me-2" role="status">
@@ -24,6 +23,7 @@ import { useInitialData } from '@/composables/useInitialData';
 definePageMeta({
     middleware: 'auth',
     layout: 'dashboard',
+    breadcrumb: 'Dashboard',
 });
 
 const {

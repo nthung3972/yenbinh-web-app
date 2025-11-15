@@ -26,7 +26,7 @@
         <div class="card-header bg-primary text-white p-3 d-flex justify-content-between align-items-center">
           <span class="fw-semibold">
             <Icon name="mdi:home-city" size="20" class="me-2 text-white" />
-            Mã Căn Hộ: {{ invoiceStore.invoice.apartment_number }}
+            Căn Hộ: {{ invoiceStore.invoice.apartment_number }}
           </span>
           <button @click="downloadInvoice(id)" class="btn btn-success" :disabled="loading">
             <Icon name="mdi:file-excel" class="me-1" />
@@ -40,7 +40,7 @@
           <div class="row mb-4">
             <div class="col-md-4">
               <p class="mb-2">
-                <strong>Ngày Phát Hành:</strong> {{ formatDate(invoiceStore.invoice.invoice_date) }}
+                <strong>Ngày Phát Hành:</strong> {{ formatDate(invoiceStore.invoice.issue_date) }}
               </p>
             </div>
             <div class="col-md-4">
@@ -50,26 +50,26 @@
             </div>
             <div class="col-md-4">
               <p class="mb-2">
-                <strong>Người tạo: </strong> {{ invoiceStore.invoice.updated_by ? invoiceStore.invoice.updated_by :
-                  '----' }}
-              </p>
-            </div>
-            <div class="col-md-4">
-              <p class="mb-2">
-                <strong>Đã thanh toán:</strong> {{ formatVND(invoiceStore.invoice.total_paid) }}
-              </p>
-            </div>
-            <div class="col-md-4">
-              <p class="mb-2">
-                <strong>Còn lại:</strong> {{ formatVND(invoiceStore.invoice.remaining_balance) }}
-              </p>
-            </div>
-            <div class="col-md-4">
-              <p class="mb-2">
                 <strong>Trạng thái: </strong>
                 <span :class="['badge', getStatusBadgeClass(invoiceStore.invoice.status)]">
                   {{ getStatusText(invoiceStore.invoice.status) }}
                 </span>
+              </p>
+            </div>
+            <div class="col-md-4">
+              <p class="mb-2">
+                <strong>Đã thanh toán:</strong> {{ formatVND(invoiceStore.invoice.paid_amount) }}
+              </p>
+            </div>
+            <div class="col-md-4">
+              <p class="mb-2">
+                <strong>Dư nợ đầu kì</strong> {{ formatVND(invoiceStore.invoice.opening_balance) }}
+              </p>
+            </div>
+
+            <div class="col-md-4">
+              <p class="mb-2">
+                <strong>Dư nợ cuối kì</strong> {{ formatVND(invoiceStore.invoice.closing_balance) }}
               </p>
             </div>
           </div>
@@ -85,38 +85,41 @@
                 <thead class="table-primary text-white">
                   <tr>
                     <th style="width: 20%;">
-                      <Icon name="mdi:file-document" size="16" class="me-2" />
                       Loại Phí
                     </th>
                     <th style="width: 15%;">
-                      <Icon name="mdi:numeric" size="16" class="me-2" />
                       Số Lượng
                     </th>
                     <th style="width: 15%;">
-                      <Icon name="mdi:currency-usd" size="16" class="me-2" />
+                      Đơn vị
+                    </th>
+                    <th style="width: 15%;">
                       Đơn Giá
                     </th>
                     <th style="width: 15%;">
-                      <Icon name="mdi:cash-multiple" size="16" class="me-2" />
                       Thành Tiền
                     </th>
                     <th style="width: 45%;">
-                      <Icon name="mdi:file-document" size="16" class="me-2" />
                       Ghi chú
                     </th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr v-for="(detail, index) in invoiceStore.invoice.invoice_details" :key="index">
-                    <td>{{ detail.fee_name }}</td>
+                    <td>{{ detail.fee_subtypes.name }}</td>
                     <td>
                       <span>
-                        {{ detail.fee_types.is_fixed === 0 ? detail.quantity : 'Phí cố định' }}
+                        {{ detail.quantity }}
                       </span>
                     </td>
                     <td>
                       <span>
-                        {{ detail.fee_types.is_fixed === 0 ? formatVND(detail.price) : 'Phí cố định' }}
+                        {{ detail.fee_subtypes.unit }}
+                      </span>
+                    </td>
+                    <td>
+                      <span>
+                        {{ formatVND(detail.unit_price) }}
                       </span>
                     </td>
                     <td>{{ formatVND(detail.amount) }}</td>
@@ -189,7 +192,12 @@ import axios from 'axios'
 
 definePageMeta({
   middleware: "auth",
-  layout: "dashboard"
+  layout: "dashboard",
+  parent: '/invoice',
+    intermediates: [
+        { label: 'Chi tiết', to: null }
+    ],
+    useInvoiceName: true 
 })
 
 const invoiceStore = useInvoiceStore()
@@ -204,20 +212,20 @@ const loading = ref(false)
 
 const getStatusBadgeClass = (status) => {
   switch (status) {
-    case 0: return 'bg-warning text-dark'
-    case 1: return 'bg-primary'           
-    case 2: return 'bg-secondary'
-    case 3: return 'bg-info'          
+    case "pending": return 'bg-warning text-dark'
+    case "paid": return 'bg-primary'           
+    case "overdue": return 'bg-secondary'
+    case "partial": return 'bg-info'          
     default: return 'bg-secondary'        
   }
 }
 
 const getStatusText = (status) => {
   switch (status) {
-    case 0: return 'Chưa thanh toán'
-    case 1: return 'Đã thanh toán'
-    case 2: return 'Đã quá hạn'
-    case 3: return 'Thanh toán một phần'
+    case "pending": return 'Chưa thanh toán'
+    case "paid": return 'Đã thanh toán'
+    case "overdue": return 'Quá hạn'
+    case "partial": return 'Còn nợ'
     default: return 'Không xác định'
   }
 }
@@ -279,7 +287,6 @@ const formatVND = (amount) => {
 
 const loadInvoice = async () => {
   await invoiceStore.fetchInvoice(id)
-  console.log(invoiceStore.invoice)
 }
 
 onMounted(loadInvoice)

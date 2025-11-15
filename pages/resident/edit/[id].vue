@@ -172,7 +172,12 @@ import AddApartmentModal from '@/components/modal/AddResidentToApartmentModal.vu
 
 definePageMeta({
     middleware: "auth",
-    layout: "dashboard"
+    layout: "dashboard",
+    parent: '/resident',
+    intermediates: [
+        { label: 'Chỉnh sửa', to: null }
+    ],
+    useResidentName: true 
 })
 
 const useResident = useResidentStore()
@@ -272,7 +277,6 @@ const openAddModal = () => {
 const loadResident = async () => {
     await useResident.fetchResident(resident_id);
     residentForm.value = { ...useResident.resident };
-    console.log(residentForm.value);
 }
 
 // Lấy danh sách căn hộ

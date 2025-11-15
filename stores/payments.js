@@ -24,6 +24,17 @@ export const usePaymentStore = defineStore("payment", {
             }
         },
 
+        async getHistoryByApartment(id) {
+            try {
+                const response = await PaymentApi.getHistoryByApartment(id);
+                if (response.data) {
+                    return response.data
+                }
+            } catch (error) {
+                throw error
+            }
+        },
+
         setSelectedInvoice(invoice) {
             this.selectedInvoice = invoice
             this.error = null

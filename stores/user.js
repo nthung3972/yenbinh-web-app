@@ -172,6 +172,7 @@ export const useUserStore = defineStore("user", {
                 if(response.data) {
                     this.error = null
                     this.avatar = response.data.data.user.avatar
+                    this.user = response.data.data.user
                     return response.data.data
                 }
             } catch (error) {

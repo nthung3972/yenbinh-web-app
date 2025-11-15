@@ -42,7 +42,7 @@ export const useBuildingStore = defineStore("building", {
             this.loading = true
             try {
                 const response = await BuildingApi.create(data)
-                if(response.data) {
+                if (response.data) {
                     return response.data
                 }
                 this.error = null
@@ -58,7 +58,7 @@ export const useBuildingStore = defineStore("building", {
             this.loading = true
             try {
                 const response = await BuildingApi.edit(id)
-                if(response.data) {
+                if (response.data) {
                     this.building = response.data.data.data
                 }
                 this.error = null
@@ -74,7 +74,7 @@ export const useBuildingStore = defineStore("building", {
             this.loading = true
             try {
                 const response = await BuildingApi.update(id, data)
-                if(response.data) {
+                if (response.data) {
                     return response.data
                 }
                 this.error = null
@@ -89,6 +89,12 @@ export const useBuildingStore = defineStore("building", {
 
     getters: {
         isLoading: (state) => state.loading,
-        hasError: (state) => state.error
+        hasError: (state) => state.error,
+        getBuildingById: (state) => (id) => {
+            if (state.building?.building_id === Number(id)) {
+                return state.building
+            }
+            return state.buildingList.find(b => b.building_id === Number(id))
+        }
     }
 });

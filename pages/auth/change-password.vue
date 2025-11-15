@@ -1,8 +1,8 @@
 <template>
-    <div class="container mt-5">
+    <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-6 col-lg-5">
-                <div class="card shadow border-0 rounded-4">
+                <div class="card shadow-lg border-0 p-4">
                     <div class="card-body p-4 p-md-5">
                         <h2 class="card-title text-center mb-4">Đổi mật khẩu</h2>
 
@@ -11,20 +11,19 @@
                             <form @submit.prevent="submitChangePassword">
                                 <div class="form-floating mb-3">
                                     <input type="password" class="form-control" id="currentPassword"
-                                        v-model="dataForm.current_password" placeholder="Mật khẩu hiện tại" required>
+                                        v-model="dataForm.current_password" placeholder="Mật khẩu hiện tại">
                                     <label for="currentPassword">Mật khẩu hiện tại</label>
                                 </div>
 
                                 <div class="form-floating mb-3">
                                     <input type="password" class="form-control" id="newPassword"
-                                        v-model="dataForm.new_password" placeholder="Mật khẩu mới" required>
+                                        v-model="dataForm.new_password" placeholder="Mật khẩu mới">
                                     <label for="newPassword">Mật khẩu mới</label>
                                 </div>
 
                                 <div class="form-floating mb-4">
                                     <input type="password" class="form-control" id="confirmPassword"
-                                        v-model="dataForm.new_password_confirmation" placeholder="Xác nhận mật khẩu mới"
-                                        required>
+                                        v-model="dataForm.new_password_confirmation" placeholder="Xác nhận mật khẩu mới">
                                     <label for="confirmPassword">Xác nhận mật khẩu mới</label>
                                     <div v-if="!isPasswordMatch && dataForm.new_password_confirmation"
                                         class="text-danger small mt-1">
@@ -107,7 +106,8 @@ import { useUserStore } from '@/stores/user';
 
 definePageMeta({
     middleware: "auth",
-    layout: "dashboard"
+    layout: "dashboard",
+    breadcrumb: 'Đổi mật khẩu',
 })
 
 const userStore = useUserStore();

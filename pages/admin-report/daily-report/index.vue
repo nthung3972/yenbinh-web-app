@@ -10,7 +10,7 @@
         <div v-else>
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h5 class="fw-bold text-primary mb-0">
-                    <Icon name="material-symbols:report" size="24" />Danh sách báo cáo nhân sự ngày
+                    <Icon name="material-symbols:report" size="24" />Danh sách báo cáo
                 </h5>
             </div>
 
@@ -145,7 +145,8 @@ import { useToast } from 'vue-toastification'
 
 definePageMeta({
     middleware: 'auth',
-    layout: 'dashboard'
+    layout: 'dashboard',
+    breadcrumb: 'Kế hoạch nhân sự',
 })
 
 const adminReportStore = useAdminReportStore()

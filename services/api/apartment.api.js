@@ -23,5 +23,17 @@ export const ApartmentApi = {
 
     getResidentsByApartment(code) {
         return apiService.get(`/apartment/apartment-number/${code}/residents`);
+    },
+    
+    getFeeManagement(id) {
+        return apiService.get(`/building-fee/fee-management-by-building/${id}`);
+    },
+
+    apartmentBalance(id, page, per_page) {
+        return apiService.get(`/apartment/balance/${id}?page=${page}&per_page=${per_page}`);
+    },
+
+    apartmentInvoice(id, page, per_page) {
+        return apiService.get(`/apartment/invoice/${id}?page=${page}&per_page=${per_page}`);
     }
 };

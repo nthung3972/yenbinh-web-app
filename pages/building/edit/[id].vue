@@ -193,7 +193,12 @@ import ConfirmNavigationModal from '@/components/modal/UnsavedChangesModal.vue'
 
 definePageMeta({
     middleware: "auth",
-    layout: "dashboard"
+    layout: "dashboard",
+    parent: '/building',
+    intermediates: [
+        { label: 'Chỉnh sửa', to: null }
+    ],
+    useBuildingName: true 
 })
 
 const router = useRouter()
@@ -267,8 +272,6 @@ const handleFileChange = async (event) => {
     if (!file) return
 
     buildingForm.value.imagePreview = URL.createObjectURL(file)
-
-    console.log(buildingForm.value.imagePreview)
 
     const formData = new FormData()
     formData.append('image', file)

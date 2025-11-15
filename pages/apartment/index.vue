@@ -51,13 +51,10 @@
                                 <select v-model="filters.apartment_type" @change="onFilter" class="form-select"
                                     id="typeSelect">
                                     <option value="">Tất cả</option>
-                                    <option value="studio">Căn hộ Studio</option>
-                                    <option value="1bedroom">1 Phòng ngủ</option>
-                                    <option value="2bedroom">2 Phòng ngủ</option>
-                                    <option value="3bedroom">3 Phòng ngủ</option>
-                                    <option value="duplex">Căn hộ thông tầng</option>
-                                    <option value="penthouse">Căn hộ áp mái</option>
-                                    <option value="dualkey">Căn hộ song lập</option>
+                                    <option v-for="type in apartmentStore.feeManagements"
+                                        :value="type.fee_subtype_code">
+                                        {{ type.fee_subtype_code }}
+                                    </option>
                                 </select>
                                 <label for="typeSelect">Loại căn hộ<span class="required-mark"></span></label>
                             </div>
@@ -93,11 +90,11 @@
                             <th style="width: 15%; text-align: center;">Hành động</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody v-if="apartmentStore.apartmentsWithStatus.length > 0">
                         <tr v-for="(apartment, index) in apartmentStore.apartmentsWithStatus" :key="index">
                             <td>{{ index + 1 }}</td>
                             <td>{{ apartment.apartment_number }}</td>
-                            <td>{{ getApartmentTypeLabel(apartment.apartment_type) }}</td>
+                            <td>{{ apartment.apartment_type }}</td>
                             <td>{{ apartment.area }}</td>
                             <td>{{ apartment.current_residents[0]?.full_name ?? '---' }}</td>
                             <td>
@@ -128,6 +125,14 @@
                             </td>
                         </tr>
                     </tbody>
+
+                    <tbody v-else>
+                        <tr>
+                            <td colspan="8" class="text-center text-muted py-3">
+                                Chưa có căn hộ hoặc không tìm thấy căn hộ phù hợp!
+                            </td>
+                        </tr>
+                    </tbody>
                 </table>
             </div>
 
@@ -145,14 +150,17 @@ import { useAuthStore } from '@/stores/auth'
 import Pagination from '@/components/pagination/Pagination.vue'
 import ActionDropdown from '@/components/dropdown/actionDropdown.vue'
 import DropdownItem from '@/components/dropdown/dropdownItem.vue'
+import { useInitialData } from '@/composables/useInitialData'
 
 definePageMeta({
     middleware: "auth",
-    layout: "dashboard"
+    layout: "dashboard",
+    breadcrumb: 'Quản lý căn hộ',
 })
 
 const apartmentStore = useApartmentStore()
 const authStore = useAuthStore()
+const { selectedBuildingId } = useInitialData();
 
 const filters = ref({
     apartment_type: '',
@@ -161,20 +169,6 @@ const filters = ref({
     page: 1,
     per_page: 10,
 })
-
-const getApartmentTypeLabel = (type) => {
-    const labels = {
-        'studio': 'Căn hộ Studio',
-        '1bedroom': '1 Phòng ngủ',
-        '2bedroom': '2 Phòng ngủ',
-        '3bedroom': '3 Phòng ngủ',
-        'dualkey': 'Căn hộ song lập',
-        'penthouse': 'Căn hộ áp mái',
-        'duplex': 'Căn hộ thông tầng',
-    }
-
-    return labels[type] || 'Không xác định'
-}
 
 const isLoading = computed(() => apartmentStore.isLoading)
 const hasError = computed(() => apartmentStore.hasError)
@@ -199,7 +193,11 @@ const onFilter = () => {
     loadApartments()
 }
 
-const loadApartments = async() => {
+const getFeeManagement = async () => {
+    await apartmentStore.getFeeManagement(selectedBuildingId.value);
+}
+
+const loadApartments = async () => {
     const params = { ...filters.value }
     await apartmentStore.apartmentsByBuilding(
         params.page,
@@ -210,7 +208,10 @@ const loadApartments = async() => {
     )
 }
 
-onMounted(loadApartments);
+onMounted(async () => {
+    await getFeeManagement()
+    await loadApartments()
+});
 </script>
 
 <style scoped>

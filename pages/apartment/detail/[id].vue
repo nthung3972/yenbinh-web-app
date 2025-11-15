@@ -13,7 +13,7 @@
                     <div class="card shadow">
                         <div class="card-header bg-white d-flex justify-content-between align-items-center">
                             <h4 class="fw-bold text-primary">
-                                <Icon name="mdi:receipt-text" size="24" class="me-2" />
+                                <Icon name="ion:home" size="22" class="me-2" />
                                 Thông tin căn hộ
                             </h4>
                             <button class="btn btn-outline-secondary" @click="goBack()">
@@ -45,12 +45,9 @@
                                     <strong> Diện tích:</strong> {{ useApartment.apartment.area }} m²
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <strong> Loại căn hộ:</strong> {{ getApartmentTypeLabel(useApartment.apartment.apartment_type) }}
+                                    <strong> Loại căn hộ:</strong> {{ useApartment.apartment.apartment_type }}
                                 </div>
                                 <div class="col-md-6 mb-3">
-                                    <strong> Loại sở hữu:</strong> {{ getOwnershipTypeLabel(useApartment.apartment.ownership_type) }}
-                                </div>
-                                <div class="col-md-12 mb-3">
                                     <strong> Ghi chú:</strong> {{ useApartment.apartment.notes ?? 'Không có ghi chú' }}
                                 </div>
                             </div>
@@ -58,15 +55,52 @@
                     </div>
                 </div>
             </div>
+            
+            <!-- Tab navigation cho thông tin khác -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="card shadow">
+                        <div class="card-header bg-white p-0">
+                            <ul class="nav nav-tabs" id="residentTabs" role="tablist">
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link active" id="balance-tab" data-bs-toggle="tab"
+                                        data-bs-target="#balance" type="button" role="tab">
+                                        Tài chính căn hộ
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="payments-tab" data-bs-toggle="tab"
+                                        data-bs-target="#payments" type="button" role="tab">
+                                        Hóa đơn căn hộ
+                                    </button>
+                                </li>
+                                <li class="nav-item" role="presentation">
+                                    <button class="nav-link" id="activity-tab" data-bs-toggle="tab"
+                                        data-bs-target="#activity" type="button" role="tab">
+                                        Cư dân căn hộ
+                                    </button>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="card-body">
+                            <div class="tab-content" id="residentTabContent">
 
-            <!-- Căn hộ sở hữu -->
-            <div class="row">
+                                <div class="tab-pane fade show active" id="balance" role="tabpanel">
+                                    <ApartmentBalance :apartment-id="Number(apartmentId)"/>
+                                </div>
+
+                                <div class="tab-pane fade" id="payments" role="tabpanel">
+                                    <ApartmentPayment :apartment-id="Number(apartmentId)"/>    
+                                </div>
+
+                                <div class="tab-pane fade" id="activity" role="tabpanel">
+                                    <div class="row">
                 <div class="col-12">
                     <div class="card shadow">
                         <div class="card-header bg-white">
                             <h5 class="fw-bold text-primary">
-                                <Icon name="ep:list" size="20" class="me-1" />
-                                Danh sách cư dân
+                                <Icon name="ic:baseline-people" size="20" class="me-1" />
+                                Thông tin cư dân
                             </h5>
                         </div>
                         <div class="card-body">
@@ -139,45 +173,6 @@
                     </div>
                 </div>
             </div>
-            <!-- Tab navigation cho thông tin khác -->
-            <div class="row mt-4">
-                <div class="col-12">
-                    <div class="card shadow">
-                        <div class="card-header bg-white p-0">
-                            <ul class="nav nav-tabs" id="residentTabs" role="tablist">
-                                <li class="nav-item" role="presentation">
-                                    <button class="nav-link active" id="payments-tab" data-bs-toggle="tab"
-                                        data-bs-target="#payments" type="button" role="tab">
-                                        Lịch sử thanh toán
-                                    </button>
-                                </li>
-                                <li class="nav-item" role="presentation">
-                                    <button class="nav-link" id="complaints-tab" data-bs-toggle="tab"
-                                        data-bs-target="#complaints" type="button" role="tab">
-                                        Phản ánh & khiếu nại
-                                    </button>
-                                </li>
-                                <li class="nav-item" role="presentation">
-                                    <button class="nav-link" id="activity-tab" data-bs-toggle="tab"
-                                        data-bs-target="#activity" type="button" role="tab">
-                                        Hoạt động gần đây
-                                    </button>
-                                </li>
-                            </ul>
-                        </div>
-                        <div class="card-body">
-                            <div class="tab-content" id="residentTabContent">
-                                <div class="tab-pane fade show active" id="payments" role="tabpanel">
-                                    <p class="text-muted">Hiển thị lịch sử thanh toán của căn hộ</p>
-                                    <!-- Nội dung lịch sử thanh toán -->
-                                </div>
-                                <div class="tab-pane fade" id="complaints" role="tabpanel">
-                                    <p class="text-muted">Hiển thị phản ánh và khiếu nại của căn hộ</p>
-                                    <!-- Nội dung phản ánh và khiếu nại -->
-                                </div>
-                                <div class="tab-pane fade" id="activity" role="tabpanel">
-                                    <p class="text-muted">Hiển thị hoạt động gần đây của căn hộ</p>
-                                    <!-- Nội dung hoạt động gần đây -->
                                 </div>
                             </div>
                         </div>
@@ -189,21 +184,32 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
+import { onMounted, computed, ref } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { useApartmentStore } from '@/stores/apartment'
+import { usePaymentStore } from '@/stores/payments'
+import ApartmentBalance from '~/components/apartment/ApartmentBalance.vue'
+import ApartmentPayment from '~/components/apartment/ApartmentPayment.vue'
 
 definePageMeta({
     middleware: "auth",
-    layout: "dashboard"
+    layout: "dashboard",
+    parent: '/apartment',
+    intermediates: [
+        { label: 'Chi tiết', to: null }
+    ],
+    useApartmentName: true 
 })
 
 const useApartment = useApartmentStore()
+const usePayment = usePaymentStore()
 const route = useRoute();
 const router = useRouter();
 const apartmentId = route.params.id;
 const isLoading = computed(() => useApartment.isLoading);
 const hasError = computed(() => useApartment.hasError);
+
+const paymentHistory = ref([])
 
 const formatDate = (date) => {
     if (!date) return 'Chưa cập nhật'
@@ -214,42 +220,21 @@ const formatDate = (date) => {
     })
 }
 
-const getApartmentTypeLabel = (type) => {
-    const labels = {
-        'studio': 'Phòng thu',
-        '1bedroom': '1 Phòng ngủ',
-        '2bedroom': '2 Phòng ngủ',
-        '3bedroom': '3 Phòng ngủ',
-        'dualkey': 'Căn hộ song lập',
-        'penthouse': 'Căn hộ áp mái',
-        'duplex': 'Căn hộ thông tầng',
-    }
-
-    return labels[type] || 'Không xác định'
-}
-
-const getOwnershipTypeLabel = (type) => {
-    const labels = {
-        'own': 'Sở hữu',
-        'lease': 'Cho thuê',
-        'lease_back': 'Cho thuê lại',
-        'mortgage': 'Thế chấp',
-        'shared_ownership': 'Sở hữu chung',
-    }
-
-    return labels[type] || 'Không xác định'
-}
-
-
 const goBack = () => {
     router.back()
+}
+
+const fetchPaymentHisory = async () => {
+    const result = await usePayment.getHistoryByApartment(apartmentId)
+    paymentHistory.value = result.data
 }
 
 const loadApartmentInfo = async () => {
     await useApartment.detailApartment(apartmentId)
 }
 
-onMounted(() => {
-    loadApartmentInfo()
+onMounted(async () => {
+    await fetchPaymentHisory()
+    await loadApartmentInfo()
 })
 </script>

@@ -39,6 +39,20 @@
               <h6 class="fw-bold mb-3 text-primary">THÔNG TIN XE</h6>
               <div class="row g-3">
                 <div class="col-md-6">
+                  <label class="form-label fw-medium">Loại xe <span class="text-danger">*</span></label>
+                  <select v-model="vehicle.vehicle_type_id" class="form-select shadow-sm" @change="onChange()" :class="{ 'is-invalid': errors?.[`${index}.vehicle_type_id`] }">
+                    <option value="" disabled>Chọn loại xe</option>
+                    <option v-for="vehicle_type in vehicleTypes" :key="vehicle_type.vehicle_type_id"
+                      :value="vehicle_type.vehicle_type_id">
+                      {{ vehicle_type.name }}
+                    </option>
+                  </select>
+                  <div v-if="errors?.[`${index}.vehicle_type_id`]" class="invalid-feedback">
+                    {{ errors[`${index}.vehicle_type_id`][0] }}
+                  </div>
+                </div>
+
+                <div class="col-md-6">
                   <label class="form-label fw-medium">Biển số xe <span class="text-danger">*</span></label>
                   <input v-model="vehicle.license_plate" type="text" class="form-control shadow-sm"
                     :class="{ 'is-invalid': errors?.[`${index}.license_plate`] }" placeholder="Nhập biển số xe"
@@ -48,21 +62,8 @@
                   </div>
                 </div>
 
-                <div class="col-md-6">
-                  <label class="form-label fw-medium">Loại xe <span class="text-danger">*</span></label>
-                  <select v-model="vehicle.vehicle_type_id" class="form-select shadow-sm" @change="onChange()" required>
-                    <option value="" disabled>Chọn loại xe</option>
-                    <option v-for="vehicle_type in vehicleTypes" :key="vehicle_type.vehicle_type_id" :value="vehicle_type.vehicle_type_id">
-                      {{ vehicle_type.vehicle_type_name }}
-                    </option>
-                  </select>
-                  <div v-if="errors?.[`${index}.vehicle_type`]" class="invalid-feedback">
-                    {{ errors[`${index}.vehicle_type`][0] }}
-                  </div>
-                </div>
-
                 <div class="col-md-4">
-                  <label class="form-label fw-medium">Hãng xe <span class="text-danger">*</span></label>
+                  <label class="form-label fw-medium">Hãng xe</label>
                   <input v-model="vehicle.vehicle_company" type="text" class="form-control shadow-sm"
                     :class="{ 'is-invalid': errors?.[`${index}.vehicle_company`] }" placeholder="Nhập tên hãng xe"
                     @input="onChange()" />
@@ -72,7 +73,7 @@
                 </div>
 
                 <div class="col-md-4">
-                  <label class="form-label fw-medium">Mẫu xe <span class="text-danger">*</span></label>
+                  <label class="form-label fw-medium">Mẫu xe</label>
                   <input v-model="vehicle.vehicle_model" type="text" class="form-control shadow-sm"
                     :class="{ 'is-invalid': errors?.[`${index}.vehicle_model`] }" placeholder="Nhập tên mẫu xe"
                     @input="onChange()" />
@@ -82,7 +83,7 @@
                 </div>
 
                 <div class="col-md-4">
-                  <label class="form-label fw-medium">Màu xe <span class="text-danger">*</span></label>
+                  <label class="form-label fw-medium">Màu xe</label>
                   <input v-model="vehicle.vehicle_color" type="text" class="form-control shadow-sm"
                     :class="{ 'is-invalid': errors?.[`${index}.vehicle_color`] }" placeholder="Nhập tên màu xe"
                     @input="onChange()" />
@@ -91,7 +92,7 @@
                   </div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-6">
                   <label class="form-label fw-medium">Vị trí đỗ</label>
                   <input v-model="vehicle.parking_slot" type="text" class="form-control shadow-sm"
                     :class="{ 'is-invalid': errors?.[`${index}.parking_slot`] }" placeholder="Nhập vị trí đỗ (nếu có)"
@@ -101,7 +102,7 @@
                   </div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-6">
                   <label class="form-label fw-medium">Trạng thái <span class="text-danger">*</span></label>
                   <select v-model="vehicle.status" class="form-select shadow-sm"
                     :class="{ 'is-invalid': errors?.[`${index}.status`] }" @change="onChange()" required>
@@ -112,33 +113,25 @@
                     {{ errors[`${index}.status`][0] }}
                   </div>
                 </div>
-
-                <div class="col-md-4">
-                  <label class="form-label fw-medium">Ngày đăng ký <span class="text-danger">*</span></label>
-                  <input v-model="vehicle.created_at" type="date" class="form-control shadow-sm"
-                    :class="{ 'is-invalid': errors?.[`${index}.created_at`] }" @input="onChange()" required />
-                  <div v-if="errors?.[`${index}.created_at`]" class="invalid-feedback">
-                    {{ errors[`${index}.created_at`][0] }}
-                  </div>
-                </div>
               </div>
 
-              <hr class="my-4"/>
+              <hr class="my-4" />
 
               <!-- THÔNG TIN CHỦ XE -->
               <h6 class="fw-bold mb-3 text-primary">THÔNG TIN CHỦ XE</h6>
               <div class="row g-3">
                 <div class="col-md-4">
                   <!-- Mã căn hộ -->
-                    <label class="form-label fw-medium">Mã căn hộ<span class="text-danger">*</span></label>
-                    <input v-model="vehicle.apartment_number" @input="onApartmentInput(index)" list="apartmentList"
-                      class="form-control" placeholder="Nhập mã căn hộ" />
-                    <datalist id="apartmentList">
-                      <option v-for="apt in filteredApartments" :key="apt.apartment_id" :value="apt.apartment_number" />
-                    </datalist>
+                  <label class="form-label fw-medium">Mã căn hộ<span class="text-danger">*</span></label>
+                  <input v-model="vehicle.apartment_number" @input="onApartmentInput(index)" list="apartmentList"
+                    class="form-control" placeholder="Nhập mã căn hộ" :class="{ 'is-invalid': errors?.[`${index}.apartment_number`] }"/>
+                  <datalist id="apartmentList">
+                    <option v-for="apt in filteredApartments" :key="apt.apartment_number" :value="apt.apartment_number" />
+                  </datalist>
                   <div v-if="errors?.[`${index}.apartment_number`]" class="invalid-feedback">
                     {{ errors[`${index}.apartment_number`][0] }}
                   </div>
+
                 </div>
 
                 <div class="col-md-4">
@@ -158,11 +151,11 @@
 
                 <div class="col-md-4">
                   <!-- Mã căn hộ -->
-                    <label class="form-label fw-medium">Ghi chú<span class="text-danger">*</span></label>
-                    <input v-model="vehicle.notes" @input="onApartmentInput(index)" list="apartmentList"
-                      class="form-control" placeholder="Ghi chú phương tiện" />
-                  <div v-if="errors?.[`${index}.notes`]" class="invalid-feedback">
-                    {{ errors[`${index}.notes`][0] }}
+                  <label class="form-label fw-medium">Ghi chú</label>
+                  <input v-model="vehicle.note" list="apartmentList"
+                    class="form-control" placeholder="Ghi chú phương tiện" />
+                  <div v-if="errors?.[`${index}.note`]" class="invalid-feedback">
+                    {{ errors[`${index}.note`][0] }}
                   </div>
                 </div>
               </div>
@@ -178,7 +171,7 @@
         <!-- Action Buttons -->
         <div class="d-flex justify-content-end gap-2">
           <button type="button" class="btn btn-secondary" style="min-width: 120px;" @click="reset()">
-            <Icon name="bx:reset" size="20" class="me-1"/>
+            <Icon name="bx:reset" size="20" class="me-1" />
             Làm mới
           </button>
           <button type="submit" class="btn btn-primary" style="min-width: 120px;">
@@ -205,7 +198,9 @@ import ConfirmNavigationModal from '@/components/modal/UnsavedChangesModal.vue'
 
 definePageMeta({
   middleware: "auth",
-  layout: "dashboard"
+  layout: "dashboard",
+  parent: '/vehicle',
+  breadcrumb: 'Thêm phương tiện',
 })
 
 const vehicleStore = useVehicleStore()
@@ -236,18 +231,17 @@ const isLoading = computed(() => vehicleStore.isLoading);
 
 const vehicles = ref([
   {
-    license_plate: '',
     vehicle_type_id: '',
-    parking_slot: '',
+    building_id: building_id,
     apartment_number: '',
-    status: 0,
-    created_at: '',
     resident_id: '',
+    license_plate: '',
+    parking_slot: '',
     vehicle_company: '',
     vehicle_model: '',
     vehicle_color: '',
-    notes: '',
-    building_id: building_id,
+    status: 0,
+    note: '',
     residents: []
   }
 ]);
@@ -266,7 +260,7 @@ const fetchResidents = async (apartmentCode, index) => {
 }
 
 const getVehicleTypes = async () => {
-  const data = await vehicleTypeStore.getList() 
+  const data = await vehicleTypeStore.getList()
   vehicleTypes.value = data
 }
 
@@ -291,7 +285,7 @@ const onApartmentInput = (index) => {
 }
 
 const addVehicle = () => {
-  vehicles.value.push({ license_plate: '', vehicle_type: '', parking_slot: '', apartment_number: '', status: 0, created_at: '',vehicle_company: '', vehicle_model: '', vehicle_color: '',  building_id: building_id, notes: '' });
+  vehicles.value.push({ license_plate: '', vehicle_type_id: '', parking_slot: '', apartment_number: '', status: 0, vehicle_company: '', vehicle_model: '', vehicle_color: '', building_id: building_id, note: '' });
 };
 
 const removeVehicle = (index) => {
@@ -300,7 +294,7 @@ const removeVehicle = (index) => {
 
 const reset = () => {
   vehicles.value = [
-    { license_plate: '', vehicle_type: '', parking_slot: '', amapartment_numberount: '', status: 0, created_at: '', vehicle_company: '', vehicle_model: '', vehicle_color: '', building_id: building_id,  notes: '', residents: [] }
+    { license_plate: '', vehicle_type_id: '', parking_slot: '', apartment_number: '', status: 0, vehicle_company: '', vehicle_model: '', vehicle_color: '', building_id: building_id, note: '', residents: [] }
   ]
   setEditing(false)
 }
@@ -310,13 +304,12 @@ const goBack = () => {
 }
 
 const createdVehicle = async () => {
-  // console.log(vehicles.value)
   try {
     const result = await vehicleStore.create(vehicles.value)
     if (result) {
       toast.success('Thêm danh sách xe thành công!')
-      errors.value = null
-      reset()
+      setEditing(false)
+      router.push('/vehicle')
     }
   } catch (error) {
     console.log('Lỗi khi thêm danh sách xe: ', error)

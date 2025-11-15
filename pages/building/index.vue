@@ -9,8 +9,10 @@
     <div v-else-if="hasError">{{ hasError }}</div>
     <div v-else>
       <div class="d-flex justify-content-between align-items-center mb-3 p-bottom">
-  
-        <h5 class="fw-bold text-primary mb-0"><Icon name="mdi:building" size="24" class="me-2"/>Danh sách tòa nhà</h5>
+
+        <h5 class="fw-bold text-primary mb-0">
+          <Icon name="mdi:building" size="24" class="me-2" />Danh sách tòa nhà
+        </h5>
         <div class="input-group w-50">
           <span class="input-group-text">
             <Icon name="material-symbols:search" />
@@ -28,17 +30,17 @@
           <thead class="table-light sticky-top" style="z-index: 1;">
             <tr>
               <th style="width: 5%;">#</th>
-              <th style="width: 20%;">Tên tòa nhà</th>
-              <th style="width: 15%;">Hình ảnh</th>
+              <th style="width: 17%;">Tên tòa nhà</th>
+              <th style="width: 13%;">Hình ảnh</th>
               <th style="width: 10%;">Số tầng</th>
-              <th style="width: 10%;">Diện tích</th>
-              <th style="width: 10%;">Phí dịch vụ</th>
+              <th style="width: 10%;">Diện tích (m²)</th>
+              <th style="width: 15%;">Phí dịch vụ (VNĐ)</th>
               <th style="width: 10%;">Loại tòa nhà</th>
               <th style="width: 15%;">Trạng thái</th>
               <th style="width: 20%; text-align: center;">Hành động</th>
             </tr>
           </thead>
-          <tbody>
+          <tbody v-if="buildingStore.buildingList.length > 0">
             <tr v-for="(building, index) in buildingStore.buildingList" :key="index">
               <td>{{ index + 1 }}</td>
               <td>{{ building.name }}</td>
@@ -48,7 +50,7 @@
                 <img v-else src="" alt="">
               </td>
               <td>{{ building.floors }}</td>
-              <td>{{ building.total_area }} (m²)</td>
+              <td>{{ building.total_area }}</td>
               <td>{{ formatVND(building.management_fee_per_m2) }}</td>
               <td>{{ getBuildingType(building.building_type) }}</td>
               <td>
@@ -73,6 +75,14 @@
               </td>
             </tr>
           </tbody>
+
+          <tbody v-else>
+            <tr>
+              <td colspan="7" class="text-center text-muted py-3">
+                Chưa có tòa nhà hoặc không tìm thấy tòa nhà phù hợp!
+              </td>
+            </tr>
+          </tbody>
         </table>
       </div>
       <Pagination :pagination="buildingStore.pagination" @page-change="handlePageChange" />
@@ -87,7 +97,8 @@ import Pagination from '@/components/pagination/Pagination.vue'
 
 definePageMeta({
   middleware: "auth",
-  layout: "dashboard"
+  layout: "dashboard",
+  breadcrumb: 'Tòa nhà',
 })
 
 const buildingStore = useBuildingStore()

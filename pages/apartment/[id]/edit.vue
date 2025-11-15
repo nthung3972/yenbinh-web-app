@@ -27,7 +27,24 @@
                             hộ
                         </h5>
                         <div class="row g-3">
-                            <div class="col-md-12">
+                            <div class="col-md-6">
+                                <div class="form-label-group">
+                                    <select v-model="apartmentForm.apartment_type" class="form-select" id="typeSelect"
+                                        @change="onChange()">
+                                        <option value="" disabled selected>Chọn loại căn hộ</option>
+                                        <option v-for="type in apartmentStore.feeManagements"
+                                            :value="type.fee_subtype_code">
+                                            {{ type.fee_subtype_code }}
+                                        </option>
+                                    </select>
+                                    <label for="typeSelect">Loại căn hộ<span class="required-mark">*</span></label>
+                                    <small v-if="errors?.apartment_type" class="text-danger">{{
+                                        errors.apartment_type }}
+                                    </small>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
                                 <div class="form-label-group">
                                     <input v-model="apartmentForm.apartment_number" type="text" class="form-control"
                                         @input="onChange()" id="apartmentNumber" placeholder=" ">
@@ -62,43 +79,6 @@
                                     </small>
                                 </div>
                             </div>
-                            <div class="col-md-6">
-                                <div class="form-label-group">
-                                    <select v-model="apartmentForm.apartment_type" class="form-select" id="typeSelect"
-                                        @change="onChange()">
-                                        <option value="" disabled selected>Chọn loại căn hộ</option>
-                                        <option value="studio">Căn hộ studio</option>
-                                        <option value="1bedroom">1 Phòng ngủ</option>
-                                        <option value="2bedroom">2 Phòng ngủ</option>
-                                        <option value="3bedroom">3 Phòng ngủ</option>
-                                        <option value="duplex">Căn hộ thông tầng</option>
-                                        <option value="penthouse">Căn hộ áp mái</option>
-                                        <option value="dualkey">Căn hộ song lập</option>
-                                    </select>
-                                    <label for="typeSelect">Loại căn hộ<span class="required-mark">*</span></label>
-                                    <small v-if="errors?.apartment_type" class="text-danger">{{
-                                        errors.apartment_type }}
-                                    </small>
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-label-group">
-                                    <select v-model="apartmentForm.ownership_type" class="form-select" id="typeSelect"
-                                        @change="onChange()">
-                                        <option value="" disabled selected>Chọn loại sở hữu</option>
-                                        <option value="own">Sở hữu</option>
-                                        <option value="lease">Thuê</option>
-                                        <option value="lease_back">Thuê lại</option>
-                                        <option value="mortgage">Thế chấp</option>
-                                        <option value="shared_ownership">Sở hữu chung</option>
-                                    </select>
-                                    <label for="typeSelect">Loại căn hộ<span class="required-mark">*</span></label>
-                                    <small v-if="errors?.ownership_type" class="text-danger">{{
-                                        errors.ownership_type }}
-                                    </small>
-                                </div>
-                            </div>
 
                             <div class="col-md-12">
                                 <div class="form-label-group">
@@ -114,7 +94,7 @@
                     </div>
 
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
-                        <button type="button" class="btn btn-secondary" @click="reset()"><Icon name="bx:reset" size="20" class="me-2" />Làm mới</button>
+                        <button type="button" class="btn btn-secondary" @click="goBack()"><Icon name="bx:reset" size="20" class="me-2" />Hủy</button>
                         <button type="submit" class="btn btn-primary px-4">
                             <Icon name="material-symbols-light:box-edit" size="20" class="me-2" /> Lưu thay đổi
                         </button>
@@ -138,7 +118,12 @@ import ConfirmNavigationModal from '@/components/modal/UnsavedChangesModal.vue'
 
 definePageMeta({
     middleware: "auth",
-    layout: "dashboard"
+    layout: "dashboard",
+    parent: '/apartment',
+    intermediates: [
+        { label: 'Chỉnh sửa', to: null }
+    ],
+    useApartmentName: true
 })
 
 const route = useRoute()
