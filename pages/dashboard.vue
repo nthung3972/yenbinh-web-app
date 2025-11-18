@@ -16,6 +16,7 @@
 </template>
 
 <script setup>
+import { onMounted } from 'vue';
 import DashboardStats from '~/components/dashboard/DashboardStats.vue';
 import DashboardTable from '~/components/dashboard/DashboardTable.vue';
 import { useInitialData } from '@/composables/useInitialData';
@@ -28,8 +29,13 @@ definePageMeta({
 
 const {
   selectedStatsData,
+  fetchInitialData 
 } = useInitialData();
 
 const loadingStore = useLoadingStore();
 const isLoading = computed(() => loadingStore.isLoading);
+
+// onMounted(async () => {
+//   await fetchInitialData();
+// });
 </script>

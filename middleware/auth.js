@@ -3,6 +3,7 @@ import { useAuthStore } from '~/stores/auth';
 
 export default defineNuxtRouteMiddleware(async (to, from) => {
   const authStore = useAuthStore();
+  const { fetchInitialData } = useInitialData();
 
   // Route yêu cầu đăng nhập
   if (to.meta.requiresAuth !== false) {

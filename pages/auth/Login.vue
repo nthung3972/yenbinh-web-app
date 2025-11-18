@@ -111,6 +111,9 @@ const handleLogin = async () => {
       password: form.password
     });
 
+    const { fetchInitialData } = useInitialData();
+    await fetchInitialData();
+
     if (!response.data.user.email_verified_at) {
       // Email chưa xác thực, chuyển sang trang verify
       return navigateTo('/auth/verify-email');

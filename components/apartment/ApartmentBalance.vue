@@ -52,6 +52,22 @@
                                 </div>
                             </div>
 
+                            <!-- Tổng đã tính phí -->
+                            <div class="col-md-3 col-sm-6 mb-3">
+                                <div class="finance-card text-center p-3 rounded bg-light">
+                                    <div class="finance-icon mb-2 text-info">
+                                        <i class="bx bx-receipt fs-2"></i>
+                                    </div>
+                                    <h4 class="text-info">
+                                        {{ formatCurrency(Math.abs(adjustmentTotal)) }}
+                                    </h4>
+                                    <p class="text-muted mb-0">Điều chỉnh {{ adjustmentTotal > 0 ? 'tăng' : 'giảm'}}</p>
+                                    <small class="text-muted">
+                                        Cập nhật: {{ formatDate(apartmentBalance.updated_at) }}
+                                    </small>
+                                </div>
+                            </div>
+
                             <!-- Tổng đã thanh toán -->
                             <div class="col-md-3 col-sm-6 mb-3">
                                 <div class="finance-card text-center p-3 rounded bg-light">
@@ -64,26 +80,6 @@
                                     <p class="text-muted mb-0">Tổng đã thanh toán</p>
                                     <small class="text-muted">
                                         Cập nhật: {{ formatDate(apartmentBalance.last_payment_date) }}
-                                    </small>
-                                </div>
-                            </div>
-
-                            <!-- Trạng thái tài khoản -->
-                            <div class="col-md-3 col-sm-6 mb-3">
-                                <div class="finance-card text-center p-3 rounded bg-light">
-                                    <div class="finance-icon mb-2">
-                                        <i class="bx bx-trending-up fs-2"
-                                            :class="getTrendingIconClass(apartmentBalance.current_balance)"></i>
-                                    </div>
-                                    <h4>
-                                        <span class="badge"
-                                            :class="getBalanceBadgeClass(apartmentBalance.current_balance)">
-                                            {{ getBalanceStatus(apartmentBalance.current_balance) }}
-                                        </span>
-                                    </h4>
-                                    <p class="text-muted mb-0">Trạng thái</p>
-                                    <small class="text-muted">
-                                        {{ getBalanceDescription(apartmentBalance.current_balance) }}
                                     </small>
                                 </div>
                             </div>
@@ -134,6 +130,12 @@
                                 </div>
                             </div>
                             <div class="col-md-3">
+                                <div class="d-flex align-items-center">
+                                    <span class="badge bg-info me-2">{{ statistics.adjustment > 0 ? '+' : '-' }}</span>
+                                    <small class="text-muted">Điều chỉnh: {{ formatCurrency(statistics.adjustment) }}</small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
                                 <small class="text-muted">Tổng giao dịch: {{ statistics.totalTransactions }}</small>
                             </div>
                             <!-- <div class="col-md-3 text-end">
@@ -174,16 +176,15 @@
                                             <div class="d-flex align-items-center">
                                                 <span class="badge"
                                                     :class="getAmountBadgeClass(transaction.transaction_type)">
-                                                    {{ transaction.transaction_type === 'charge' ? ' + ' : ' - ' }}
                                                 </span>
                                                 <strong :class="getAmountTextClass(transaction.transaction_type)">
-                                                    {{ formatCurrency(Math.abs(transaction.amount)) }}
+                                                    {{ formatCurrency(transaction.amount) }}
                                                 </strong>
                                             </div>
                                         </td>
                                         <td>
                                             <span class="text-muted">{{ formatCurrency(transaction.balance_before)
-                                            }}</span>
+                                                }}</span>
                                         </td>
                                         <td>
                                             <strong>{{ formatCurrency(transaction.balance_after) }}</strong>
@@ -275,13 +276,22 @@ const statistics = computed(() => {
     const filtered = filteredTransactions.value
     return {
         income: filtered
-            .filter(t => parseFloat(t.amount) > 0)
+            .filter(t => parseFloat(t.amount) > 0 && t.reference_type === 'invoice')
+            .reduce((sum, t) => sum + parseFloat(t.amount), 0),
+        adjustment: filtered
+            .filter(t => parseFloat(t.amount) && t.reference_type === 'adjustment')
             .reduce((sum, t) => sum + parseFloat(t.amount), 0),
         expense: Math.abs(filtered
-            .filter(t => parseFloat(t.amount) < 0)
+            .filter(t => parseFloat(t.amount) < 0 && t.reference_type === 'payment')
             .reduce((sum, t) => sum + parseFloat(t.amount), 0)),
         totalTransactions: filtered.length
     }
+})
+
+const adjustmentTotal = computed(() => {
+    const total = transactions.value
+    return total.filter(t => parseFloat(t.amount) && t.reference_type === 'adjustment')
+        .reduce((sum, t) => sum + parseFloat(t.amount), 0)
 })
 
 // Methods
@@ -378,8 +388,7 @@ const getTransactionTypeBadgeClass = (type) => {
     const classes = {
         charge: 'bg-danger',
         payment: 'bg-success',
-        adjustment: 'bg-warning',
-        refund: 'bg-info'
+        adjustment: 'bg-info'
     }
     return classes[type] || 'bg-secondary'
 }
@@ -395,11 +404,27 @@ const getTransactionTypeText = (type) => {
 }
 
 const getAmountBadgeClass = (type) => {
-    return type === 'charge' ? 'bg-danger' : 'bg-success'
+    if (type === 'charge') {
+        return 'bg-danger'
+    }
+    else if (type === 'payment') {
+        return 'bg-success'
+    }
+    else if (type === 'adjustment') {
+        return 'bg-info'
+    }
 }
 
 const getAmountTextClass = (type) => {
-    return type === 'charge' ? 'text-danger' : 'text-success'
+    if (type === 'charge') {
+        return 'text-danger'
+    }
+    else if (type === 'payment') {
+        return 'text-success'
+    }
+    else if (type === 'adjustment') {
+        return 'text-info'
+    }
 }
 
 const exportTransactions = () => {
