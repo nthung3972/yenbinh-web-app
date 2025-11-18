@@ -11,6 +11,10 @@ export const useUserStore = defineStore("user", {
         success: null,
     }),
 
+    persist: {
+        paths: ['user'],
+    },
+
     actions: {
         async resendEmailVerification() {
             this.loading = true;

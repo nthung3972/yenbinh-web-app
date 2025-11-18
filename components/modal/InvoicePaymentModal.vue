@@ -72,7 +72,7 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" @click="close">Hủy</button>
                     <button type="submit" class="btn btn-primary" @click="handleSubmit">
-                        Thêm
+                        Lưu thanh toán
                     </button>
                 </div>
             </div>

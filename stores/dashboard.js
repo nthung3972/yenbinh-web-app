@@ -9,7 +9,7 @@ export const useDashboardStore = defineStore("dashboard", {
         error: null,
     }),
     persist: {
-        paths: ['selectedBuildingId'], // Chỉ persist selectedBuildingId
+        paths: ['selectedBuildingId'],  
     },
 
     actions: {

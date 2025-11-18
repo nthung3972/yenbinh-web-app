@@ -128,11 +128,18 @@
                                         Chi tiết
                                     </DropdownItem>
 
-                                    <DropdownItem :disabled="invoice.status === 1"
-                                        :title="invoice.status === 1 ? 'Hóa đơn đã thanh toán, không thể thêm' : 'Thêm thanh toán'"
+                                    <DropdownItem :disabled="invoice.status === 'paid'"
+                                        :title="invoice.status === 'paid' ? 'Hóa đơn đã thanh toán, không thể thanh toán tiếp' : 'Thêm thanh toán'"
                                         iconName="bxs:wallet" :onClick="() => openPaymentModal(invoice)"
                                         :onClose="closeDropdown">
                                         Thanh toán
+                                    </DropdownItem>
+
+                                    <DropdownItem :disabled="invoice.status === 'paid'"
+                                        :title="invoice.status === 'paid' ? 'Hóa đơn đã thanh toán, không thể điều chỉnh' : 'Điều chỉnh'"
+                                        iconName="material-symbols:price-change" :onClick="() => openAdjustmentModal(invoice)"
+                                        :onClose="closeDropdown">
+                                        Điều chỉnh
                                     </DropdownItem>
                                 </template>
                             </ActionDropdown>
@@ -154,18 +161,43 @@
     </div>
 
     <!-- Modal -->
-    <InvoicePaymentModal v-model="showModal" :invoice="selectedInvoice" @submitted="handlePaymentSubmitted" />
+    <InvoicePaymentModal
+        v-model="showModal" 
+        :invoice="selectedInvoice" 
+        @submitted="handlePaymentSubmitted" 
+    />
 
-    <GenerateMonthlyInvoices v-if="showGenerateModal" :building-id="buildingId" @close="closeGenerateModal" @saved="loadInvoices"/>
+    <GenerateMonthlyInvoices
+        v-if="showGenerateModal" 
+        :building-id="buildingId" 
+        @close="closeGenerateModal" 
+        @saved="loadInvoices"
+    />
+ 
+    <AdjustmentInvoiceModal 
+        v-model="showAdjustmentModal" 
+        :invoice="selectedInvoice" 
+        :error="adjustmentErrors" 
+        :success="adjustmentSuccess" 
+        :loading="adjustmentLoading"
+        @submit="handleAdjustmentSubmit"
+        @reset="resetAdjustment"
+    />
 
-    <ConfirmModal v-model="showDeleteModal" title="Xác nhận xóa hóa đơn"
-        :message="`Bạn có chắc chắn muốn xóa hóa đơn này không?`" confirmText="Xóa" @confirm="deleteInvoice" />
+    <ConfirmModal 
+        v-model="showDeleteModal" 
+        title="Xác nhận xóa hóa đơn"
+        :message="`Bạn có chắc chắn muốn xóa hóa đơn này không?`" 
+        confirmText="Xóa" 
+        @confirm="deleteInvoice" 
+    />
 </template>
 
 <script setup>
 import axios from 'axios'
 import { ref, watch, onMounted } from 'vue'
 import { useInvoiceStore } from '@/stores/invoice'
+import { useAdjustmentInvoiceStore } from '@/stores/adjustment-invoice'
 import { useInitialData } from '@/composables/useInitialData';
 import { useAuthStore } from "~/stores/auth"
 import Pagination from '@/components/pagination/Pagination.vue'
@@ -175,6 +207,7 @@ import InvoicePaymentModal from '@/components/modal/InvoicePaymentModal.vue'
 import ConfirmModal from '@/components/modal/ConfirmModal.vue'
 import { useToast } from 'vue-toastification'
 import GenerateMonthlyInvoices from '~/components/modal/GenerateMonthlyInvoices.vue';
+import AdjustmentInvoiceModal from '~/components/modal/AdjustmentInvoiceModal.vue';
 
 definePageMeta({
     middleware: "auth",
@@ -185,6 +218,7 @@ definePageMeta({
 const useInvoice = useInvoiceStore()
 const authStore = useAuthStore()
 const showModal = ref(false)
+const showAdjustmentModal = ref(false)
 const selectedInvoice = ref(null)
 const showDeleteModal = ref(false)
 const invoice_id = ref(null)
@@ -192,6 +226,10 @@ const toast = useToast()
 const exportLoading = ref(false)
 const showGenerateModal = ref(false)
 const buildingId = ref(false)
+const adjustmentErrors = ref(null)
+const adjustmentStore = useAdjustmentInvoiceStore()
+const adjustmentSuccess = ref(null)
+const adjustmentLoading = ref(false)
 
 const checkAll = ref(false)
 const selectedInvoices = ref([])
@@ -224,18 +262,28 @@ watch(selectedInvoices, (newVal) => {
 
 const { formatVND } = useCurrencyFormat()
 
-function openPaymentModal(invoice) {
+const openPaymentModal = (invoice) => {
     selectedInvoice.value = invoice
     showModal.value = true
 }
 
-function handlePaymentSubmitted() {
+const openAdjustmentModal = (invoice) => {
+    selectedInvoice.value = invoice
+    showAdjustmentModal.value = true
+}
+
+const handlePaymentSubmitted = () => {
     loadInvoices()
 }
 
 const setSelectedInvoice = async (id) => {
     invoice_id.value = id;
     showDeleteModal.value = true
+}
+
+const resetAdjustment = () => {
+    adjustmentErrors.value = null
+    adjustmentSuccess.value = null
 }
 
 const filters = ref({
@@ -334,6 +382,22 @@ const formatPeriod = (period) => {
     if (!period) return ''
     const [year, month] = period.split('-')
     return `${month}/${year}`
+}
+
+const handleAdjustmentSubmit = async(form) => {
+    console.log(form)
+    adjustmentLoading.value = true
+    try {
+        const result = await adjustmentStore.create(form)
+        if (result.success) {
+            adjustmentErrors.value = null
+            adjustmentSuccess.value = result.message
+        }
+    } catch (err) {
+        adjustmentErrors.value = err.errors
+    } finally {
+        adjustmentLoading.value = false
+    }
 }
 
 onMounted(loadInvoices)
